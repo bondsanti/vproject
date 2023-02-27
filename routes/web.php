@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\CustomAuthController;
 use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +19,9 @@ Route::get('/', function () {
 });
 
 
-// Route::get('/main', function () {
-//     return view('index');
-// });
+Route::get('/login',[CustomAuthController::class,'login']);
+Route::get('/regis',[CustomAuthController::class,'regis']);
+
 
 Route::get('/main',[MainController::class,'index'])->name('main');
 Route::get('/calendar',[MainController::class,'calendar'])->name('calendar');
