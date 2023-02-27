@@ -143,11 +143,41 @@ $data_schedule=array(
         <div class="row">
             <div class="col-md-4">
 
-                <div class="box box-solid">
+                <div class="box box-primary">
                   <div class="box-header with-border">
                     <h3 class="box-title">นัดเยี่ยมโครงการ</h3>
                   </div>
                   <div class="box-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <label>วันที่ </label>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input type="text" class="form-control pull-right" id="datepicker">
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <label>เวลา </label>
+                                    <div class="input-group date">
+                                        <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                        </div>
+                                        <select class="form-control select2" style="width: 100%;">
+                                            <option>เลือก</option>
+                                            <option>09.00 - 10.00 น.</option>
+                                            <option>10.00 - 11.00 น.</option>
+                                            <option>11.00 - 12.00 น.</option>
+                                            <option>13.00 - 14.00 น.</option>
+                                            <option>14.00 - 15.00 น.</option>
+                                            <option>15.00 - 16.00 น.</option>
+                                            </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label>โครงการ</label>
                             <select class="form-control select2" style="width: 100%;">
@@ -167,7 +197,7 @@ $data_schedule=array(
                                     <input type="text" class="form-control" placeholder="">
                                 </div>
                                 <div class="col-xs-6">
-                                    <label>เบอร์โทร</label>
+                                    <label>เบอร์ติดต่อ</label>
                                     <input type="text" class="form-control" placeholder="">
                                 </div>
                             </div>
@@ -175,31 +205,230 @@ $data_schedule=array(
                         <div class="form-group">
                             <label>เซ็นเอกสารใบคำขอกู้ธนาคาร</label>
                             <br>
-                            <label>
-                                <input type="checkbox" class="minimal">
-                                กสิกร
-                              </label>
-                              <label>
-                                <input type="checkbox" class="minimal">
-                                ออมสิน
-                              </label>
-                              <label>
-                                <input type="checkbox" class="minimal">
-                                ไทยพาณิช
-                              </label>
-                              <label>
-                                <input type="checkbox" class="minimal">
-                                กรุงไทย
-                              </label>
-                              <label>
-                                <input type="checkbox" class="minimal">
-                                ทหารไทย
-                              </label>
-                              <label>
-                                <input type="checkbox" class="minimal">
-                                ธอส.
-                              </label>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            กสิกร
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            กรุงไทย
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            เกียรตินาคิน
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            ไทยพาณิชย์
+                                          </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            ธอส.
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            ออมสิน
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            TTB
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+
+                                            <div class="form-check-inline">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
+                                                    <input type="checkbox" class="minimal">
+                                                    </span>
+                                                    <input type="text" style="" class="form-control" placeholder="อื่น ๆ ระบุ..">
+                                                </div>
+                                            </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </div>
+                        <div class="form-group">
+                            <label>ข้อมูลลูกค้าเข้าชม</label>
+                            <br>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="minimal">
+                                            ชมห้องตัวอย่าง
+                                          </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <div class="input-group">
+                                            <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
+                                            <input type="checkbox" class="minimal">
+                                            </span>
+                                            <input type="text" style="" class="form-control" placeholder="พาชมห้อง ราคา">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-xs-6">
+                                    <label>ระบุเลขห้อง</label>
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>เอกสารจากลูกค้า</label>
+                            <br>
+                            <div class="row">
+                                <div class="col-xs-12">
+
+                                    <table width="100%">
+                                        <tr>
+                                            <td width="60%">
+                                            <div class="form-check-inline">
+                                                <div class="input-group tex-left">
+                                                    <span class="input-group-addon" style="border: none;  padding: 0px 15px 0px 0px;">
+                                                    <input type="checkbox" class="minimal">
+                                                     สำเนาทะเบียนบ้าน
+                                                    </span>
+
+
+                                                </div>
+                                            </div>
+                                            </td>
+                                            <td width="20%"><input type="number" class="form-control" placeholder=""></td>
+                                            <td width="20%">&nbsp;&nbsp;ชุด</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">
+                                            <div class="form-check-inline">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" style="border: none;  padding: 0px 12px 0px 0px;">
+                                                    <input type="checkbox" class="minimal">
+                                                    สำเนาบัตรประชาชน
+                                                    </span>
+
+
+                                                </div>
+                                            </div>
+                                            </td>
+                                            <td><input type="number" class="form-control" placeholder=""></td>
+                                            <td>&nbsp;&nbsp;ชุด</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">
+                                            <div class="form-check-inline">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" style="border: none;  padding: 0px 0px 0px 0px;">
+                                                    <input type="checkbox" class="minimal">
+                                                    หนังสือรับรองเงินเดือน
+                                                    </span>
+
+
+                                                </div>
+                                            </div>
+                                            </td>
+                                            <td><input type="number" class="form-control" placeholder=""></td>
+                                            <td>&nbsp;&nbsp;ชุด</td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%">
+                                            <div class="form-check-inline">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" style="border: none;  padding: 0px 24px 0px 0px;">
+                                                    <input type="checkbox" class="minimal">
+                                                    เอกสาร Statement
+                                                    </span>
+
+
+                                                </div>
+                                            </div>
+                                            </td>
+                                            <td><input type="number" class="form-control" placeholder=""></td>
+                                            <td>&nbsp;&nbsp;ชุด</td>
+                                        </tr>
+                                        {{-- <tr>
+                                            <td width="50%">
+                                            <div class="form-check-inline">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
+                                                    <input type="checkbox" class="minimal">
+                                                    </span>
+                                                    <input type="text" style="width: 100%;" class="form-control" placeholder="อื่น ๆ ระบุ..">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><input type="number" class="form-control" placeholder=""></td>
+                                        <td>&nbsp;&nbsp;ชุด</td>
+                                        </tr> --}}
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                        <hr style=" border: 1px solid rgb(2, 116, 209);">
+                        <div class="form-group">
+                            <label>เจ้าหน้าที่โครงการ</label>
+                            <select class="form-control select2" style="width: 100%;">
+                            <option>เลือก</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ผู้ดูแลสายงาน</label>
+                            <select class="form-control select2" style="width: 100%;">
+                            <option>เลือก</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ชื่อสายงาน</label>
+                            <select class="form-control select2" style="width: 100%;">
+                            <option>เลือก</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <label>ชื่อ-นามสกุล (Sale)</label>
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                                <div class="col-xs-6">
+                                    <label>เบอร์ติดต่อ</label>
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                                    <label>หมายเหตุ</label>
+                                    <input type="text" class="form-control" placeholder="">
+                        </div>
+                        <div class="box-footer text-center">
+                            <button type="submit" class="btn btn-primary ">บันทึก</button>
+                            <button type="reset" class="btn btn-danger">เคลียร์</button>
+                            </div>
+
                   </div>
                 </div>
               </div>
@@ -215,7 +444,7 @@ $data_schedule=array(
                           <th style="vertical-align: middle;">09:00 - 10:00</th>
                           <th style="vertical-align: middle;">10:00 - 11:00</th>
                           <th style="vertical-align: middle;">11:00 - 12:00</th>
-                          <th style="vertical-align: middle;">12:00 - 13:00</th>
+                          {{-- <th style="vertical-align: middle;">12:00 - 13:00</th> --}}
                           <th style="vertical-align: middle;">13:00 - 14:00</th>
                           <th style="vertical-align: middle;">14:00 - 15:00</th>
                           <th style="vertical-align: middle;">15:00 - 16:00</th>
