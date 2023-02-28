@@ -17,9 +17,11 @@
     <!-- jvectormap -->
     <link rel="stylesheet" href="{{ asset('vendors/bower_components/jvectormap/jquery-jvectormap.css') }}">
       <!-- daterange picker -->
-    <link rel="stylesheet" href="{{ asset('bower_components/bootstrap-daterangepicker/daterangepicker.css')}}">
+    <link rel="stylesheet" href="{{ asset('vendors/bower_components/bootstrap-daterangepicker/daterangepicker.css')}}">
     <!-- bootstrap datepicker -->
-    <link rel="stylesheet" href="{{ asset('bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('vendors/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
+      <!-- DataTables -->
+    <link rel="stylesheet" href="{{ asset('vendors/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('vendors/dist/css/AdminLTE.min.css') }}">
     <!-- iCheck for checkboxes and radio inputs -->
@@ -79,10 +81,15 @@
     <!-- iCheck 1.0.1 -->
     <script src="{{ asset('vendors/plugins/iCheck/icheck.min.js') }}"></script>
     <!-- date-range-picker -->
-    <script src="{{ asset('bower_components/moment/min/moment.min.js')}}"></script>
-    <script src="{{ asset('bower_components/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+    <script src="{{ asset('vendors/bower_components/moment/min/moment.min.js')}}"></script>
+    <script src="{{ asset('vendors/bower_components/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
+
+    <!-- DataTables -->
+    <script src="{{ asset('vendors/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendors/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+
     <!-- bootstrap datepicker -->
-    <script src=".{{ asset('bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+    <script src=".{{ asset('vendors/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('vendors/dist/js/adminlte.min.js') }}"></script>
     <!-- Sparkline -->
@@ -99,20 +106,34 @@
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('vendors/dist/js/demo.js') }}"></script>
 </body>
-<script>
-    $(function () {
-      //Initialize Select2 Elements
-    $('.select2').select2()
-          //iCheck for checkbox and radio inputs
-    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-      checkboxClass: 'icheckbox_minimal-blue',
-      radioClass   : 'iradio_minimal-blue'
-    })
-    //Date picker
-    $('#datepicker').datepicker({
-      autoclose: true
-    })
+    <script>
+        $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
 
-    });
+        //iCheck for checkbox and radio inputs
+        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+        checkboxClass: 'icheckbox_minimal-blue',
+        radioClass   : 'iradio_minimal-blue'
+        })
+
+        //Date picker
+        $('#datepicker').datepicker({
+        autoclose: true
+        })
+
+        });
+    </script>
+    <script>
+        $(function () {
+          $('#example2').DataTable({
+            'paging'      : true,
+            'lengthChange': true,
+            'searching'   : true,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : true
+          })
+        })
       </script>
 </html>

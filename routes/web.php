@@ -1,6 +1,8 @@
 <?php
 use App\Http\Controllers\CustomAuthController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,4 +27,5 @@ Route::get('/regis',[CustomAuthController::class,'regis']);
 
 Route::get('/main',[MainController::class,'index'])->name('main');
 Route::get('/calendar',[MainController::class,'calendar'])->name('calendar');
-//Route::get('/calendar',[CalendarController::class,'index'])->name('calendar');
+Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject');
+Route::get('/user',[UserController::class,'index'])->name('user');

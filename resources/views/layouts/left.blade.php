@@ -17,10 +17,11 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">เมนูหลัก</li>
-        <li class="{{ request()->routeIs('main') ? 'active' : '' }}"><a href="{{ route('main') }}"><i class="fa fa-dashboard"></i> <span>Dashboard </span></a></li>
-        <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>Calendar </span></a></li>
+        <li class="{{ request()->routeIs('main') ? 'active' : '' }}"><a href="{{ route('main') }}"><i class="fa fa-dashboard"></i> <span>แดชบอร์ด </span></a></li>
+        <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>ปฏิทินงาน </span></a></li>
+        <li class="{{ request()->routeIs('bookingProject') ? 'active' : '' }}"><a href="{{ route('bookingProject') }}"><i class="fa fa-calendar-plus-o"></i> <span>นัดหมาย </span></a></li>
         <li class="header">เมนู ผู้ดูแลระบบ</li>
-        <li><a href=""><i class="fa fa-users"></i> <span>ผู้ใช้งานระบบ </span></a></li>
+        <li class="{{ request()->routeIs('user') ? 'active' : '' }}"><a href="{{ route('user') }}"><i class="fa fa-users"></i> <span>จัดผู้ใช้งานระบบ </span></a></li>
         <li class="treeview">
             <a href="#">
               <i class="fa fa-cogs"></i> <span>ตั้งค่าระบบ</span>
@@ -34,6 +35,8 @@
               <li><a href="index2.html"><i class="fa fa-circle-o"></i> จัดการทีม</a></li>
             </ul>
         </li>
+        <li class="header">ออกจากระบบ</li>
+        <li><a href="" style="background-color: rgba(255, 23, 23, 0.3)"><i class="fa fa-sign-out"></i> ออกจากระบบ</a></li>
         <li class="header">คู่มือ</li>
         <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
         <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
