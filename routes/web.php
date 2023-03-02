@@ -16,16 +16,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 
-Route::get('/login',[CustomAuthController::class,'login']);
-Route::get('/regis',[CustomAuthController::class,'regis']);
+Route::get('/login',[CustomAuthController::class,'login'])->middleware('alreadyLogin');
+Route::get('/regis',[CustomAuthController::class,'regis'])->middleware('alreadyLogin');
+Route::post('/registration',[CustomAuthController::class,'insertRegis'])->name('insertRegis');
+Route::post('/login/auth',[CustomAuthController::class,'loginUser'])->name('loginUser');
+Route::get('/logout/auth',[CustomAuthController::class,'logoutUser'])->name('logoutUser')->middleware('isLogin');
 
 
-Route::get('/main',[MainController::class,'index'])->name('main');
-Route::get('/calendar',[MainController::class,'calendar'])->name('calendar');
-Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject');
-Route::get('/user',[UserController::class,'index'])->name('user');
+Route::get('/',[MainController::class,'index'])->name('main')->middleware('isLogin');
+Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
+Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
+Route::get('/user',[UserController::class,'index'])->name('user')->middleware('isLogin');

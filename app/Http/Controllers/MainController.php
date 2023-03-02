@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Session;
+use App\Models\User;
 use App\Models\Main;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,14 @@ class MainController extends Controller
      */
     public function index()
     {
-        return view('index');
+        $dataUserLogin = array();
+
+        if (Session::has('loginId')) {
+           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
+           $countUser = User::count();
+           //dd($countUser);
+        }
+        return view('index',compact('dataUserLogin','countUser'));
     }
     public function calendar()
     {

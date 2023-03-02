@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="{{ asset('vendors/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
       <!-- DataTables -->
     <link rel="stylesheet" href="{{ asset('vendors/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+      <!-- Pace style -->
+    <link rel="stylesheet" href="{{ asset('vendors/plugins/pace/pace.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('vendors/dist/css/AdminLTE.min.css') }}">
     <!-- iCheck for checkboxes and radio inputs -->
@@ -46,7 +48,7 @@
 
 <body class="hold-transition skin-green sidebar-mini">
     <div class="wrapper">
-
+        @include('sweetalert::alert')
         {{-- 1. Top --}}
         @include('layouts.top')
 
@@ -87,7 +89,8 @@
     <!-- DataTables -->
     <script src="{{ asset('vendors/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('vendors/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
-
+    <!-- PACE -->
+    <script src="{{ asset('vendors/bower_components/PACE/pace.min.js') }}"></script>
     <!-- bootstrap datepicker -->
     <script src=".{{ asset('vendors/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <!-- AdminLTE App -->
@@ -136,4 +139,9 @@
           })
         })
       </script>
+      <script type="text/javascript">
+        // To make Pace works on Ajax calls
+        $(document).ajaxStart(function () {
+          Pace.restart()
+        })
 </html>
