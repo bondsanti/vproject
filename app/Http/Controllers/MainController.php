@@ -26,7 +26,13 @@ class MainController extends Controller
     }
     public function calendar()
     {
-        return view('calendar.index');
+        $dataUserLogin = array();
+
+        if (Session::has('loginId')) {
+           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
+        }
+
+        return view('calendar.index',compact('dataUserLogin'));
     }
 
     /**

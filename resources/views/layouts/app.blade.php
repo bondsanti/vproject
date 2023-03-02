@@ -34,6 +34,8 @@
        folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="{{ asset('vendors/dist/css/skins/_all-skins.min.css') }}">
 
+
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -92,7 +94,7 @@
     <!-- PACE -->
     <script src="{{ asset('vendors/bower_components/PACE/pace.min.js') }}"></script>
     <!-- bootstrap datepicker -->
-    <script src=".{{ asset('vendors/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+    <script src="{{ asset('vendors/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('vendors/dist/js/adminlte.min.js') }}"></script>
     <!-- Sparkline -->
@@ -108,6 +110,9 @@
     {{-- <script src="{{ asset('vendors/dist/js/pages/dashboard2.js') }}"></script> --}}
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('vendors/dist/js/demo.js') }}"></script>
+
+
+
 </body>
     <script>
         $(function () {
@@ -121,27 +126,57 @@
         })
 
         //Date picker
-        $('#datepicker').datepicker({
-        autoclose: true
-        })
+        // $('#datepicker').datepicker({
+        // autoclose: true
+        // })
 
         });
     </script>
     <script>
-        $(function () {
-          $('#example2').DataTable({
-            'paging'      : true,
-            'lengthChange': true,
-            'searching'   : true,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : true
-          })
+    $(document).ready(function () {
+        $.ajaxSetup({
+                headers:{
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+        });
+        $('#tableUser').DataTable({
+        processing: true,
+        serverSide: true,
+            ajax:"{{route('user')}}",
+            columns:[
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data:'code',name:'code'},
+                {data:'fullname',name:'fullname'},
+                {data:'role',name:'role'},
+                {data:'team_id',name:'team_id'},
+                {data:'active',name:'active'},
+                {data:'action',name:'action',orderable:false,searchable:false},
+            ]
         })
-      </script>
-      <script type="text/javascript">
-        // To make Pace works on Ajax calls
-        $(document).ajaxStart(function () {
-          Pace.restart()
-        })
+        $('#savedata').click(function (e) {
+        e.preventDefault();
+        $(this).html('Sending..');
+
+        $.ajax({
+          data: $('#userForm').serialize(),
+          url: "{{ route('user.insert') }}",
+          type: "POST",
+          dataType: 'json',
+          success: function (data) {
+
+              $('#userForm').trigger("reset");
+              $('#modal-default').modal('hide');
+              table.draw();
+
+          },
+          error: function (data) {
+              console.log('Error:', data);
+              $('#savedata').html('Save Changes');
+          }
+      });
+    });
+
+    });
+    </script>
+
 </html>
