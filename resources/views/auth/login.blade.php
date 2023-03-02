@@ -17,9 +17,7 @@
 
     <link rel="stylesheet" href="{{ asset('vendors/dist/css/AdminLTE.min.css') }}">
 
-    <style>
 
-    </style>
 
     <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -30,6 +28,7 @@
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
 <body class="hold-transition login-page">
+
     <br><br><br><br><br>
     <div class="login-box">
         <div class="login-logo">
@@ -37,18 +36,22 @@
 
 
         </div>
+        @include('sweetalert::alert')
 
         <div class="login-box-body">
             <p class="login-box-msg login-logo"><b>vBis</b>Project</p>
-            <form action="" method="post">
+            <form action="{{route('loginUser')}}" method="post">
+                @csrf
                 <div class="form-group has-feedback">
-                    <input type="email" class="form-control" placeholder="Email">
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                </div>
-                <div class="form-group has-feedback">
-                    <input type="password" class="form-control" placeholder="Password">
+                    <input type="text" class="form-control" name="code" placeholder="Code"  autocomplete="off" value="{{old('code')}}">
+                    <span class="glyphicon glyphicon-barcode form-control-feedback"></span>
+                    <small class="text-danger mt-1">@error('code'){{$message}} @enderror</small>
+                  </div>
+                  <div class="form-group has-feedback">
+                    <input type="password" class="form-control" name="password" placeholder="Password"  autocomplete="off">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
+                    <small class="text-danger mt-1">@error('password'){{$message}} @enderror</small>
+                  </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <button type="submit" class="btn btn-primary btn-block btn-flat"><i class="fa fa-sign-in"></i>

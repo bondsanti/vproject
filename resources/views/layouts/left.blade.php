@@ -8,7 +8,7 @@
           <img src="{{ url('uploads/avatar.png') }}" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>Admin IT</p>
+          <p>{{$dataUserLogin->fullname}}</p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -36,7 +36,7 @@
             </ul>
         </li>
         <li class="header">ออกจากระบบ</li>
-        <li><a href="" style="background-color: rgba(255, 23, 23, 0.3)"><i class="fa fa-sign-out"></i> ออกจากระบบ</a></li>
+        <li><a href="{{route('logoutUser')}}" style="background-color: rgba(255, 23, 23, 0.3)"><i class="fa fa-sign-out"></i> ออกจากระบบ</a></li>
         <li class="header">คู่มือ</li>
         <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
         <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>
