@@ -114,7 +114,7 @@
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">เพิ่มข้อมูล</h4>
+                            <h4 class="modal-title" id="">เพิ่มข้อมูล</h4>
                         </div>
                         <div class="modal-body">
                             <!-- form start -->
@@ -131,7 +131,7 @@
                                         <small class="text-danger mt-1 code_err"></small>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" id="editpass">
                                         <label for="" class="col-sm-4 control-label">Password</label>
 
                                         <div class="col-sm-6">
@@ -199,46 +199,31 @@
                 </div>
                   <!-- /.modal -->
 
-                  <div class="modal fade" id="modal-del">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
+
+            </div>
+            <!-- /.modal -->
+            <div class="modal fade" id="modal-update">
+                <div class="modal-dialog">
+                    <div class="modal-content">
                         <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title">เพิ่มข้อมูล</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="">แก้ไข</h4>
                         </div>
                         <div class="modal-body">
-                              <!-- form start -->
-                            <form id="userForm" name="userForm" class="form-horizontal">
+                            <!-- form start -->
+                            <form id="userFormEdit" name="userFormEdit" class="form-horizontal">
                                 @csrf
-                                <input type="hidden" name="id" id="id">
+                                <input type="hidden" name="id_edit" id="id_edit">
                                 <div class="box-body">
 
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">code</label>
 
-                                        <div class="col-sm-6">
-                                        <input type="text" class="form-control" id="code" name="code" "
-                                                placeholder="code" autocomplete="off">
-                                            <small class="text-danger mt-1 code_err"></small>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">Password</label>
-
-                                        <div class="col-sm-6">
-                                            <input type="password" class="form-control" id="password" name="password"
-                                                placeholder="Password" autocomplete="off" required>
-                                            <small class="text-danger mt-1 password_err"></small>
-                                        </div>
-                                    </div>
                                     <div class="form-group">
                                         <label for="" class="col-sm-4 control-label">ชื่อ-สกุล</label>
 
                                         <div class="col-sm-6">
-                                            <input type="fullname" class="form-control" id="fullname" name="fullname"
-                                                placeholder="ชื่อ-สกุล" required>
-                                            <small class="text-danger mt-1 fullname_err"></small>
+                                        <input type="fullname" class="form-control" id="fullname_edit" name="fullname_edit" placeholder="ชื่อ-สกุล" required>
+                                        <small class="text-danger mt-1 fullname_err"></small>
                                         </div>
                                     </div>
 
@@ -246,13 +231,13 @@
                                         <label for="" class="col-sm-4 control-label">ประเภทผู้ใช้งาน</label>
 
                                         <div class="col-sm-6">
-                                            <select class="form-control" id="role" name="role">
+                                            <select class="form-control" id="role_edit" name="role_edit">
                                                 <option value="">เลือก</option>
                                                 <option value="admin">Admin</option>
                                                 <option value="staff">Staff</option>
                                                 <option value="user">User</option>
-                                            </select>
-                                            <small class="text-danger mt-1 role_err"></small>
+                                              </select>
+                                              <small class="text-danger mt-1 role_err"></small>
                                         </div>
 
                                     </div>
@@ -260,37 +245,40 @@
                                         <label for="" class="col-sm-4 control-label">ทีม</label>
 
                                         <div class="col-sm-6">
-                                            <select class="form-control" name="team_id" required>
+                                            <select class="form-control" id="team_id_edit" name="team_id_edit" required>
                                                 <option value="0">ไม่มีทีม</option>
                                                 <option value="1">ทีม 1</option>
                                                 <option value="2">ทีม 2</option>
                                                 <option value="3">ทีม 3</option>
-                                            </select>
+                                              </select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="" class="col-sm-4 control-label">สถานะ</label>
 
                                         <div class="col-sm-6">
-                                            <select class="form-control" name="active" required>
+                                            <select class="form-control" id="active_edit" name="active_edit" required>
                                                 <option value="enable">Enable</option>
                                                 <option value="disable">Disable</option>
-                                            </select>
+                                              </select>
                                         </div>
                                     </div>
                                 </div>
                         </div>
                         <div class="modal-footer">
-                            {{-- <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button> --}}
-                            <button type="submit" class="btn btn-success btn-block" id="savedata"
-                                value="create">ตกลง</button>
-                            {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
+                          {{-- <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button> --}}
+                          <button type="submit" class="btn btn-success btn-block" id="update" >อัพเดท</button>
+                          {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
                         </div>
                         </form>
+                      </div>
+                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-content -->
+                    <!-- /.modal-dialog -->
                 </div>
-                <!-- /.modal-dialog -->
+                  <!-- /.modal -->
+
+
             </div>
             <!-- /.modal -->
 
@@ -355,7 +343,7 @@
             });
 
             $('#createNewPost').click(function() {
-                $('#savedata').val("create-post");
+                $('#savedata').val("create-user");
                 $('#id').val('');
                 $('#userForm').trigger("reset");
                 $('#modal-default').modal('show');
@@ -384,7 +372,7 @@
 
                             if ($.isEmptyObject(data.error)) {
                                 Swal.fire({
-                                    position: 'top-center',
+
                                     icon: 'success',
                                     title: 'เพิ่มข้อมูลสำเร็จ!',
                                     showConfirmButton: true,
@@ -422,9 +410,10 @@
                 });
             });
 
+
             $('body').on('click', '.deleteUser', function() {
 
-                var user_id = $(this).data("id");
+                const user_id = $(this).data("id");
 
                 //confirm("Are You sure want to delete this Post!");
                 Swal.fire({
@@ -442,6 +431,7 @@
                         $.ajax({
                             type: "DELETE",
                             url: "user" + '/' + user_id,
+
                             success: function(data) {
                                 tableUser.draw();
                             },
@@ -457,6 +447,86 @@
                     }
                 });
 
+            });
+
+
+            $('body').on('click', '.editUser', function () {
+                const user_id = $(this).data('id');
+                //console.log(user_id);
+                $('#modal-update').modal('show');
+                $('#savedata').val("edit-user");
+                $('#modelHeading').html("แก้ไข");
+
+                $.get("user/edit" +'/' + user_id , function (data) {
+                    //console.log(data);
+                    $('#id_edit').val(data.id);
+                    // $('#code').val(data.code);
+                    // $('#password').val(data.password);
+                    $('#fullname_edit').val(data.fullname);
+                    $('#role_edit').val(data.role);
+                    $('#team_id_edit option[value="'+data.team_id+'"]').prop('selected', true);
+                    $('#active_edit').val(data.active);
+                });
+            });
+
+            $('#update').click(function(e) {
+                e.preventDefault();
+                $(this).html('รอสักครู่..');
+                const _token = $("input[name='_token']").val();
+                const id = $("#id_edit").val();
+                const fullname = $("#fullname_edit").val();
+                const role = $("#role_edit").val();
+                const team_id = $("#team_id_edit").val();
+                const active = $("#active_edit").val();
+
+                $.ajax({
+                    data: $('#userFormEdit').serialize(),
+                    url: "user/update"+'/'+id,
+                    type: "POST",
+                    dataType: 'json',
+
+                    success: function(data) {
+                        //console.log(data);
+                        if (data.success = true) {
+
+                            if ($.isEmptyObject(data.error)) {
+                                Swal.fire({
+
+                                    icon: 'success',
+                                    title: 'แก้ไขข้อมูลสำเร็จ!',
+                                    showConfirmButton: true,
+                                    timer: 2500
+                                });
+                                $('#userFormEdit').trigger("reset");
+                                $('#modal-update').modal('hide');
+                                tableUser.draw();
+                            } else {
+                                printErrorMsg(data.error);
+                                $('#update').html('ลองอีกครั้ง');
+                                //$('#userForm').trigger("reset");
+                                Swal.fire({
+                                    position: 'top-center',
+                                    icon: 'error',
+                                    title: 'เกิดข้อผิดพลาด',
+                                    showConfirmButton: true,
+                                    timer: 2500
+                                });
+                            }
+
+                        } else {
+                            Swal.fire({
+                                position: 'top-center',
+                                icon: 'error',
+                                title: 'เพิ่มข้อมูลสำเร็จ!',
+                                showConfirmButton: true,
+                                timer: 2500
+                            });
+                        }
+
+
+                    },
+
+                });
             });
 
 

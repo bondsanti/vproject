@@ -47,7 +47,7 @@ class UserController extends Controller
             if ($row->code =="admin") {
                 $btn = '-';
             }else{
-                $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</a>';
+                $btn = '<button  data-id="'.$row->id.'" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>';
                 $btn = $btn.' <button  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser"><i class="fa fa-trash"></i> ลบ</button>';
             }
             return $btn;
@@ -68,6 +68,7 @@ class UserController extends Controller
         'countUserDisable',
         'users'));
    }
+
    public function insert(Request $request){
 
         $validator = Validator::make($request->all(),[
@@ -107,10 +108,56 @@ class UserController extends Controller
 
    public function destroy($id){
 
-    User::find($id)->delete($id);
+            User::find($id)->delete($id);
 
-    return response()->json([
-        'success' => 'Record deleted successfully!'
-    ]);
-}
+            return response()->json([
+                'success' => 'successfully!'
+            ]);
+   }
+
+   public function edit($id){
+        $user = User::find($id);
+
+        return response()->json($user, 200);
+   }
+
+   public function update(Request $request,$id){
+
+
+
+        $user = User::find($id);
+
+        if(!$user){
+            return response()->json([
+                'errors' => [
+                    'message'=>'ไม่สามารถอัพเดทข้อมูลได้ ID ไม่ถูกต้อง..'
+                    ]
+            ],400);
+        }
+
+        $validator = Validator::make($request->all(),[
+            'fullname_edit' => 'required',
+            'role_edit'=>'required'
+        ],[
+
+            'fullname_edit.required' => 'ป้อนชื่อ-นามสกุล',
+            'role_edit.required' => 'เลือกประเภทผู้ใช้งาน',
+        ]);
+
+        if ($validator->passes()) {
+
+            $user->fullname = $request->fullname_edit;
+            $user->role = $request->role_edit;
+            $user->team_id = $request->team_id_edit;
+            $user->active = $request->active_edit;
+            $user->save();
+
+            return response()->json([
+                'message' => 'อัพเดทข้อมูลสำเร็จ'
+            ], 201);
+
+        }
+
+    return response()->json($user, 200);
+    }
 }
