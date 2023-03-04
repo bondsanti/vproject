@@ -25,9 +25,15 @@ Route::post('/login/auth',[CustomAuthController::class,'loginUser'])->name('logi
 Route::get('/logout/auth',[CustomAuthController::class,'logoutUser'])->name('logoutUser')->middleware('isLogin');
 
 
+
 Route::get('/',[MainController::class,'index'])->name('main')->middleware('isLogin');
+
+
+
+
 Route::get('/user',[UserController::class,'index'])->name('user')->middleware('isLogin');
 Route::post('/user',[UserController::class,'insert'])->name('user.insert')->middleware('isLogin');
+Route::delete('/user/{id}',[UserController::class,'destroy'])->name('user.destroy')->middleware('isLogin');
 
 Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
 Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');

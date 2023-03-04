@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>vBis | ระบบนัดเยี่ยมโครงการ</title>
     <link rel="icon" type="image/x-icon" href="{{ url('uploads/vbeicon.ico') }}">
     <!-- Tell the browser to be responsive to screen width -->
@@ -44,13 +45,21 @@
   <![endif]-->
 
     <!-- Google Font -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    {{-- <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic"> --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body{
+        font-family: 'Sarabun', sans-serif;
+    }
+</style>
 </head>
 
 <body class="hold-transition skin-green sidebar-mini">
     <div class="wrapper">
-        @include('sweetalert::alert')
+
         {{-- 1. Top --}}
         @include('layouts.top')
 
@@ -61,7 +70,7 @@
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
-
+            @include('sweetalert::alert')
                     @yield('content')
 
         </div>
@@ -106,6 +115,8 @@
     <script src="{{ asset('vendors/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
     <!-- ChartJS -->
     <script src="{{ asset('vendors/bower_components/chart.js/Chart.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     {{-- <script src="{{ asset('vendors/dist/js/pages/dashboard2.js') }}"></script> --}}
     <!-- AdminLTE for demo purposes -->
@@ -114,16 +125,10 @@
 
 
 </body>
-    <script>
+    {{-- <script>
         $(function () {
         //Initialize Select2 Elements
-        $('.select2').select2()
 
-        //iCheck for checkbox and radio inputs
-        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass   : 'iradio_minimal-blue'
-        })
 
         //Date picker
         // $('#datepicker').datepicker({
@@ -131,52 +136,7 @@
         // })
 
         });
-    </script>
-    <script>
-    $(document).ready(function () {
-        $.ajaxSetup({
-                headers:{
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-        });
-        $('#tableUser').DataTable({
-        processing: true,
-        serverSide: true,
-            ajax:"{{route('user')}}",
-            columns:[
-                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                {data:'code',name:'code'},
-                {data:'fullname',name:'fullname'},
-                {data:'role',name:'role'},
-                {data:'team_id',name:'team_id'},
-                {data:'active',name:'active'},
-                {data:'action',name:'action',orderable:false,searchable:false},
-            ]
-        })
-        $('#savedata').click(function (e) {
-        e.preventDefault();
-        $(this).html('Sending..');
-
-        $.ajax({
-          data: $('#userForm').serialize(),
-          url: "{{ route('user.insert') }}",
-          type: "POST",
-          dataType: 'json',
-          success: function (data) {
-
-              $('#userForm').trigger("reset");
-              $('#modal-default').modal('hide');
-              table.draw();
-
-          },
-          error: function (data) {
-              console.log('Error:', data);
-              $('#savedata').html('Save Changes');
-          }
-      });
-    });
-
-    });
-    </script>
+    </script> --}}
+    @stack('script')
 
 </html>

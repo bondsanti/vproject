@@ -40,11 +40,11 @@ class CustomAuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->role = 'user'; //user = ผู้ใช้งานทั่วไป //admin = ผู้ดูแลระบบ //staff ผู้ใช้งานลองจาก admin
         $user->team_id = '0'; //0 = Df ไม่มี team
-        $user->active = 'disable'; // active = ใช้งาน // disable = ปิดใช้งาน
+        $user->active = 'disable'; // enable = ใช้งาน // disable = ปิดใช้งาน
         $res = $user->save();
 
         if ($res) {
-            Alert::success('ลงทะเบียนสำเร็จ', 'คุณได้ลงทะเบียนเรียบร้อย \n
+            Alert::success('ลงทะเบียนสำเร็จ', 'คุณได้ลงทะเบียนเรียบร้อย
             รอ Admin เปิดใช้งานระบบ 5 นาที');
 
 
