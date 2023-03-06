@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Session;
 use App\Models\User;
 use DataTables;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
@@ -121,9 +122,7 @@ class UserController extends Controller
         return response()->json($user, 200);
    }
 
-   public function update(Request $request,$id){
-
-
+    public function update(Request $request,$id){
 
         $user = User::find($id);
 
@@ -144,6 +143,7 @@ class UserController extends Controller
             'role_edit.required' => 'เลือกประเภทผู้ใช้งาน',
         ]);
 
+
         if ($validator->passes()) {
 
             $user->fullname = $request->fullname_edit;
@@ -158,6 +158,55 @@ class UserController extends Controller
 
         }
 
-    return response()->json($user, 200);
+        return response()->json(['error'=>$validator->errors()]);
     }
+
+    public function testteam(Request $request){
+        $dataUserLogin = array();
+
+        if (Session::has('loginId')) {
+           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
+           $data = DB::table('teams')
+           ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
+           ->select('teams.id', 'teams.team_name', 'subteams.subteam_name')
+           ->orderBy('teams.id')
+           ->get();
+
+           //dd($data);
+          return view('user.test',compact('data'));
+
+        //    $data = DB::table('teams')
+        //     ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
+        //     ->select('teams.id', 'teams.team_name', 'subteams.subteam_name')
+        //     ->orderBy('teams.id')
+        //     ->get();
+
+        // $grouped = $data->groupBy('id');
+
+        // $response = [];
+
+        // foreach ($grouped as $teamId => $subteams) {
+        //     $team = [
+        //         'team_id' => $teamId,
+        //         'team_name' => $subteams->first()->team_name,
+        //         'subteams' => [],
+        //     ];
+
+        //     foreach ($subteams as $subteam) {
+        //         $team['subteams'][] = [
+        //             'subteam_name' => $subteam->subteam_name,
+        //         ];
+        //     }
+
+        //     $response[] = $team;
+        // }
+
+        // return response()->json($response);
+
+
+        }
+
+
+    }
+
 }

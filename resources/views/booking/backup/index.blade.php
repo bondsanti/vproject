@@ -141,12 +141,12 @@ $data_schedule=array(
     <section class="content">
         <!-- Info boxes -->
         <div class="row">
-            <div class="col-md-4 col-xs-12">
+            <div class="col-md-4">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                      <li class="active"><a href="#tab_1" data-toggle="tab">เยี่ยมโครงการ</a></li>
-                      <li><a href="#tab_2" data-toggle="tab">   ประเมินห้องชุด</a></li>
-                      <li><a href="#tab_3" data-toggle="tab">ตรวจ DF/ รับมอบห้อง</a></li>
+                      <li class="active"><a href="#tab_1" data-toggle="tab">นัดเยี่ยมโครงการ</a></li>
+                      <li><a href="#tab_2" data-toggle="tab">นัดประเมินห้องชุด</a></li>
+                      <li><a href="#tab_3" data-toggle="tab">ตรวจ Defect/รับมอบห้อง</a></li>
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="tab_1">
@@ -447,76 +447,70 @@ $data_schedule=array(
                     <!-- /.tab-content -->
                   </div>
                   <!-- nav-tabs-custom -->
-            </div>
+
+
+
+              </div>
               <!-- /.col -->
-
-
-
-              <div class="col-md-8 col-xs-12">
+              <div class="col-md-8">
                 <div class="box box-primary">
                   <div class="box-body no-padding">
                     <!-- THE CALENDAR -->
-                    <div id="calendar"></div>
+                    <table class="table table-bordered text-center">
+                        <thead>
+                        <tr style="height:60px;">
+                          <th style="vertical-align: middle;">วัน / เวลา</th>
+                          <th style="vertical-align: middle;">09:00 - 10:00</th>
+                          <th style="vertical-align: middle;">10:00 - 11:00</th>
+                          <th style="vertical-align: middle;">11:00 - 12:00</th>
+                          {{-- <th style="vertical-align: middle;">12:00 - 13:00</th> --}}
+                          <th style="vertical-align: middle;">13:00 - 14:00</th>
+                          <th style="vertical-align: middle;">14:00 - 15:00</th>
+                          <th style="vertical-align: middle;">15:00 - 16:00</th>
+                          <th style="vertical-align: middle;">16:00 - 17:00</th>
+                          <th style="vertical-align: middle;">17:00 - 18:00</th>
+                        </tr>
+                        </thead>
+                        <tbody >
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> จันทร์
+                                    <p>xx-xx-xxxx</p>
+                                </td>
+                            </tr>
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> อังคาร
+                                    <p>xx-xx-xxxx</p></td>
+                            </tr>
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> พุธ
+                                    <p>xx-xx-xxxx</p></td>
+                            </tr>
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> พฤหัส
+                                    <p>xx-xx-xxxx</p></td>
+                            </tr>
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> ศุกร์
+                                    <p>xx-xx-xxxx</p></td>
+                            </tr>
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> เสาร์
+                                    <p>xx-xx-xxxx</p></td>
+                            </tr>
+                            <tr style="height:100px;">
+                                <td style="vertical-align: middle;"> อาทิตย์
+                                    <p>xx-xx-xxxx</p></td>
+                            </tr>
+                        </tbody>
+                      </table>
                   </div>
                   <!-- /.box-body -->
                 </div>
                 <!-- /. box -->
               </div>
               <!-- /.col -->
-
-
         </div>
         <!-- /.row -->
     </section>
     <!-- /.content -->
 @endsection
-@push('script')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: 'cy',
-        themeSystem: 'bootstrap',
-        timeZone: 'Asia/Thailand',
-        initialView: 'timeGridWeek',
-        headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        // left:'title',
-        // center:'prev,next today',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-
-        defaultView: 'timeGridWeek',
-        //slotDuration: '01:00:00',
-        dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true },
-        slotLabelFormat: [
-            { hour: '2-digit', minute: '2-digit' },
-            { hour: '2-digit', minute: '2-digit' }
-        ],
-
-        events: [
-            {
-                title: 'นัดเยี่ยมโครงการ \n\n โครงการ ABC',
-                start: '2023-03-07T09:00:00',
-                end: '2023-03-07T12:00:00',
-                allDay: false,
-
-                backgroundColor: '#00a65a', //Success (green)
-                borderColor    : '#00a65a' //Success (green)
-            },
-
-            {
-                title: 'Booking 2',
-                start: '2023-03-08T13:00:00',
-                end: '2023-03-08T16:00:00',
-                allDay: false
-            },]
-    });
-
-    calendar.render();
-    });
-
-</script>
-@endpush

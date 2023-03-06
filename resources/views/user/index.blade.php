@@ -223,7 +223,7 @@
 
                                         <div class="col-sm-6">
                                         <input type="fullname" class="form-control" id="fullname_edit" name="fullname_edit" placeholder="ชื่อ-สกุล" required>
-                                        <small class="text-danger mt-1 fullname_err"></small>
+                                        <small class="text-danger mt-1 fullname_err2"></small>
                                         </div>
                                     </div>
 
@@ -231,13 +231,13 @@
                                         <label for="" class="col-sm-4 control-label">ประเภทผู้ใช้งาน</label>
 
                                         <div class="col-sm-6">
-                                            <select class="form-control" id="role_edit" name="role_edit">
+                                            <select class="form-control" id="role_edit" name="role_edit" required>
                                                 <option value="">เลือก</option>
                                                 <option value="admin">Admin</option>
                                                 <option value="staff">Staff</option>
                                                 <option value="user">User</option>
                                               </select>
-                                              <small class="text-danger mt-1 role_err"></small>
+                                              <small class="text-danger mt-1 role_err2"></small>
                                         </div>
 
                                     </div>
@@ -378,13 +378,15 @@
                                     showConfirmButton: true,
                                     timer: 2500
                                 });
-                                $('#userForm').trigger("reset");
+                                // $('#userForm').trigger("reset");
+                                $('#userForm')[0].reset();
                                 $('#modal-default').modal('hide');
                                 tableUser.draw();
                             } else {
                                 printErrorMsg(data.error);
                                 $('#savedata').html('ลองอีกครั้ง');
-                                //$('#userForm').trigger("reset");
+                                $('#userForm').trigger("reset");
+                                // $('#userForm')[0].reset();
                                 Swal.fire({
                                     position: 'top-center',
                                     icon: 'error',
@@ -402,6 +404,7 @@
                                 showConfirmButton: true,
                                 timer: 2500
                             });
+                            $('#userForm')[0].reset();
                         }
 
 
@@ -451,6 +454,7 @@
 
 
             $('body').on('click', '.editUser', function () {
+
                 const user_id = $(this).data('id');
                 //console.log(user_id);
                 $('#modal-update').modal('show');
@@ -474,9 +478,9 @@
                 $(this).html('รอสักครู่..');
                 const _token = $("input[name='_token']").val();
                 const id = $("#id_edit").val();
-                const fullname = $("#fullname_edit").val();
-                const role = $("#role_edit").val();
-                const team_id = $("#team_id_edit").val();
+                const fullname= $("#fullname_edit").val();
+                const role= $("#role_edit").val();
+                const team_id= $("#team_id_edit").val();
                 const active = $("#active_edit").val();
 
                 $.ajax({
@@ -501,9 +505,10 @@
                                 $('#modal-update').modal('hide');
                                 tableUser.draw();
                             } else {
-                                printErrorMsg(data.error);
+                                printErrorMsg2(data.error);
                                 $('#update').html('ลองอีกครั้ง');
-                                //$('#userForm').trigger("reset");
+
+                                //$('#userFormEdit').trigger("reset");
                                 Swal.fire({
                                     position: 'top-center',
                                     icon: 'error',
@@ -521,6 +526,7 @@
                                 showConfirmButton: true,
                                 timer: 2500
                             });
+                            $('#userFormEdit').trigger("reset");
                         }
 
 
@@ -534,6 +540,12 @@
                 $.each(msg, function(key, value) {
                     //console.log(key);
                     $('.' + key + '_err').text(value);
+                });
+            }
+            function printErrorMsg2(msg) {
+                $.each(msg, function(key, value) {
+                    //console.log(key);
+                    $('.' + key + '_err2').text(value);
                 });
             }
         });

@@ -40,6 +40,8 @@ Route::delete('/user/{id}',[UserController::class,'destroy'])->name('user.destro
 Route::get('/user/edit/{id}',[UserController::class,'edit'])->name('user.edit')->middleware('isLogin');
 Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.update')->middleware('isLogin');
 
+Route::get('/user/test',[UserController::class,'testteam']);
+
 Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
 Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
 
