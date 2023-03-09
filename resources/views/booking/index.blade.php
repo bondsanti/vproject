@@ -1,130 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-@php
-///////////////// ตัวอย่างรูปแบบข้อมูล //////////////////
-$demo_year_month=date("Y-m");
-$data_schedule=array(
-    array(
-        "id"=>1,
-        "start_date"=>"{$demo_year_month}-12", // รุปแบบ 0000-00-00
-        "end_date"=>"{$demo_year_month}-21",
-        "start_time"=>"08:00:00",
-        "end_time"=>"09:30:00",
-        "repeat_day"=>array(1,3,5),
-        "title"=>"test data 1",
-        "room"=>"ห้องบรรยาย 1",
-        "building"=>"ตึก A"
-    ),
-    array(
-        "id"=>2,
-        "start_date"=>"{$demo_year_month}-15",
-        "end_date"=>"{$demo_year_month}-21",
-        "start_time"=>"10:00:00",
-        "end_time"=>"11:00:00",
-        "repeat_day"=>array(2,4),
-        "title"=>"test data 2",
-        "room"=>"ห้องบรรยาย 2",
-        "building"=>"ตึก B"
-    ),
-    array(
-        "id"=>3,
-        "start_date"=>"{$demo_year_month}-15",
-        "end_date"=>"{$demo_year_month}-25",
-        "start_time"=>"14:30:00",
-        "end_time"=>"16:00:00",
-        "repeat_day"=>[],
-        "title"=>"test data 3",
-        "room"=>"ห้องบรรยาย 3",
-        "building"=>"ตึก C"
-    ),
-    array(
-        "id"=>4,
-        "start_date"=>"{$demo_year_month}-19",
-        "end_date"=>"{$demo_year_month}-28",
-        "start_time"=>"16:30:00",
-        "end_time"=>"18:00:00",
-        "repeat_day"=>[1,4,5],
-        "title"=>"test data 4",
-        "room"=>"ห้องบรรยาย 4",
-        "building"=>"ตึก D"
-    ),
-);
-///////////////// ตัวอย่างรูปแบบข้อมูล //////////////////
-@endphp
-<style type="text/css">
-    div.table-responsive::-webkit-scrollbar,
-    div.table-responsive::-webkit-scrollbar {
-      width: 10px;
-      height: 2px;
-    }
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 7px;
-    }
-    ::-webkit-scrollbar-button {
-      width: 0px;
-      height: 0px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #CACACA;
-      border: 0px none #CACACA;
-      border-radius: 50px;
-    }
-    ::-webkit-scrollbar-thumb:active {
-      background: #000000;
-    }
-    .wrap_schedule_control{
-        margin:auto;
-        width:800px;
-    }
-    .wrap_schedule{
-        cursor: grab;
-        margin:auto;
-        width:800px;
-    }
-    .time_schedule{
-        font-size:12px;
-    }
-    .day_schedule{
-        font-size:12px;
-    }
-    .time_schedule_text{
 
-    }
-    .day_schedule_text{
-        width:80px;
-        font-size: 12px;
-        padding: 10px 5px;
-    }
-    .day-head-label{
-        position: relative;
-        right: 10px;
-        top: 0;
-    }
-    .time-head-label{
-        position: relative;
-        left: 10px;
-        bottom: 0;
-    }
-    .diagonal-cross{
-    border-bottom: 2px solid #dee2e6;
-        /* -webkit-transform: translateY(20px) translateX(5px) rotate(26deg); */
-        position: relative;
-        top: -20px;
-        left: 0;
-        transform: translateY(20px) translateX(5px) rotate(20deg);
-    }
-    .sc-detail{
-        font-size: 11px;
-        background-color: #63E327;
-        color: #FFFFFF;
-    }
-    .sc-detail a{
-        color: #FF4F00;
-        font-size: 14px;
-    }
-    </style>
+
     <section class="content-header">
         <h1>
             นัดหมาย
@@ -159,7 +37,7 @@ $data_schedule=array(
                                             <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                             </div>
-                                            <input type="text" class="form-control pull-right" id="datepicker">
+                                            <input type="text" class="form-control pull-right" id="datepicker" name="date">
                                         </div>
                                     </div>
                                     <div class="col-xs-6">
@@ -168,7 +46,7 @@ $data_schedule=array(
                                             <div class="input-group-addon">
                                             <i class="fa fa-clock-o"></i>
                                             </div>
-                                            <select class="form-control select2" style="width: 100%;">
+                                            <select class="form-control select2" style="width: 100%;" name="time">
                                                 <option>เลือก</option>
                                                 <option>09.00 - 10.00 น.</option>
                                                 <option>10.00 - 11.00 น.</option>
@@ -183,25 +61,23 @@ $data_schedule=array(
                             </div>
                             <div class="form-group">
                                 <label>โครงการ</label>
-                                <select class="form-control select2" style="width: 100%;">
-                                <option>เลือก</option>
-                                <option>A Spece Me รัตนาธิเบศร์</option>
-                                <option>Altitude Symphony เจริญกรุง</option>
-                                <option>Altitude Unicorn</option>
-                                <option>Artisan Ratchada</option>
-                                <option>Astoria Rangsit-Klong 3</option>
-                                <option>Atmoz Chaengwattana</option>
+                                <select class="form-control select2" style="width: 100%;" name="project_id" required>
+                                <option value="">เลือก</option>
+                                @foreach ($projects as $project )
+                                <option value="{{$project->id}}">{{$project->project_name}}</option>
+                                @endforeach
+
                                 </select>
                             </div>
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (ลูกค้า)</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control" placeholder="" name="customer_name" autocomplete="off">
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control" placeholder="" name="tel_name" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
@@ -212,25 +88,25 @@ $data_schedule=array(
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 กสิกร
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 กรุงไทย
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 เกียรตินาคิน
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 ไทยพาณิชย์
                                               </label>
                                         </div>
@@ -238,19 +114,19 @@ $data_schedule=array(
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 ธอส.
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 ออมสิน
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
                                                 TTB
                                               </label>
                                         </div>
@@ -259,9 +135,9 @@ $data_schedule=array(
                                                 <div class="form-check-inline">
                                                     <div class="input-group">
                                                         <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
-                                                        <input type="checkbox" class="minimal">
+                                                        <input type="checkbox" class="minimal" name="checkbox_bank[]" value="อื่น ๆ">
                                                         </span>
-                                                        <input type="text" style="" class="form-control" placeholder="อื่น ๆ ระบุ..">
+                                                        <input type="text" class="form-control" name="checkbox_bank[]" placeholder="อื่น ๆ ระบุ..">
                                                     </div>
                                                 </div>
 
@@ -278,7 +154,7 @@ $data_schedule=array(
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]"   >
                                                 ชมห้องตัวอย่าง
                                               </label>
                                         </div>
@@ -388,7 +264,7 @@ $data_schedule=array(
                                     </div>
                                 </div>
                             </div>
-                            <hr style=" border: 1px solid rgb(2, 116, 209);">
+                            <hr style=" border: 1px solid rgb(2, 116, 209);"></hr>
                             {{-- <div class="form-group">
                                 <label>เจ้าหน้าที่โครงการ</label>
                                 <select class="form-control select2" style="width: 100%;">
@@ -453,8 +329,16 @@ $data_schedule=array(
 
 
               <div class="col-md-8 col-xs-12">
+
                 <div class="box box-primary">
                   <div class="box-body no-padding">
+                    <h5>
+                        &nbsp;&nbsp;สถานะ <span class="label label-default">รอรับงาน</span>
+                        &nbsp;<span class="label label-warning">รับงานแล้ว</span>
+                        &nbsp;<span class="label label-info">จองสำเร็จ / รอเข้าเยี่ยม</span>
+                        &nbsp;<span class="label label-success">จองสำเร็จ</span>
+                    </h5>
+
                     <!-- THE CALENDAR -->
                     <div id="calendar"></div>
                   </div>
@@ -471,13 +355,14 @@ $data_schedule=array(
     <!-- /.content -->
 @endsection
 @push('script')
-<script>
+
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'cy',
-        themeSystem: 'bootstrap',
+        // themeSystem: 'bootstrap',
         timeZone: 'Asia/Thailand',
         initialView: 'timeGridWeek',
         headerToolbar: {
@@ -489,7 +374,7 @@ $data_schedule=array(
         },
 
         defaultView: 'timeGridWeek',
-        //slotDuration: '01:00:00',
+       //slotDuration: '01:00:00',
         dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true },
         slotLabelFormat: [
             { hour: '2-digit', minute: '2-digit' },
@@ -498,13 +383,11 @@ $data_schedule=array(
 
         events: [
             {
-                title: 'นัดเยี่ยมโครงการ \n\n โครงการ ABC',
+                title: 'นัดเยี่ยมโครงการ',
                 start: '2023-03-07T09:00:00',
                 end: '2023-03-07T12:00:00',
                 allDay: false,
 
-                backgroundColor: '#00a65a', //Success (green)
-                borderColor    : '#00a65a' //Success (green)
             },
 
             {
@@ -512,11 +395,122 @@ $data_schedule=array(
                 start: '2023-03-08T13:00:00',
                 end: '2023-03-08T16:00:00',
                 allDay: false
-            },]
+            },],
+
     });
 
     calendar.render();
     });
 
-</script>
+</script> --}}
+
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers:{
+            'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+  $('#calendar').fullCalendar({
+    locale: 'cy',
+    defaultView: 'month',
+    eventLimit: false,
+    timeZone: 'Asia/Bangkok',
+    header    : {
+        left  : 'prev,next today',
+        center: 'title',
+        right : 'month,agendaWeek,agendaDay'
+      },
+
+
+      events:'/booking_project',
+
+        eventClick: function(event, jsEvent, view) {
+        // Handle event click here
+        },
+        eventRender: function(event, element) {
+        // Handle event rendering here
+        },
+        dayClick: function(date, jsEvent, view) {
+        // Handle day click here
+        }
+        });
+
+    });
+  </script>
+
+{{-- <script>
+    $(function () {
+
+      /* initialize the external events
+       -----------------------------------------------------------------*/
+      function init_events(ele) {
+        ele.each(function () {
+
+          // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+          // it doesn't need to have a start or end
+          var eventObject = {
+            title: $.trim($(this).text()) // use the element's text as the event title
+          }
+
+          // store the Event Object in the DOM element so we can get to it later
+          $(this).data('eventObject', eventObject)
+
+          // make the event draggable using jQuery UI
+          $(this).draggable({
+            zIndex        : 1070,
+            revert        : true, // will cause the event to go back to its
+            revertDuration: 0  //  original position after the drag
+          })
+
+        })
+      }
+
+      init_events($('#external-events div.external-event'))
+
+      /* initialize the calendar
+       -----------------------------------------------------------------*/
+      //Date for the calendar events (dummy data)
+    //   var date = new Date()
+    //   var d    = date.getDate(),
+    //       m    = date.getMonth(),
+    //       y    = date.getFullYear()
+      $('#calendar').fullCalendar({
+        header    : {
+          left  : 'prev,next today',
+          center: 'title',
+          right : 'month,agendaWeek,agendaDay'
+        },
+        buttonText: {
+          today: 'today',
+          month: 'month',
+          week : 'week',
+          day  : 'day'
+        },
+        //Random default events
+        events:'/booking_project',
+        // events    : [
+
+        //   {
+        //     title          : 'Meeting',
+        //     start          : new Date(y, m, d, 10, 30),
+        //     allDay         : false,
+        //     backgroundColor: '#0073b7', //Blue
+        //     borderColor    : '#0073b7' //Blue
+        //   },
+        //   {
+        //     title          : 'Lunch',
+        //     start          : new Date(y, m, d, 12, 0),
+        //     end            : new Date(y, m, d, 14, 0),
+        //     allDay         : false,
+        //     backgroundColor: '#00c0ef', //Info (aqua)
+        //     borderColor    : '#00c0ef' //Info (aqua)
+        //   },
+
+        // ],
+
+    })
+    })
+</script> --}}
 @endpush
