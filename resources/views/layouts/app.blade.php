@@ -34,7 +34,8 @@
     <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="{{ asset('vendors/dist/css/skins/_all-skins.min.css') }}">
-
+  <!-- bootstrap datepicker -->
+  <link rel="stylesheet" href="{{ asset('bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
   <!-- fullCalendar -->
   <link rel="stylesheet" href="{{ asset('vendors/bower_components/fullcalendar/dist/fullcalendar.min.css') }}">
   <link rel="stylesheet" href="{{ asset('vendors/bower_components/fullcalendar/dist/fullcalendar.print.min.css') }}" media="print">
@@ -127,6 +128,9 @@
     <script src="{{ asset('vendors/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
     <!-- ChartJS -->
     <script src="{{ asset('vendors/bower_components/chart.js/Chart.js') }}"></script>
+
+    <!-- bootstrap datepicker -->
+    <script src="{{ asset('vendors/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->

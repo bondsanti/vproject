@@ -28,6 +28,7 @@
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="tab_1">
+                        <form action="{{route('bookingPoject.create')}}" method="post">
                         <div class="box-body">
                             <div class="form-group">
                                 <div class="row">
@@ -47,14 +48,14 @@
                                             <i class="fa fa-clock-o"></i>
                                             </div>
                                             <select class="form-control select2" style="width: 100%;" name="time">
-                                                <option>เลือก</option>
-                                                <option>09.00 - 10.00 น.</option>
-                                                <option>10.00 - 11.00 น.</option>
-                                                <option>11.00 - 12.00 น.</option>
-                                                <option>13.00 - 14.00 น.</option>
-                                                <option>14.00 - 15.00 น.</option>
-                                                <option>15.00 - 16.00 น.</option>
-                                                </select>
+                                                <option value="">เลือก</option>
+                                                <option value="09:00">09.00 - 10.00 น.</option>
+                                                <option value="10:00">10.00 - 11.00 น.</option>
+                                                <option value="11:00">11.00 - 12.00 น.</option>
+                                                <option value="13:00">13.00 - 14.00 น.</option>
+                                                <option value="14:00">14.00 - 15.00 น.</option>
+                                                <option value="15:00">15.00 - 16.00 น.</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -274,15 +275,18 @@
                             </div> --}}
                             <div class="form-group">
                                 <label>ผู้ดูแลสายงาน</label>
-                                <select class="form-control select2" style="width: 100%;">
-                                <option>เลือก</option>
+                                <select class="form-control select2" id="teamSelect" name="team_id" style="width: 100%;" required>
+                                <option value="">เลือก</option>
+                                @foreach ($teams as $team)
+                                    <option value="{{$team->id}}">{{ $team->team_name }}</option>
+                                @endforeach
 
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>ชื่อสายงาน</label>
-                                <select class="form-control select2" style="width: 100%;">
-                                <option>เลือก</option>
+                                <select class="form-control select2" id="subteamSelect" name="subteam_id" style="width: 100%;" disabled required>
+                                <option value="">เลือก</option>
 
                                 </select>
                             </div>
@@ -290,25 +294,27 @@
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->fullname}}" disabled>
+                                        <input type="hidden" class="form-control" name="name_sale" value="{{$dataUserLogin->fullname}}">
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control" name="tel_sale" placeholder="" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
 
                                         <label>หมายเหตุ</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <textarea class="form-control" rows="3" name="remark" placeholder="หมายเหตุ ..."></textarea>
                             </div>
                             <div class="box-footer text-center">
                                 <button type="submit" class="btn btn-primary ">บันทึก</button>
                                 <button type="reset" class="btn btn-danger">เคลียร์</button>
-                                </div>
+                            </div>
 
-                      </div>
+                        </div>
+                        </form>
                       </div>
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
@@ -336,7 +342,7 @@
                         &nbsp;&nbsp;สถานะ <span class="label label-default">รอรับงาน</span>
                         &nbsp;<span class="label label-warning">รับงานแล้ว</span>
                         &nbsp;<span class="label label-info">จองสำเร็จ / รอเข้าเยี่ยม</span>
-                        &nbsp;<span class="label label-success">จองสำเร็จ</span>
+                        &nbsp;<span class="label label-success">เยี่ยมชมเรียบร้อย</span>
                     </h5>
 
                     <!-- THE CALENDAR -->
@@ -403,9 +409,36 @@
     });
 
 </script> --}}
-
+<script>
+    $(document).ready(function() {
+        $('#teamSelect').change(function() {
+            var teamId = $(this).val();
+            if (teamId) {
+                $.ajax({
+                    url: '{{ route('subteams.get') }}',
+                    type: 'GET',
+                    data: {team_id: teamId},
+                    success: function(data) {
+                        $('#subteamSelect').empty().append('<option value="">เลือก</option>');
+                        $.each(data, function(index, subteam) {
+                            $('#subteamSelect').append('<option value="'+ subteam.id +'">'+ subteam.subteam_name +'</option>');
+                        });
+                        $('#subteamSelect').prop('disabled', false);
+                    }
+                });
+            } else {
+                $('#subteamSelect').empty().prop('disabled', true);
+            }
+        });
+    });
+</script>
 <script>
 $(document).ready(function() {
+        //Date picker
+    $('#datepicker').datepicker({
+      autoclose: true
+    })
+
     $.ajaxSetup({
         headers:{
             'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')

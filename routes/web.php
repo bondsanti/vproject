@@ -43,5 +43,9 @@ Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.up
 Route::get('/user/test',[UserController::class,'testteam']);
 
 Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
+
+//bookings
 Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
+Route::get('/subteams', [BookingController::class,'getByTeam'])->name('subteams.get');
+Route::post('/booking/create',[BookingController::class,'createBookingPoject'])->name('bookingPoject.create')->middleware('isLogin');
 

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 06, 2023 at 03:08 PM
--- Server version: 10.4.25-MariaDB
--- PHP Version: 7.4.30
+-- Generation Time: Mar 10, 2023 at 02:54 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,13 +24,47 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `bookings`
+--
+
+CREATE TABLE `bookings` (
+  `id` int(11) NOT NULL,
+  `booking_title` varchar(50) NOT NULL,
+  `booking_start` varchar(100) NOT NULL,
+  `booking_end` varchar(100) NOT NULL,
+  `booking_status` int(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bookings`
+--
+
+INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`) VALUES
+(1, 'นัดเยี่ยมโครงการ', '2023-03-09 11:00', '2023-03-09 13:00', 0),
+(2, 'ทดสอบ 2', '2023-03-10 10:00', '2023-03-10 13:00', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `projects`
 --
 
 CREATE TABLE `projects` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `project_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `project_active` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_name` varchar(255) NOT NULL,
+  `is_active` varchar(10) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -39,9 +73,9 @@ CREATE TABLE `projects` (
 -- Dumping data for table `projects`
 --
 
-INSERT INTO `projects` (`id`, `project_name`, `project_active`, `created_at`, `updated_at`) VALUES
+INSERT INTO `projects` (`id`, `project_name`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'โครงการ Altitude  Unicorn', 'enable', NULL, NULL),
-(2, 'โครงการมอนเต้ พระราม 9', 'enable', NULL, NULL),
+(2, 'โครงการมอนเต้ พระราม 9', 'disable', NULL, NULL),
 (3, 'โครงการ Be condo', 'enable', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -52,7 +86,7 @@ INSERT INTO `projects` (`id`, `project_name`, `project_active`, `created_at`, `u
 
 CREATE TABLE `subteams` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `subteam_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subteam_name` varchar(255) NOT NULL,
   `team_id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -75,7 +109,7 @@ INSERT INTO `subteams` (`id`, `subteam_name`, `team_id`, `created_at`, `updated_
 
 CREATE TABLE `teams` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `team_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `team_name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -96,12 +130,12 @@ INSERT INTO `teams` (`id`, `team_name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fullname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `team_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `active` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `fullname` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `team_id` varchar(255) NOT NULL,
+  `active` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -117,7 +151,6 @@ INSERT INTO `users` (`id`, `code`, `password`, `fullname`, `role`, `team_id`, `a
 (8, 'rrrrrrrr', '$2y$10$9DLbnQelp8.uUsoP2WQAPOP8fcAbWUCSWucQzIPD98ysBwVvmggq6', 'rrrrrrr', 'staff', '2', 'enable', '2023-03-04 06:53:55', '2023-03-04 06:53:55'),
 (9, 'yyy', '$2y$10$/7C2T6ZRcAjlRHkVWXtwIuWWOsiNIn3F8vyHDEbTCrVv3RnoU5F2i', 'yyy', 'staff', '0', 'enable', '2023-03-04 07:06:59', '2023-03-04 07:06:59'),
 (10, 'qwe', '$2y$10$2Ju0wH6Q3JmBz8Lt5HiTautDAF1FqS58AINlUnFpQFhUDPoan98tS', 'qwe', 'user', '0', 'disable', '2023-03-04 08:12:53', '2023-03-04 08:12:53'),
-(14, 'asd', '$2y$10$tBW84rIKIQ3PHNFV6bDG2ekNFO13IUDHbXhSe.oEIIHJnY7Mp5Rky', 'asdasd', 'user', '0', 'disable', '2023-03-04 08:25:46', '2023-03-04 08:25:46'),
 (19, 'afsasf', '$2y$10$pV7bd7uLBvr.GSFY7XXMZuan8kgtsjtk/cNHWCSomdwEfZnJBJsj.', 'afasf', 'user', '1', 'disable', '2023-03-04 08:59:53', '2023-03-04 17:51:47'),
 (22, 'test', '$2y$10$ppKOlgu3aMlzD2/1vHZF9.ZmX48TEnRLuq9eGFA0CJwmjXYt6GukW', 'test', 'staff', '2', 'enable', '2023-03-04 09:05:32', '2023-03-04 17:54:21'),
 (24, '5678', '$2y$10$MYqtCSvyZhi9NXmVEq5PaevJ7ewFOy7WFsLOm8S7B2wI12woR76.u', 'asdasd', 'staff', '0', 'enable', '2023-03-04 10:43:30', '2023-03-04 10:43:30'),
@@ -127,6 +160,18 @@ INSERT INTO `users` (`id`, `code`, `password`, `fullname`, `role`, `team_id`, `a
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `projects`
@@ -156,6 +201,18 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `projects`
