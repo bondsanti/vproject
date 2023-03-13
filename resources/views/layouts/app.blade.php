@@ -35,10 +35,12 @@
        folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="{{ asset('vendors/dist/css/skins/_all-skins.min.css') }}">
   <!-- bootstrap datepicker -->
-  <link rel="stylesheet" href="{{ asset('bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('vendors/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css') }}">
   <!-- fullCalendar -->
   <link rel="stylesheet" href="{{ asset('vendors/bower_components/fullcalendar/dist/fullcalendar.min.css') }}">
   <link rel="stylesheet" href="{{ asset('vendors/bower_components/fullcalendar/dist/fullcalendar.print.min.css') }}" media="print">
+  <!-- jQuery UI -->
+
   {{-- <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css' /> --}}
 
         <!-- moment lib -->
@@ -140,7 +142,9 @@
     {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js'></script> --}}
     <!-- fullCalendar -->
-    <script src="{{ asset('vendors/bower_components/moment/moment.js') }}"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/th.js'></script>
+    {{-- <script src="{{ asset('vendors/bower_components/moment/moment.js') }}"></script> --}}
     <script src="{{ asset('vendors/bower_components/fullcalendar/dist/fullcalendar.min.js') }}"></script>
 
 </body>

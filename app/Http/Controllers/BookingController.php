@@ -38,11 +38,16 @@ class BookingController extends Controller
                     $end_time = Carbon::parse($booking->booking_end)->toIso8601String();
 
                     if($booking->booking_status==0){
-                        $backgroundColor="#00c0ef";
-                        $borderColor="#00c0ef";
-                    }else{
+                        $backgroundColor="#8b8c8b";
+                        $borderColor="#8b8c8b";
+                        // $backgroundColor="#00c0ef";
+                        // $borderColor="#00c0ef";
+                    }elseif($booking->booking_status==1){
                         $backgroundColor="#00a65a";
                         $borderColor="#00a65a";
+                    }else{
+                        $backgroundColor="#cc2d2d";
+                        $borderColor="#cc2d2d";
                     }
 
                     $event = [

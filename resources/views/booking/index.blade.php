@@ -343,6 +343,7 @@
                         &nbsp;<span class="label label-warning">รับงานแล้ว</span>
                         &nbsp;<span class="label label-info">จองสำเร็จ / รอเข้าเยี่ยม</span>
                         &nbsp;<span class="label label-success">เยี่ยมชมเรียบร้อย</span>
+                        &nbsp;<span class="label label-danger">ยกเลิก</span>
                     </h5>
 
                     <!-- THE CALENDAR -->
@@ -446,7 +447,7 @@ $(document).ready(function() {
     });
 
   $('#calendar').fullCalendar({
-    locale: 'cy',
+    locale: 'th',
     defaultView: 'month',
     eventLimit: false,
     timeZone: 'Asia/Bangkok',
@@ -455,6 +456,7 @@ $(document).ready(function() {
         center: 'title',
         right : 'month,agendaWeek,agendaDay'
       },
+      timeFormat: 'H:mm [น.]',
 
 
       events:'/booking_project',
@@ -468,6 +470,21 @@ $(document).ready(function() {
         dayClick: function(date, jsEvent, view) {
         // Handle day click here
         }
+        // datepickerLocale: {
+        // closeText: 'ปิด',
+        // prevText: '&#xAB;ย้อน',
+        // nextText: 'ถัดไป&#xBB;',
+        // currentText: 'วันนี้',
+        // monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+        // monthNamesShort: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+        // dayNames: ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'],
+        // dayNamesShort: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+        // dayNamesMin: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+        // weekHeader: 'Wk',
+        // dateFormat: 'dd/mm/yy',
+        // firstDay: 0,
+        // isRTL: false,
+        // },
         });
 
     });
