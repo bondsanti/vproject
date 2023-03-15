@@ -28,6 +28,9 @@ Route::get('/logout/auth',[CustomAuthController::class,'logoutUser'])->name('log
 
 Route::get('/',[MainController::class,'index'])->name('main')->middleware('isLogin');
 
+Route::get('/user/test',[UserController::class,'testteam']);
+Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,12 +43,15 @@ Route::delete('/user/{id}',[UserController::class,'destroy'])->name('user.destro
 Route::get('/user/edit/{id}',[UserController::class,'edit'])->name('user.edit')->middleware('isLogin');
 Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.update')->middleware('isLogin');
 
-Route::get('/user/test',[UserController::class,'testteam']);
 
-Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
+/*
+|--------------------------------------------------------------------------
+| bookings Routes
+|--------------------------------------------------------------------------
+*/
 
-//bookings
-Route::get('/booking_project',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
+Route::get('/booking',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
+//ajax getteams
 Route::get('/subteams', [BookingController::class,'getByTeam'])->name('subteams.get');
-Route::post('/booking/create',[BookingController::class,'createBookingPoject'])->name('bookingPoject.create')->middleware('isLogin');
-
+Route::post('/booking/create',[BookingController::class,'createBookingProject'])->name('createBookingProject.create');
+Route::get('/booking/list',[BookingController::class,'listBooking'])->name('listBooking')->middleware('isLogin');

@@ -2,6 +2,19 @@
 
 @section('content')
 
+@push('styles ')
+
+<style>
+.my-event {
+  padding: 7px;
+  cursor: pointer;
+}
+/* .fc-event:hover {
+  cursor: pointer;
+} */
+
+
+</style>
 
     <section class="content-header">
         <h1>
@@ -14,11 +27,18 @@
     </ol> --}}
     </section>
 
-
+    @include('sweetalert::alert')
     <!-- Main content -->
     <section class="content">
         <!-- Info boxes -->
         <div class="row">
+            <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                จองล่วงหน้าได้เท่านั้น !!!
+              </div>
+            </div>
             <div class="col-md-4 col-xs-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
@@ -28,7 +48,9 @@
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="tab_1">
-                        <form action="{{route('bookingPoject.create')}}" method="post">
+                        <form action="{{route('createBookingProject.create')}}" method="post">
+                            @csrf
+                            <input type="hidden" name="booking_title" value="เยี่ยมโครงการ">
                         <div class="box-body">
                             <div class="form-group">
                                 <div class="row">
@@ -38,7 +60,7 @@
                                             <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                             </div>
-                                            <input type="text" class="form-control pull-right" id="datepicker" name="date">
+                                            <input type="text" class="form-control pull-right" id="datepicker" name="date" autocomplete="off" required>
                                         </div>
                                     </div>
                                     <div class="col-xs-6">
@@ -47,14 +69,15 @@
                                             <div class="input-group-addon">
                                             <i class="fa fa-clock-o"></i>
                                             </div>
-                                            <select class="form-control select2" style="width: 100%;" name="time">
+                                            <select class="form-control select2" style="width: 100%;" name="time" required>
                                                 <option value="">เลือก</option>
-                                                <option value="09:00">09.00 - 10.00 น.</option>
-                                                <option value="10:00">10.00 - 11.00 น.</option>
-                                                <option value="11:00">11.00 - 12.00 น.</option>
-                                                <option value="13:00">13.00 - 14.00 น.</option>
-                                                <option value="14:00">14.00 - 15.00 น.</option>
-                                                <option value="15:00">15.00 - 16.00 น.</option>
+                                                <option value="08:00">08.00</option>
+                                                <option value="09:00">09.00</option>
+                                                <option value="10:00">10.00</option>
+                                                <option value="11:00">11.00</option>
+                                                <option value="13:00">13.00</option>
+                                                <option value="14:00">14.00</option>
+                                                <option value="15:00">15.00</option>
                                             </select>
                                         </div>
                                     </div>
@@ -67,18 +90,17 @@
                                 @foreach ($projects as $project )
                                 <option value="{{$project->id}}">{{$project->project_name}}</option>
                                 @endforeach
-
                                 </select>
                             </div>
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (ลูกค้า)</label>
-                                        <input type="text" class="form-control" placeholder="" name="customer_name" autocomplete="off">
+                                        <input type="text" class="form-control" placeholder="" name="customer_name" autocomplete="off" required>
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" placeholder="" name="tel_name" autocomplete="off">
+                                        <input type="text" class="form-control" placeholder="" name="customer_tel" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>
@@ -89,25 +111,25 @@
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="กสิกร">
                                                 กสิกร
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="กรุงไทย">
                                                 กรุงไทย
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="เกียรตินาคิน">
                                                 เกียรตินาคิน
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="ไทยพาณิชย์">
                                                 ไทยพาณิชย์
                                               </label>
                                         </div>
@@ -115,19 +137,19 @@
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="ธอส.">
                                                 ธอส.
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="ออมสิน">
                                                 ออมสิน
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                <input type="checkbox" class="minimal" name="checkbox_bank[]" value="TTB">
                                                 TTB
                                               </label>
                                         </div>
@@ -135,10 +157,10 @@
 
                                                 <div class="form-check-inline">
                                                     <div class="input-group">
-                                                        <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
-                                                        <input type="checkbox" class="minimal" name="checkbox_bank[]" value="อื่น ๆ">
-                                                        </span>
-                                                        <input type="text" class="form-control" name="checkbox_bank[]" placeholder="อื่น ๆ ระบุ..">
+                                                        {{-- <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
+                                                        <input type="checkbox" class="minimal" name="checkbox_bank[]">
+                                                        </span> --}}
+                                                        <input type="text" class="form-control" name="checkbox_bank[]" placeholder="อื่น ๆ ระบุ.." autocomplete="off">
                                                     </div>
                                                 </div>
 
@@ -155,23 +177,23 @@
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_bank[]"   >
+                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="ชมห้องตัวอย่าง">
                                                 ชมห้องตัวอย่าง
                                               </label>
                                         </div>
                                         <div class="form-check-inline">
                                             <div class="input-group">
                                                 <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
-                                                <input type="checkbox" class="minimal">
+                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="พาชมห้องราคา">
                                                 </span>
-                                                <input type="text" style="" class="form-control" placeholder="พาชมห้อง ราคา">
+                                                <input type="text" style="" name="room_price" class="form-control" placeholder="พาชมห้อง ราคา" autocomplete="off">
                                             </div>
                                         </div>
 
                                     </div>
                                     <div class="col-xs-6">
                                         <label>ระบุเลขห้อง</label>
-                                        <input type="text" class="form-control" placeholder="">
+                                        <input type="text" class="form-control" name="room_no" placeholder="เช่น 99/9" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
@@ -187,7 +209,7 @@
                                                 <div class="form-check-inline">
                                                     <div class="input-group tex-left">
                                                         <span class="input-group-addon" style="border: none;  padding: 0px 15px 0px 0px;">
-                                                        <input type="checkbox" class="minimal">
+                                                        <input type="checkbox" class="minimal" name="checkbox_doc[]" value="สำเนาทะเบียนบ้าน">
                                                          สำเนาทะเบียนบ้าน
                                                         </span>
 
@@ -195,7 +217,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td width="20%"><input type="number" class="form-control" placeholder=""></td>
+                                                <td width="20%"><input type="number" name="num_home" class="form-control" placeholder=""></td>
                                                 <td width="20%">&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                             <tr>
@@ -203,7 +225,7 @@
                                                 <div class="form-check-inline">
                                                     <div class="input-group">
                                                         <span class="input-group-addon" style="border: none;  padding: 0px 12px 0px 0px;">
-                                                        <input type="checkbox" class="minimal">
+                                                        <input type="checkbox" class="minimal" name="checkbox_doc[]" value="สำเนาบัตรประชาชน">
                                                         สำเนาบัตรประชาชน
                                                         </span>
 
@@ -211,7 +233,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td><input type="number" class="form-control" placeholder=""></td>
+                                                <td><input type="number" class="form-control" name="num_idcard" placeholder=""></td>
                                                 <td>&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                             <tr>
@@ -219,7 +241,7 @@
                                                 <div class="form-check-inline">
                                                     <div class="input-group">
                                                         <span class="input-group-addon" style="border: none;  padding: 0px 0px 0px 0px;">
-                                                        <input type="checkbox" class="minimal">
+                                                        <input type="checkbox" class="minimal"  name="checkbox_doc[]" value="หนังสือรับรองเงินเดือน">
                                                         หนังสือรับรองเงินเดือน
                                                         </span>
 
@@ -227,7 +249,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td><input type="number" class="form-control" placeholder=""></td>
+                                                <td><input type="number" class="form-control" name="num_app_statement" placeholder=""></td>
                                                 <td>&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                             <tr>
@@ -235,7 +257,7 @@
                                                 <div class="form-check-inline">
                                                     <div class="input-group">
                                                         <span class="input-group-addon" style="border: none;  padding: 0px 24px 0px 0px;">
-                                                        <input type="checkbox" class="minimal">
+                                                        <input type="checkbox" class="minimal"  name="checkbox_doc[]" value="เอกสาร Statement">
                                                         เอกสาร Statement
                                                         </span>
 
@@ -243,23 +265,9 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td><input type="number" class="form-control" placeholder=""></td>
+                                                <td><input type="number" class="form-control"name="num_statement" placeholder=""></td>
                                                 <td>&nbsp;&nbsp;ชุด</td>
                                             </tr>
-                                            {{-- <tr>
-                                                <td width="50%">
-                                                <div class="form-check-inline">
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
-                                                        <input type="checkbox" class="minimal">
-                                                        </span>
-                                                        <input type="text" style="width: 100%;" class="form-control" placeholder="อื่น ๆ ระบุ..">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td><input type="number" class="form-control" placeholder=""></td>
-                                            <td>&nbsp;&nbsp;ชุด</td>
-                                            </tr> --}}
                                         </table>
 
                                     </div>
@@ -294,19 +302,19 @@
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
+                                        <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
                                         <input type="text" class="form-control" name="" value="{{$dataUserLogin->fullname}}" disabled>
-                                        <input type="hidden" class="form-control" name="name_sale" value="{{$dataUserLogin->fullname}}">
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" name="tel_sale" placeholder="" required>
+                                        <input type="text" class="form-control" name="user_tel" placeholder="" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
 
                                         <label>หมายเหตุ</label>
-                                        <textarea class="form-control" rows="3" name="remark" placeholder="หมายเหตุ ..."></textarea>
+                                        <textarea class="form-control" rows="3" name="remark" placeholder="หมายเหตุ ..." autocomplete="off"></textarea>
                             </div>
                             <div class="box-footer text-center">
                                 <button type="submit" class="btn btn-primary ">บันทึก</button>
@@ -362,6 +370,10 @@
     <!-- /.content -->
 @endsection
 @push('script')
+
+
+
+
 
 {{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -437,7 +449,11 @@
 $(document).ready(function() {
         //Date picker
     $('#datepicker').datepicker({
-      autoclose: true
+      format:'yyyy-mm-dd',
+      autoclose: true,
+      startDate: new Date(), // sets the minimum date to today
+      datesDisabled: [new Date()], // disables today's date in the datepicker
+      todayHighlight: true, // highlights today's date in the datepicker
     })
 
     $.ajaxSetup({
@@ -457,34 +473,42 @@ $(document).ready(function() {
         right : 'month,agendaWeek,agendaDay'
       },
       timeFormat: 'H:mm [น.]',
+      slotLabelFormat:"HH:mm [น.]",
+      axisFormat: 'H:mm [น.]',
 
-
-      events:'/booking_project',
+      events:'/booking',
 
         eventClick: function(event, jsEvent, view) {
         // Handle event click here
+        // Show the details of the clicked event
+        //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
+        Swal.fire({
+            title: event.title,
+            // html: `
+            // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
+            // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
+            // `,
+            html: `
+            <h5><strong>${event.project}</strong></h5>
+            <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
+            <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
+            <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
+            <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
+            <hr>
+            <h5><strong>สถานะ ${event.status}</strong></h5>
+            `,
+            // icon: 'info',
+            confirmButtonText: 'OK'
+        });
         },
         eventRender: function(event, element) {
         // Handle event rendering here
+        element.addClass('my-event');
         },
         dayClick: function(date, jsEvent, view) {
         // Handle day click here
         }
-        // datepickerLocale: {
-        // closeText: 'ปิด',
-        // prevText: '&#xAB;ย้อน',
-        // nextText: 'ถัดไป&#xBB;',
-        // currentText: 'วันนี้',
-        // monthNames: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
-        // monthNamesShort: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
-        // dayNames: ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'],
-        // dayNamesShort: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
-        // dayNamesMin: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
-        // weekHeader: 'Wk',
-        // dateFormat: 'dd/mm/yy',
-        // firstDay: 0,
-        // isRTL: false,
-        // },
+
         });
 
     });
