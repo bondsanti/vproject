@@ -10,6 +10,7 @@ use App\Models\Bookingdetail;
 use App\Models\Team;
 use App\Models\Subteam;
 use RealRashid\SweetAlert\Facades\Alert;
+use Phattarachai\LineNotify\Line;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -117,9 +118,10 @@ class BookingController extends Controller
         ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
         ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
-        ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
-        ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name', 'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
-        ->first();
+        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name',
+        'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+        ->get();
 
 
         //return response()->json($bookings);
@@ -170,15 +172,34 @@ class BookingController extends Controller
 
             $id_booking = Booking::latest()->first();
 
+            $projects = Project::where('id', $request->project_id)->first();
+            $Strdate_start = date('d/m/Y',strtotime($request->date));
+
 
             //insert detail customer
             $bookingdetail = New Bookingdetail();
             $bookingdetail->booking_id = $id_booking->id; //ref booking_id
             $bookingdetail->customer_name = $request->customer_name;
             $bookingdetail->customer_tel = $request->customer_tel;
-            $bookingdetail->customer_req = implode(',', $request->checkbox_room);
-            $bookingdetail->customer_req_bank = implode(',', $request->checkbox_bank);
-            $bookingdetail->customer_doc_personal = implode(',', $request->checkbox_doc);
+
+            if ($request->checkbox_room!=null) {
+                $bookingdetail->customer_req = implode(',', $request->checkbox_room);
+            }else{
+                $bookingdetail->customer_req = "";
+            }
+
+            if ($request->checkbox_bank!=null) {
+                $bookingdetail->customer_req_bank = implode(',', $request->checkbox_bank);
+            }else{
+                $bookingdetail->customer_req_bank = "";
+            }
+
+            if ($request->checkbox_doc!=null) {
+                $bookingdetail->customer_doc_personal = implode(',', $request->checkbox_doc);
+            }else{
+                $bookingdetail->customer_doc_personal = "";
+            }
+
             $bookingdetail->num_home = $request->num_home;
             $bookingdetail->num_idcard = $request->num_idcard;
             $bookingdetail->num_app_statement = $request->num_app_statement;
@@ -191,7 +212,13 @@ class BookingController extends Controller
 
             if ($res1 && $res2) {
                 Alert::success('จองสำเร็จ!', '');
-                //return redirect('/');
+
+                $line = new Line('UOmTNB7jin55QZUvG67BiDjEYNx3I7cWmHtCTBLCXts');//token กลุ่ม Admin vBisProject
+                $line->send('มีนัด '.$request->booking_title.' : '.$projects->project_name."\n".
+                'เวลา : '.$Strdate_start.' '.$request->time.'-'.$end_time."\n".
+                'ลูกค้าชื่อ : '.$request->customer_name."\n".
+                'กรุณากดรับจองภายใน 1 ชม. หากไม่รับจอง ระบบจะยกเลิกการจองทันที!');
+
                 return back();
             }else{
                 Alert::error('Error Title', 'Error Message');
