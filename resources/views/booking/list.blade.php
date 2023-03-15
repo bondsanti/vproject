@@ -33,7 +33,7 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th class="text-center">Code</th>
+                                    <th class="text-center">ประเภท</th>
                                     <th class="text-center">ชื่อ-สกุล</th>
                                     <th class="text-center">ประเภทผู้ใช้งาน</th>
                                     <th class="text-center">ทีม</th>
@@ -55,87 +55,6 @@
             </div>
             <!-- /.col -->
 
-
-            <!-- /.modal -->
-            <div class="modal fade" id="modal-update">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="">แก้ไข</h4>
-                        </div>
-                        <div class="modal-body">
-                            <!-- form start -->
-                            <form id="userFormEdit" name="userFormEdit" class="form-horizontal">
-                                @csrf
-                                <input type="hidden" name="id_edit" id="id_edit">
-                                <div class="box-body">
-
-
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ชื่อ-สกุล</label>
-
-                                        <div class="col-sm-6">
-                                        <input type="fullname" class="form-control" id="fullname_edit" name="fullname_edit" placeholder="ชื่อ-สกุล" required>
-                                        <small class="text-danger mt-1 fullname_err2"></small>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ประเภทผู้ใช้งาน</label>
-
-                                        <div class="col-sm-6">
-                                            <select class="form-control" id="role_edit" name="role_edit" required>
-                                                <option value="">เลือก</option>
-                                                <option value="admin">Admin</option>
-                                                <option value="staff">Staff</option>
-                                                <option value="user">User</option>
-                                              </select>
-                                              <small class="text-danger mt-1 role_err2"></small>
-                                        </div>
-
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ทีม</label>
-
-                                        <div class="col-sm-6">
-                                            <select class="form-control" id="team_id_edit" name="team_id_edit" required>
-                                                <option value="0">ไม่มีทีม</option>
-                                                <option value="1">ทีม 1</option>
-                                                <option value="2">ทีม 2</option>
-                                                <option value="3">ทีม 3</option>
-                                              </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">สถานะ</label>
-
-                                        <div class="col-sm-6">
-                                            <select class="form-control" id="active_edit" name="active_edit" required>
-                                                <option value="enable">Enable</option>
-                                                <option value="disable">Disable</option>
-                                              </select>
-                                        </div>
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                          {{-- <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button> --}}
-                          <button type="submit" class="btn btn-success btn-block" id="update" >อัพเดท</button>
-                          {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
-                        </div>
-                        </form>
-                      </div>
-                      <!-- /.modal-content -->
-                    </div>
-                    <!-- /.modal-dialog -->
-                </div>
-                  <!-- /.modal -->
-
-
-            </div>
-            <!-- /.modal -->
 
         </div>
         <!-- /.row -->

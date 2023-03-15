@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2023 at 02:54 PM
+-- Generation Time: Mar 15, 2023 at 10:49 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 7.4.33
 
@@ -24,6 +24,35 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `bookingdetails`
+--
+
+CREATE TABLE `bookingdetails` (
+  `id` int(11) NOT NULL,
+  `booking_id` varchar(5) NOT NULL COMMENT 'ref_ตารางจอง',
+  `customer_name` varchar(100) NOT NULL,
+  `customer_tel` varchar(10) NOT NULL,
+  `customer_req` text NOT NULL COMMENT 'ข้อมูลลูกค้าเข้าชม',
+  `customer_req_bank` text DEFAULT NULL COMMENT 'เอกสารขอกู้ธนาคาร',
+  `customer_doc_personal` text DEFAULT NULL COMMENT 'เอกสารจากลูกค้า',
+  `num_home` int(1) DEFAULT NULL COMMENT 'สำเนาทะเบียนบ้าน',
+  `num_idcard` int(1) DEFAULT NULL COMMENT 'สำเนาบัตรประชาชน',
+  `num_app_statement` int(1) DEFAULT NULL COMMENT 'หนังสือรับรองเงินเดือน',
+  `num_statement` int(1) DEFAULT NULL COMMENT 'เอกสาร Statement',
+  `room_no` varchar(10) NOT NULL,
+  `room_price` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bookingdetails`
+--
+
+INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel`, `customer_req`, `customer_req_bank`, `customer_doc_personal`, `num_home`, `num_idcard`, `num_app_statement`, `num_statement`, `room_no`, `room_price`) VALUES
+(2, '4', 'สันติ ชูประยูร', '0613299642', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'กสิกร,กรุงไทย,เกียรตินาคิน,ไทยพาณิชย์,ธอส.,ออมสิน,TTB,bitkub', 'สำเนาทะเบียนบ้าน,สำเนาบัตรประชาชน,หนังสือรับรองเงินเดือน,เอกสาร Statement', 1, 1, 1, 1, '99/9', 2000000);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `bookings`
 --
 
@@ -32,28 +61,39 @@ CREATE TABLE `bookings` (
   `booking_title` varchar(50) NOT NULL,
   `booking_start` varchar(100) NOT NULL,
   `booking_end` varchar(100) NOT NULL,
-  `booking_status` int(1) DEFAULT 0
+  `booking_status` int(1) DEFAULT 0,
+  `project_id` int(3) NOT NULL,
+  `booking_status_df` int(1) DEFAULT 0 COMMENT 'สถานะ DF',
+  `teampro_id` int(3) NOT NULL COMMENT 'ref_เจ้าหน้าโครงการที่รับผิดชอบ',
+  `team_id` int(3) NOT NULL COMMENT 'ทีมสายงาน',
+  `subteam_id` int(3) NOT NULL COMMENT 'ชื่อสายงาน',
+  `user_id` int(3) NOT NULL COMMENT 'ref_ผู้ทำรายงาน',
+  `user_tel` varchar(10) NOT NULL,
+  `remark` text DEFAULT NULL COMMENT 'หมายเหตุการจอง',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`) VALUES
-(1, 'นัดเยี่ยมโครงการ', '2023-03-09 11:00', '2023-03-09 13:00', 0),
-(2, 'ทดสอบ 2', '2023-03-10 10:00', '2023-03-10 13:00', 1);
+INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `created_at`, `updated_at`) VALUES
+(4, 'เยี่ยมโครงการ', '2023-03-16 08:00', '2023-03-16 11:00', 0, 1, 0, 30, 1, 1, 1, '009', 'ทดสอบ', '2023-03-15 06:55:25', '2023-03-15 06:55:25');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `migrations`
+-- Table structure for table `holiday_requests`
 --
 
-CREATE TABLE `migrations` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `migration` varchar(255) NOT NULL,
-  `batch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `holiday_requests` (
+  `id` int(11) NOT NULL,
+  `user_id` int(3) NOT NULL,
+  `start_date` varchar(50) NOT NULL,
+  `end_date` varchar(50) NOT NULL,
+  `status` int(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -125,6 +165,17 @@ INSERT INTO `teams` (`id`, `team_name`, `created_at`, `updated_at`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `teams_project`
+--
+
+CREATE TABLE `teams_project` (
+  `id` int(3) NOT NULL,
+  `team_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -136,6 +187,7 @@ CREATE TABLE `users` (
   `role` varchar(255) NOT NULL,
   `team_id` varchar(255) NOT NULL,
   `active` varchar(255) NOT NULL,
+  `is_jobs` int(1) DEFAULT 0 COMMENT 'สถานะรับงาน',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -144,33 +196,26 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `code`, `password`, `fullname`, `role`, `team_id`, `active`, `created_at`, `updated_at`) VALUES
-(1, 'admin', '$2y$10$ZOMlS2LD8VlfjQbeO6YZa.NGrTgk4gItjBfAMstcsJkA7Y5YU2Uni', 'admin IT', 'admin', '0', 'enable', '2023-03-04 03:42:36', '2023-03-04 03:42:36'),
-(3, 'ee', '$2y$10$zR9/vQ5yL4llRBCEz001C.lPxSg74.6ESiPZic5r5/zhKvThjTbFC', 'e', 'staff', '0', 'enable', '2023-03-04 05:20:41', '2023-03-04 05:20:41'),
-(5, 'aa', '$2y$10$3JYx3/l8B.yYYWOMoU.4fOPSVq.q2YwucHu/2C.rd/19y56LMLL..', 'aa', 'staff', '3', 'enable', '2023-03-04 05:22:41', '2023-03-04 17:57:38'),
-(8, 'rrrrrrrr', '$2y$10$9DLbnQelp8.uUsoP2WQAPOP8fcAbWUCSWucQzIPD98ysBwVvmggq6', 'rrrrrrr', 'staff', '2', 'enable', '2023-03-04 06:53:55', '2023-03-04 06:53:55'),
-(9, 'yyy', '$2y$10$/7C2T6ZRcAjlRHkVWXtwIuWWOsiNIn3F8vyHDEbTCrVv3RnoU5F2i', 'yyy', 'staff', '0', 'enable', '2023-03-04 07:06:59', '2023-03-04 07:06:59'),
-(10, 'qwe', '$2y$10$2Ju0wH6Q3JmBz8Lt5HiTautDAF1FqS58AINlUnFpQFhUDPoan98tS', 'qwe', 'user', '0', 'disable', '2023-03-04 08:12:53', '2023-03-04 08:12:53'),
-(19, 'afsasf', '$2y$10$pV7bd7uLBvr.GSFY7XXMZuan8kgtsjtk/cNHWCSomdwEfZnJBJsj.', 'afasf', 'user', '1', 'disable', '2023-03-04 08:59:53', '2023-03-04 17:51:47'),
-(22, 'test', '$2y$10$ppKOlgu3aMlzD2/1vHZF9.ZmX48TEnRLuq9eGFA0CJwmjXYt6GukW', 'test', 'staff', '2', 'enable', '2023-03-04 09:05:32', '2023-03-04 17:54:21'),
-(24, '5678', '$2y$10$MYqtCSvyZhi9NXmVEq5PaevJ7ewFOy7WFsLOm8S7B2wI12woR76.u', 'asdasd', 'staff', '0', 'enable', '2023-03-04 10:43:30', '2023-03-04 10:43:30'),
-(25, 'tyt', '$2y$10$bsJgGol2LOVSn.4FhJYx4uSfFTduk1QPf5xM0a7Y/LroSttfZ22e.', 'tyt', 'user', '0', 'enable', '2023-03-04 10:47:06', '2023-03-04 10:47:06'),
-(28, 'aaa', '$2y$10$lO7BfnLPrpqngnt00ct1TOgYlNBs0ThYsIAisu5dNjwbLhSVui.Im', 'rrrrrrrrrrrrrrr', 'staff', '3', 'disable', '2023-03-04 14:33:23', '2023-03-04 18:23:43');
+INSERT INTO `users` (`id`, `code`, `password`, `fullname`, `role`, `team_id`, `active`, `is_jobs`, `created_at`, `updated_at`) VALUES
+(1, 'admin', '$2y$10$ZOMlS2LD8VlfjQbeO6YZa.NGrTgk4gItjBfAMstcsJkA7Y5YU2Uni', 'admin IT', 'admin', '0', 'enable', 0, '2023-03-04 03:42:36', '2023-03-04 03:42:36'),
+(30, 'jib', '$2y$10$iP8oApxYr89gjfs0frRdiOX/DLdxNs7/Ge8K8Os/mpJ18JmqlIAhK', 'จิ๊ป', 'staff', '0', 'enable', 0, '2023-03-13 09:01:42', '2023-03-13 09:01:42'),
+(31, 'max', '$2y$10$LUraHvihWFIa/x7CBNe9AeictIrtljFGICs5ZFl8fFq9zMjD8oH4u', 'แม็ค', 'staff', '0', 'disable', 0, '2023-03-13 09:02:04', '2023-03-13 09:02:04'),
+(32, 'if', '$2y$10$Ms69PXGE22C66VZGllrW9uHv0EomHPnGFVoa.U06TlFJ.YnPsayUG', 'อีฟ', 'staff', '0', 'enable', 0, '2023-03-13 09:02:33', '2023-03-13 09:02:33');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `bookings`
+-- Indexes for table `bookingdetails`
 --
-ALTER TABLE `bookings`
+ALTER TABLE `bookingdetails`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `migrations`
+-- Indexes for table `bookings`
 --
-ALTER TABLE `migrations`
+ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -203,16 +248,16 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `bookings`
+-- AUTO_INCREMENT for table `bookingdetails`
 --
-ALTER TABLE `bookings`
+ALTER TABLE `bookingdetails`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `migrations`
+-- AUTO_INCREMENT for table `bookings`
 --
-ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `projects`
@@ -236,7 +281,7 @@ ALTER TABLE `teams`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -104,11 +104,27 @@ class BookingController extends Controller
         $projects = Project::where('is_active', 'enable')->get();
         $teams = Team::get();
 
-        $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
-        ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
+        //$bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+        // ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        // ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
+        // ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
+        // ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+        // ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
+        // ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name', 'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+        // ->get();
+        $bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+        ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
+        ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
+        ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+        ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
+        ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name', 'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+        ->first();
 
 
-        return view("booking.list",compact('dataUserLogin','bookings','projects','teams'));
+        //return response()->json($bookings);
+
+       return view("booking.list",compact('dataUserLogin','bookings','projects','teams'));
 
     }
     public function getByTeam(Request $request)
