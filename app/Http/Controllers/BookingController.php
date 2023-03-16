@@ -65,10 +65,14 @@ class BookingController extends Controller
                         $backgroundColor="#00a65a";
                         $borderColor="#00a65a";
                         $textStatus="เยี่ยมชมเรียบร้อย";
-                    }else{
+                    }elseif($booking->booking_status==4){
                         $backgroundColor="#cc2d2d";
                         $borderColor="#cc2d2d";
                         $textStatus="ยกเลิก";
+                    }else{
+                        $backgroundColor="#b342f5";
+                        $borderColor="#b342f5";
+                        $textStatus="ยกเลิกอัตโนมัติ";
                     }
 
                     $event = [
@@ -124,6 +128,18 @@ class BookingController extends Controller
         ->get();
 
 
+    //     $data1 = $bookings->customer_doc_personal;
+    //     $data2 = $bookings->num_home.",".$bookings->num_idcard.",".$bookings->num_app_statement.",".$bookings->num_statement;
+
+    //     $data1_array = explode(',', $data1);
+    //     $data2_array = explode(',', $data2);
+
+    //     $data_array = array_combine($data1_array, $data2_array);
+    //     $result = [];
+    //     foreach ($new_arr as $key => $value) {
+    //       array_push($result, "{$key}({$value})");
+    //   }
+
         //return response()->json($bookings);
 
        return view("booking.list",compact('dataUserLogin','bookings','projects','teams'));
@@ -136,7 +152,8 @@ class BookingController extends Controller
     }
 
     //สร้างนัดเยี่ยมโครงการ
-    public function createBookingProject(Request $request){
+    public function createBookingProject(Request $request)
+    {
 
             //dd($request);
             $dataUserLogin = array();
@@ -212,11 +229,11 @@ class BookingController extends Controller
 
             if ($res1 && $res2) {
                 Alert::success('จองสำเร็จ!', '');
-
-                $line = new Line('UOmTNB7jin55QZUvG67BiDjEYNx3I7cWmHtCTBLCXts');//token กลุ่ม Admin vBisProject
-                $line->send('มีนัด '.$request->booking_title.' : '.$projects->project_name."\n".
-                'เวลา : '.$Strdate_start.' '.$request->time.'-'.$end_time."\n".
-                'ลูกค้าชื่อ : '.$request->customer_name."\n".
+                $token_line = config('line-notify.access_token');
+                $line = new Line($token_line);
+                $line->send('มีนัด '.$request->booking_title.' : *'.$projects->project_name."* \n".
+                'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
+                'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 'กรุณากดรับจองภายใน 1 ชม. หากไม่รับจอง ระบบจะยกเลิกการจองทันที!');
 
                 return back();
@@ -227,6 +244,11 @@ class BookingController extends Controller
 
         //dd($request);
 
+
+    }
+
+    public function showBooking(Request $request,$id)
+    {
 
     }
 

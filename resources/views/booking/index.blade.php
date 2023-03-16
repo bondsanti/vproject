@@ -352,6 +352,7 @@
                         &nbsp;<span class="label label-info">จองสำเร็จ / รอเข้าเยี่ยม</span>
                         &nbsp;<span class="label label-success">เยี่ยมชมเรียบร้อย</span>
                         &nbsp;<span class="label label-danger">ยกเลิก</span>
+                        &nbsp;<span class="label" style="background-color:#b342f5">ยกเลิกอัตโนมัติ</span>
                     </h5>
 
                     <!-- THE CALENDAR -->
