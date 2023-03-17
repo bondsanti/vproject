@@ -53,5 +53,6 @@ Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.up
 Route::get('/booking',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
 //ajax getteams
 Route::get('/subteams', [BookingController::class,'getByTeam'])->name('subteams.get');
-Route::post('/booking/create',[BookingController::class,'createBookingProject'])->name('createBookingProject.create');
+Route::post('/booking/create',[BookingController::class,'createBookingProject'])->name('createBookingProject.create')->middleware('isLogin');
 Route::get('/booking/list',[BookingController::class,'listBooking'])->name('listBooking')->middleware('isLogin');
+Route::delete('/booking/{id}',[BookingController::class,'destroyBooking'])->name('booking.del')->middleware('isLogin');

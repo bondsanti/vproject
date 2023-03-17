@@ -115,7 +115,7 @@
 
                                     </td>
                                     <td class="project-actions text-center">
-                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->id}}">
+                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                             <i class="fa fa-folder">
                                             </i>
                                             View
@@ -126,15 +126,15 @@
                                             </i>
                                             Edit
                                         </a>
-                                        <a class="btn btn-danger btn-sm" href="#">
+                                        <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                             <i class="fa fa-trash">
                                             </i>
                                             Delete
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
 
-                                <div class="modal fade" id="modal-{{$booking->id}}">
+                                <div class="modal fade" id="modal-{{$booking->bkid}}">
                                     <div class="modal-dialog">
                                       <div class="modal-content">
                                         <div class="modal-header">
@@ -270,44 +270,52 @@
                 'autoWidth'   : false
             })
 
-            $('body').on('click', '.deleteUser', function() {
-
-                const user_id = $(this).data("id");
-
-                //confirm("Are You sure want to delete this Post!");
-                Swal.fire({
-                    title: 'คุณแน่ใจไหม? ',
-                    text: "หากต้องการลบข้อมูลนี้ โปรดยืนยัน การลบข้อมูล",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'ยกเลิก',
-                    confirmButtonText: 'ยืนยัน'
-                }).then((result) => {
-
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            type: "DELETE",
-                            url: "user" + '/' + user_id,
-
-                            success: function(data) {
-                                tableUser.draw();
-                            },
-                            error: function(data) {
-                                //console.log('Error:', data);
-                            }
-                        });
-                        Swal.fire(
-                            'สำเร็จ!',
-                            'ลบข้อมูลเรียบร้อย..',
-                            'success'
-                        )
-                    }
-                });
-
-            });
-
         });
+
+        //Delete
+        $(document).on('click', '.delete-item', function() {
+            let id = $(this).data('id');
+            //console.log(id);
+            Swal.fire({
+                title: 'คุณแน่ใจไหม?',
+                text: 'หากต้องการลบข้อมูลนี้ โปรดยืนยัน การลบข้อมูล',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonText: 'ยืนยัน'
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    var url = '{{ route("booking.del", ":id") }}';
+                    //console.log(url);
+                    url = url.replace(':id', id);
+                    // console.log(url);
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            '_token': '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'สำเร็จ!',
+                                text: 'ลบข้อมูลเรียบร้อย..',
+                                icon: 'success'
+                            });
+                            tableUser.draw();
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: 'Oops...',
+                                text: 'มีบางอย่างผิดพลาด!',
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
     </script>
 @endpush

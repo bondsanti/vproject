@@ -117,13 +117,13 @@ class BookingController extends Controller
         // ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
         // ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name', 'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
         // ->get();
-        $bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+         $bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
         ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
         ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-        ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name',
+        ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
         'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->get();
 
@@ -140,7 +140,7 @@ class BookingController extends Controller
     //       array_push($result, "{$key}({$value})");
     //   }
 
-        //return response()->json($bookings);
+       // return response()->json($bookings);
 
        return view("booking.list",compact('dataUserLogin','bookings','projects','teams'));
 
@@ -160,7 +160,7 @@ class BookingController extends Controller
             $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
 
             //หาเจ้าหน้าที่โครงการ
-            $users = User::where('active', 'enable')->where('role','staff')->where('is_jobs','0')->orderBy('id')->first();
+            $users = User::where('active', 'enable')->where('role','staff')->orderBy('id')->first();
 
 
 
@@ -249,6 +249,24 @@ class BookingController extends Controller
 
     public function showBooking(Request $request,$id)
     {
+
+    }
+
+    public function destroyBooking($id){
+
+        $booking = Booking::find($id);
+        $bookingdetail = Bookingdetail::where('booking_id',$id);
+
+        if (!$booking) {
+            return redirect()->back()->with('error','มีบางอย่างผิดพลาด!');
+        }
+
+        $booking->delete();
+        $bookingdetail->delete();
+
+
+        return redirect()->route('listBooking')->with('success', 'ลบข้อมูล..สำเร็จ!');
+
 
     }
 

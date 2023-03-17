@@ -326,11 +326,11 @@
                       </div>
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_2">
-                        Tab2
+                        Comming soon
                       </div>
                       <!-- /.tab-pane -->
                       <div class="tab-pane" id="tab_3">
-                       Tab3
+                        Comming soon
                       </div>
                       <!-- /.tab-pane -->
                     </div>
