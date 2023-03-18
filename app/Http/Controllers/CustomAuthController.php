@@ -25,6 +25,7 @@ class CustomAuthController extends Controller
             'code' => ['required','unique:users'],
             'fullname'=> 'required',
             'password'=> ['required', 'min:8'],
+            'tel'=> ['required', 'min:10'],
 
         ],[
             'code.required' => 'ป้อนรหัสพนักงาน',
@@ -32,6 +33,8 @@ class CustomAuthController extends Controller
             'fullname.required' => 'ป้อนชื่อ-นามสกุล',
             'password.required' => 'ป้อนชื่อรหัสผ่าน',
             'password.min' => 'รหัสผ่านต้องไม่ต่ำกว่า 8 ตัวอักษร',
+            'tel.required'=> 'ป้อนเบอร์โทร',
+            'tel.min' => 'เบอร์โทรไม่ถูกต้อง',
         ]);
 
         $user = new User();
@@ -41,14 +44,14 @@ class CustomAuthController extends Controller
         $user->role = 'user'; //user = ผู้ใช้งานทั่วไป //admin = ผู้ดูแลระบบ //staff ผู้ใช้งานลองจาก admin
         $user->team_id = '0'; //0 = Df ไม่มี team
         $user->active = 'disable'; // enable = ใช้งาน // disable = ปิดใช้งาน
+        $user->tel = $request->tel;
         $res = $user->save();
 
         if ($res) {
             Alert::success('ลงทะเบียนสำเร็จ', 'คุณได้ลงทะเบียนเรียบร้อย
             รอ Admin เปิดใช้งานระบบ 5 นาที');
-
-
-            $line = new Line('UOmTNB7jin55QZUvG67BiDjEYNx3I7cWmHtCTBLCXts');//token กลุ่ม Admin vBisProject
+            $token_line = config('line-notify.access_token_project');
+            $line = new Line($token_line);
             $line->send('มีผู้สมัครใช้งานระบบ vBisProject');
             return redirect('/login');
         }else{

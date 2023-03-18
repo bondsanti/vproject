@@ -229,7 +229,7 @@ class BookingController extends Controller
 
             if ($res1 && $res2) {
                 Alert::success('จองสำเร็จ!', '');
-                $token_line = config('line-notify.access_token');
+                $token_line = config('line-notify.access_token_project');
                 $line = new Line($token_line);
                 $line->send('มีนัด '.$request->booking_title.' : *'.$projects->project_name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".

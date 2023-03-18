@@ -55,6 +55,11 @@
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
                     <small class="text-danger mt-1">@error('fullname'){{$message}} @enderror</small>
                   </div>
+                  <div class="form-group has-feedback">
+                    <input type="text" class="form-control" name="tel" placeholder="Tel"  autocomplete="off" value="{{old('tel')}}">
+                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    <small class="text-danger mt-1">@error('tel'){{$message}} @enderror</small>
+                  </div>
 
                   <div class="form-group has-feedback">
                     <input type="password" class="form-control" name="password" placeholder="Password"  autocomplete="off">
