@@ -54,20 +54,20 @@ class BookingController extends Controller
                         // $backgroundColor="#00c0ef";
                         // $borderColor="#00c0ef";
                     }elseif($booking->booking_status==1){
-                        $backgroundColor="#00a65a";
-                        $borderColor="#00a65a";
+                        $backgroundColor="#f39c12";
+                        $borderColor="#f39c12";
                         $textStatus="รับงานแล้ว";
                     }elseif($booking->booking_status==2){
-                        $backgroundColor="#00a65a";
-                        $borderColor="#00a65a";
+                        $backgroundColor="#00c0ef";
+                        $borderColor="#00c0ef";
                         $textStatus="จองสำเร็จ";
                     }elseif($booking->booking_status==3){
                         $backgroundColor="#00a65a";
                         $borderColor="#00a65a";
                         $textStatus="เยี่ยมชมเรียบร้อย";
                     }elseif($booking->booking_status==4){
-                        $backgroundColor="#cc2d2d";
-                        $borderColor="#cc2d2d";
+                        $backgroundColor="#dd4b39";
+                        $borderColor="#dd4b39";
                         $textStatus="ยกเลิก";
                     }else{
                         $backgroundColor="#b342f5";
@@ -109,14 +109,6 @@ class BookingController extends Controller
         $projects = Project::where('is_active', 'enable')->get();
         $teams = Team::get();
 
-        //$bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
-        // ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-        // ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-        // ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
-        // ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
-        // ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
-        // ->select('bookings.*', 'projects.*', 'bookingdetails.*', 'sales.fullname as sale_name', 'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
-        // ->get();
          $bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
@@ -128,23 +120,11 @@ class BookingController extends Controller
         ->get();
 
 
-    //     $data1 = $bookings->customer_doc_personal;
-    //     $data2 = $bookings->num_home.",".$bookings->num_idcard.",".$bookings->num_app_statement.",".$bookings->num_statement;
-
-    //     $data1_array = explode(',', $data1);
-    //     $data2_array = explode(',', $data2);
-
-    //     $data_array = array_combine($data1_array, $data2_array);
-    //     $result = [];
-    //     foreach ($new_arr as $key => $value) {
-    //       array_push($result, "{$key}({$value})");
-    //   }
-
-       // return response()->json($bookings);
 
        return view("booking.list",compact('dataUserLogin','bookings','projects','teams'));
 
     }
+
     public function getByTeam(Request $request)
     {
         $subteams = Subteam::where('team_id', $request->team_id)->get();
@@ -190,6 +170,7 @@ class BookingController extends Controller
             $id_booking = Booking::latest()->first();
 
             $projects = Project::where('id', $request->project_id)->first();
+
             $Strdate_start = date('d/m/Y',strtotime($request->date));
 
 
@@ -216,13 +197,13 @@ class BookingController extends Controller
             }else{
                 $bookingdetail->customer_doc_personal = "";
             }
-
+            $bookingdetail->customer_req_bank_other = $request->customer_req_bank_other;
             $bookingdetail->num_home = $request->num_home;
             $bookingdetail->num_idcard = $request->num_idcard;
             $bookingdetail->num_app_statement = $request->num_app_statement;
             $bookingdetail->num_statement = $request->num_statement;
             $bookingdetail->room_no = $request->room_no;
-            $bookingdetail->room_price = $request->room_price;
+            $bookingdetail->room_price = str_replace(',', '', $request->room_price);
 
             $res2 = $bookingdetail->save();
 
@@ -231,14 +212,17 @@ class BookingController extends Controller
                 Alert::success('จองสำเร็จ!', '');
                 $token_line = config('line-notify.access_token_project');
                 $line = new Line($token_line);
-                $line->send('มีนัด '.$request->booking_title.' : *'.$projects->project_name."* \n".
+                $line->send('มีนัด '.$request->booking_title." \n".
+                '*'.$projects->project_name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
-                'กรุณากดรับจองภายใน 1 ชม. หากไม่รับจอง ระบบจะยกเลิกการจองทันที!');
+                '-------------------'." \n".
+                'เจ้าหน้าที่โครงการ : *'.$users->fullname."* \n".
+                'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
 
                 return back();
             }else{
-                Alert::error('Error Title', 'Error Message');
+                Alert::error('Error', '');
                 return back();
             }
 
@@ -252,21 +236,72 @@ class BookingController extends Controller
 
     }
 
-    public function destroyBooking($id){
+    public function destroyBooking(Request $request,$id){
 
         $booking = Booking::find($id);
+
         $bookingdetail = Bookingdetail::where('booking_id',$id);
 
-        if (!$booking) {
-            return redirect()->back()->with('error','มีบางอย่างผิดพลาด!');
+        if (!$booking || !$bookingdetail) {
+            return response()->json([
+                'error' => 'Error!'
+            ]);
+        }else{
+            $booking->delete();
+            $bookingdetail->delete();
+
+            return response()->json([
+                'success' => 'successfully!'
+            ]);
         }
 
-        $booking->delete();
-        $bookingdetail->delete();
+    }
+
+    //update status
+    public function updateStatus(Request $request)
+    {
+        $booking = Booking::findOrFail($request->booking_id);
+        //dd($booking);
+        if (!$booking) {
+            Alert::error('Error', 'Not found ID');
+            return redirect()->back();
+        }else{
 
 
-        return redirect()->route('listBooking')->with('success', 'ลบข้อมูล..สำเร็จ!');
+            $booking->booking_status = $request->booking_status;
+            $booking->because_cancel_remark = $request->because_cancel_remark;
+            $booking->save();
 
+            Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
+            return redirect()->back();
+
+
+        }
+
+    }
+
+    public function editBooking(Request $request,$id)
+    {
+
+        $dataUserLogin = array();
+        $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
+
+
+        $projects = Project::where('is_active', 'enable')->get();
+        $teams = Team::get();
+
+         $bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+        ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
+        ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
+        ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+        'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+        ->where('bookings.id',"=",$id)->first();
+        // dd($bookings);
+
+       return view("booking.edit",compact('dataUserLogin','bookings','projects','teams'));
 
     }
 

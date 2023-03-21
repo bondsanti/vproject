@@ -118,22 +118,90 @@
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                             <i class="fa fa-folder">
                                             </i>
-                                            View
+                                            รายละเอียด
                                           </button>
-
-                                        <a class="btn btn-info btn-sm" href="#">
+                                          <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                            <i class="fa fa-refresh">
+                                            </i>
+                                            สถานะ
+                                          </button>
+                                          @if ($booking->booking_title=="เยี่ยมโครงการ")
+                                          <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
                                             <i class="fa fa-pencil">
                                             </i>
-                                            Edit
+                                            แก้ไข
                                         </a>
+                                          @endif
+                                          @if ($booking->booking_title=="ประเมินห้องชุด")
+                                          <a class="btn btn-info btn-sm" href="">
+                                            <i class="fa fa-pencil">
+                                            </i>
+                                            แก้ไข
+                                         </a>
+                                          @endif
+                                          @if ($booking->booking_title=="ตรวจDF/รับมอบห้อง")
+                                          <a class="btn btn-info btn-sm" href="">
+                                            <i class="fa fa-pencil">
+                                            </i>
+                                            แก้ไข
+                                         </a>
+                                          @endif
                                         <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                             <i class="fa fa-trash">
                                             </i>
-                                            Delete
+                                            ลบ
                                         </button>
                                     </td>
                                 </tr>
 
+                                <div class="modal fade" id="modal-status-{{$booking->bkid}}">
+                                    <div class="modal-dialog modal-sm">
+                                    <form id="updateStatusForm" method="POST" name="updateStatusForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span></button>
+                                          <h4 class="modal-title">อัพเดทสถานะ</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>สถานะการจอง</label>
+                                                <select class="form-control" name="booking_status" id="my-dropdown" required>
+                                                <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
+                                                <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
+                                                <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <div id="my-element" style="display:none">
+                                                    <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
+                                                <select class="form-control" name="because_cancel_remark">
+                                                    <option value="">เลือก</option>
+                                                {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
+                                                <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
+                                                <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
+                                                <option value="อื่นๆ">อื่น ๆ</option>
+                                                </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+
+                                            <button type="submit" class="btn btn-success" id="">ตกลง</button>
+                                            <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ยกเลิก</button>
+                                            {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
+                                        </div>
+                                        </form>
+                                      </div>
+                                      <!-- /.modal-content -->
+                                    </div>
+                                    <!-- /.modal-dialog -->
+                                </div>
+                                <!-- /.modal -->
                                 <div class="modal fade" id="modal-{{$booking->bkid}}">
                                     <div class="modal-dialog">
                                       <div class="modal-content">
@@ -227,7 +295,7 @@
                                       <!-- /.modal-content -->
                                     </div>
                                     <!-- /.modal-dialog -->
-                                  </div>
+                                </div>
                                   <!-- /.modal -->
                                 @endforeach
 
@@ -264,14 +332,26 @@
             $('#table').DataTable({
                 'paging'      : true,
                 'lengthChange': false,
-                'searching'   : false,
+                'searching'   : true,
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false
             })
 
         });
+        $("#my-dropdown").change(function () {
 
+            const result = $("#my-dropdown").val();
+            //console.log(v);
+            if (result == '4') {
+                $("#my-element").show();
+
+            } else {
+
+                $("#my-element").hide();
+            }
+
+        });
         //Delete
         $(document).on('click', '.delete-item', function() {
             let id = $(this).data('id');
@@ -290,7 +370,7 @@
                     var url = '{{ route("booking.del", ":id") }}';
                     //console.log(url);
                     url = url.replace(':id', id);
-                    // console.log(url);
+                    console.log(url);
                     $.ajax({
                         url: url,
                         type: 'DELETE',
@@ -298,24 +378,36 @@
                             '_token': '{{ csrf_token() }}'
                         },
                         success: function(response) {
+                            window.location.href = '{{ route("listBooking") }}';
                             Swal.fire({
                                 title: 'สำเร็จ!',
                                 text: 'ลบข้อมูลเรียบร้อย..',
                                 icon: 'success'
                             });
-                            tableUser.draw();
+                            //table.draw();
+
                         },
                         error: function() {
+                            window.location.href = '{{ route("listBooking") }}';
                             Swal.fire({
                                 title: 'Oops...',
                                 text: 'มีบางอย่างผิดพลาด!',
                                 icon: 'error'
                             });
+                            //table.draw();
+
                         }
                     });
                 }
+
+
             });
         });
+
+
+
+
+
 
     </script>
 @endpush
