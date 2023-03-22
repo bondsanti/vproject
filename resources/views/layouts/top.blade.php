@@ -21,7 +21,7 @@
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="{{ url('uploads/avatar.png') }}" class="user-image" alt="User Image">
-                        <span class="">{{$dataUserLogin->fullname}}</span>
+                        <span class="">{{$dataUserLogin->name_th}}</span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
@@ -29,8 +29,8 @@
                             <img src="{{ url('uploads/avatar.png') }}" class="img-circle" alt="User Image">
 
                             <p>
-                                {{$dataUserLogin->fullname}}
-                                <small>Member since Nov. 2012</small>
+                                {{$dataUserLogin->name_th}}
+                                <small>ประเภทผู้ใช้งาน {{$dataRoleUser->role_type}}</small>
                             </p>
                         </li>
 

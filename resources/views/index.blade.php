@@ -22,7 +22,7 @@
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3>{{$countUser}}</h3>
+              <h3>0</h3>
 
               <p>ผู้ใช้งานระบบ</p>
             </div>

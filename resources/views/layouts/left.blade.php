@@ -8,7 +8,7 @@
           <img src="{{ url('uploads/avatar.png') }}" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>{{$dataUserLogin->fullname}}</p>
+          <p>{{$dataUserLogin->name_th}}</p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -21,7 +21,7 @@
         <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>ปฏิทินงาน </span></a></li>
         <li class="{{ request()->routeIs('bookingProject') ? 'active' : '' }}{{ request()->routeIs('booking.edit') ? 'active' : '' }}"><a href="{{ route('bookingProject') }}"><i class="fa fa-calendar-plus-o"></i> <span>นัดหมาย </span></a></li>
         <li class="{{ request()->routeIs('listBooking') ? 'active' : '' }}"><a href="{{ route('listBooking') }}"><i class="fa fa-table"></i> <span>ตารางข้อมูลนัดหมาย </span></a></li>
-
+        <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>ตารางวันหยุด </span></a></li>
         <li class="treeview">
             <a href="#">
               <i class="fa fa-files-o"></i> <span>รายงาน</span>

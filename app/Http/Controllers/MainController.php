@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Session;
 use App\Models\User;
 use App\Models\Main;
+use App\Models\Role_user;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class MainController extends Controller
@@ -17,23 +19,17 @@ class MainController extends Controller
     {
         $dataUserLogin = array();
 
-        if (Session::has('loginId')) {
-           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
-           $countUser = User::count();
-           //dd($countUser);
-        }
-        return view('index',compact('dataUserLogin','countUser'));
-    }
-    public function calendar()
-    {
-        $dataUserLogin = array();
+        $dataUserLogin = DB::connection('mysql_user')->table('users')
+        ->where('id', '=', Session::get('loginId'))
+        ->first();
 
-        if (Session::has('loginId')) {
-           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
-        }
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
 
-        return view('calendar.index',compact('dataUserLogin'));
+
+
+        return view('index',compact('dataUserLogin','dataRoleUser'));
     }
+
 
     /**
      * Show the form for creating a new resource.

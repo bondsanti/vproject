@@ -3,6 +3,7 @@ use App\Http\Controllers\CustomAuthController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,7 +30,7 @@ Route::get('/logout/auth',[CustomAuthController::class,'logoutUser'])->name('log
 Route::get('/',[MainController::class,'index'])->name('main')->middleware('isLogin');
 
 Route::get('/user/test',[UserController::class,'testteam']);
-Route::get('/calendar',[MainController::class,'calendar'])->name('calendar')->middleware('isLogin');
+Route::get('/calendar',[CalendarController::class,'index'])->name('calendar')->middleware('isLogin');
 
 
 /*

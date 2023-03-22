@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
 use App\Models\User;
+use App\Models\Role_user;
+use Illuminate\Support\Facades\DB;
 
 class CustomAuthController extends Controller
 {
@@ -67,6 +69,7 @@ class CustomAuthController extends Controller
    }
 
    public function loginUser(Request $request){
+
         $request->validate([
             'code'=>'required',
             'password'=>'required'
@@ -75,27 +78,59 @@ class CustomAuthController extends Controller
             'password.required'=>'ป้อนรหัสผ่าน'
         ]);
 
-        $user = User::where('code',"=", $request->code)->first();
 
-        if ($user) {
-            if($user->active != 'disable'){
-                if(Hash::check($request->password, $user->password)){
-                    $request->session()->put('loginId',$user->id);
-                    Alert::success('เข้าสู่ระบบสำเร็จ');
-                    return redirect('/');
-                }else{
-                    Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+        $user_hr = DB::connection('mysql_user')->table('users')
+        ->where('code', '=', $request->code)
+        ->orWhere('old_code', '=', $request->code)->first();
+
+        //dd($user_hr);
+        if($user_hr){
+            if($user_hr->active !=0 or $user_hr->resign_date==null or $user_hr->active_vproject!=0){
+
+                $role_user = Role_user::where('user_id',"=",$user_hr->id)->first();
+
+                if(!$role_user){
+                    Alert::warning('คุณไม่มีสิทธิ์เข้าระบบ', 'กรุณาติดต่อ Admin!!');
                     return back();
+
+                }else{
+
+                    if(Hash::check($request->password, $user_hr->password)){
+
+                        $request->session()->put('loginId',$user_hr->id);
+
+                        DB::table('vbeyond_report.log_login')->insert([
+                            'username' => $user_hr->code,
+                            'dates' => date('Y-m-d'),
+                            'timeStm' => date('Y-m-d H:i:s'),
+                            'page' => 'vProject'
+                        ]);
+
+                        Alert::success('เข้าสู่ระบบสำเร็จ');
+                        return redirect('/');
+
+
+                        }else{
+
+                            Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+                            return back();
+
+                        }
+
+
+                        Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+                        return back();
                 }
+
             }else{
-                Alert::error('ผู้ใช้ถูกปิด & ยังไม่เปิดใช้งาน', 'กรุณาติดต่อ Admin!!');
+                Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
                 return back();
             }
         }else{
-            Alert::warning('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-            //return back()->with('ล้มเหลว','ไม่พบผู้ใช้งาน');
+            Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
             return back();
         }
+
    }
 
    public function logoutUser(Request $request){
