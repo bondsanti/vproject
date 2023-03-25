@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
+    use HasFactory;
     protected $connection = 'mysql_user';
     protected $table = 'users';
 
     public function role_ref()
     {
-        return $this->hasMany(Role_user::class, 'id', 'user_id')
-                    ->on('mysql')
-                    ->where('user_id', $this->id);
+
+        return $this->belongsTo(Role_user::class,'id','user_id');
     }
 }

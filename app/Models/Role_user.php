@@ -9,11 +9,13 @@ use DB;
 class Role_user extends Model
 {
 
+    use HasFactory;
+    protected $connection = 'mysql';
+    protected $table = 'role_users';
 
-    public function ref_user()
+    public function user_ref()
     {
-        $users = Role_user::get();
-        return DB::connection('mysql_user')->table('users')->where('id', $users->user_id)->first();
-
+        return $this->hasMany(User::class,'id','user_id');
     }
+
 }
