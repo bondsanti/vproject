@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    use HasFactory;
+    protected $connection = 'mysql_user';
+    protected $table = 'users';
 
-    protected $fillable = [
-        'id', 'code', 'password', 'fullname','role','team_id','active','tel'
-    ];
+    public function role_ref()
+    {
+        return $this->hasMany(Role_user::class, 'id', 'user_id')
+                    ->on('mysql')
+                    ->where('user_id', $this->id);
+    }
 }

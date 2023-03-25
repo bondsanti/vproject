@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Session;
 use App\Models\User;
 use DataTables;
+use App\Models\Role_user;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -16,36 +17,36 @@ class UserController extends Controller
    public function index(Request $request){
     $dataUserLogin = array();
 
-    if (Session::has('loginId')) {
-       $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
-       $countUser = User::count();
-       $countUserActive = User::where('active',"=",'enable')->count();
-       $countUserDisable = User::where('active',"=",'disable')->count();
-       $users = User::get();
+    $dataUserLogin = DB::connection('mysql_user')->table('users')
+    ->where('id', '=', Session::get('loginId'))
+    ->first();
+
+    $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+
+
+       $countUser = Role_user::count();
+       $countUserAdmin = Role_user::where('role_type',"=",'Admin')->count();
+       $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
+       $countUserSell= Role_user::where('role_type',"=",'Sell')->count();
+       $users = Role_user::get();
+
        //dd($users);
+
         if ($request->ajax()) {
            $allData = DataTables::of($users)
            ->addIndexColumn()
-           ->addColumn('role' ,function($row){
-            if ($row->role =="admin") {
-                $role = '<span class="label label-success">Admin</span>';
-            }else if($row->role =="staff"){
-                $role = '<span class="label label-warning">Staff</span>';
+           ->addColumn('role_type' ,function($row){
+            if ($row->role_type =="Admin") {
+                $role_type = '<span class="label label-success">Admin</span>';
+            }else if($row->role_type =="Staff"){
+                $role_type = '<span class="label label-warning">Staff</span>';
             }else{
-                $role = '<span class="label label-primary">User</span>';
+                $role_type = '<span class="label label-primary">Sell</span>';
             }
-            return $role;
+            return $role_type;
             })
-            ->addColumn('active' ,function($row){
-                if ($row->active =="enable") {
-                    $active = '<span class="label label-success">Enable</span>';
-                }else{
-                    $active = '<span class="label label-default">Disable</span>';
-                }
-                return $active;
-                })
            ->addColumn('action' ,function($row){
-            if ($row->code =="admin") {
+            if ($row->role_type =="Admin") {
                 $btn = '-';
             }else{
                 $btn = '<button  data-id="'.$row->id.'" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>';
@@ -53,20 +54,21 @@ class UserController extends Controller
             }
             return $btn;
             })
-            ->rawColumns(['role','active','action'])
+            ->rawColumns(['role_type','action'])
             ->make(true);
 
             return $allData;
         }
 
-    }
 
 
-    return view('user.index',compact(
-        'dataUserLogin',
+
+    return view('user.admin.index',compact(
+        'dataUserLogin','dataRoleUser',
         'countUser',
-        'countUserActive',
-        'countUserDisable',
+        'countUserAdmin',
+        'countUserStaff',
+        'countUserSell',
         'users'));
    }
 

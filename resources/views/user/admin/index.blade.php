@@ -18,7 +18,7 @@
 
         <!-- Info boxes -->
         <div class="row">
-            <div class="col-lg-4 col-xs-6">
+            <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
                 <div class="small-box bg-aqua">
                     <div class="inner">
@@ -33,13 +33,13 @@
                 </div>
             </div>
             <!-- ./col -->
-            <div class="col-lg-4 col-xs-6">
+            <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
                 <div class="small-box bg-green">
                     <div class="inner">
-                        <h3>{{ $countUserActive }}</h3>
+                        <h3>{{ $countUserAdmin }}</h3>
 
-                        <p>ผู้ใช้งาน [Enable]</p>
+                        <p>ผู้ใช้งาน [Admin]</p>
                     </div>
                     <div class="icon">
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
@@ -48,16 +48,31 @@
                 </div>
             </div>
             <!-- ./col -->
-            <div class="col-lg-4 col-xs-6">
+            <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
-                <div class="small-box bg-gray">
+                <div class="small-box bg-yellow">
                     <div class="inner">
-                        <h3>{{ $countUserDisable }}</h3>
+                        <h3>{{ $countUserStaff }}</h3>
 
-                        <p>ผู้ใช้งาน [Disable]</p>
+                        <p>ผู้ใช้งาน [Staff]</p>
                     </div>
                     <div class="icon">
-                        <i class="fa fa-user-times" aria-hidden="true"></i>
+                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3>{{ $countUserSell }}</h3>
+
+                        <p>ผู้ใช้งาน [Sell]</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i>
                     </div>
 
                 </div>
@@ -89,8 +104,6 @@
                                     <th class="text-center">Code</th>
                                     <th class="text-center">ชื่อ-สกุล</th>
                                     <th class="text-center">ประเภทผู้ใช้งาน</th>
-                                    <th class="text-center">ทีม</th>
-                                    <th class="text-center">สถานะ</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -322,16 +335,8 @@
                         name: 'fullname'
                     },
                     {
-                        data: 'role',
-                        name: 'role'
-                    },
-                    {
-                        data: 'team_id',
-                        name: 'team_id'
-                    },
-                    {
-                        data: 'active',
-                        name: 'active'
+                        data: 'role_type',
+                        name: 'role_type'
                     },
                     {
                         data: 'action',
@@ -354,11 +359,7 @@
                 $(this).html('รอสักครู่..');
                 const _token = $("input[name='_token']").val();
                 const code = $("#code").val();
-                const password = $("#password").val();
-                const fullname = $("#fullname").val();
                 const role = $("#role").val();
-                const team_id = $("#team_id").val();
-                const active = $("#active").val();
 
                 $.ajax({
                     data: $('#userForm').serialize(),
