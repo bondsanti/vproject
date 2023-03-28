@@ -3,6 +3,8 @@ use App\Http\Controllers\CustomAuthController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TeamController;
+use App\Http\Controllers\SubTeamController;
 use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +30,6 @@ Route::get('/logout/auth',[CustomAuthController::class,'logoutUser'])->name('log
 
 
 Route::get('/',[MainController::class,'index'])->name('main')->middleware('isLogin');
-
 Route::get('/user/test',[UserController::class,'testteam']);
 Route::get('/calendar',[CalendarController::class,'index'])->name('calendar')->middleware('isLogin');
 
@@ -44,6 +45,21 @@ Route::delete('/user/{id}',[UserController::class,'destroy'])->name('user.destro
 Route::get('/user/edit/{id}',[UserController::class,'edit'])->name('user.edit')->middleware('isLogin');
 Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.update')->middleware('isLogin');
 
+/*
+|--------------------------------------------------------------------------
+| Team Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/team',[TeamController::class,'index'])->name('team')->middleware('isLogin');
+
+
+
+/*
+|--------------------------------------------------------------------------
+| subTeam Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/subteam',[SubTeamController::class,'index'])->name('subteam')->middleware('isLogin');
 
 /*
 |--------------------------------------------------------------------------
@@ -52,8 +68,10 @@ Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.up
 */
 
 Route::get('/booking',[BookingController::class,'bookingProject'])->name('bookingProject')->middleware('isLogin');
+
 //ajax get teams
 Route::get('/subteams', [BookingController::class,'getByTeam'])->name('subteams.get');
+
 Route::post('/booking/create',[BookingController::class,'createBookingProject'])->name('createBookingProject.create')->middleware('isLogin');
 Route::get('/booking/list',[BookingController::class,'listBooking'])->name('listBooking')->middleware('isLogin');
 Route::delete('/booking/list/{id}',[BookingController::class,'destroyBooking'])->name('booking.del')->middleware('isLogin');

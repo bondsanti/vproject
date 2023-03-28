@@ -108,7 +108,28 @@
                                 </tr>
                             </thead>
                             <tbody class="text-center">
+                                @foreach ( $users as  $user)
 
+
+                                <tr>
+                                    <td> {{ $loop->index+1 }}</td>
+                                    <td>{{ $user->user_ref[0]->code }}</td>
+                                    <td>{{ $user->user_ref[0]->name_th }}</td>
+                                    <td>{{$user->role_type}}</td>
+
+                                    <td>
+                                        <button  data-id="{{$user->user_id}}" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>
+
+
+                                          <button class="btn btn-danger btn-sm delete-item" data-id="{{$user->user_id}}">
+                                            <i class="fa fa-trash">
+                                            </i>
+                                            ลบ
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                @endforeach
 
                             </tbody>
 
@@ -120,7 +141,8 @@
 
             </div>
             <!-- /.col -->
-
+        </div>
+        <!-- /.row -->
             <div class="modal fade" id="modal-default">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -137,66 +159,30 @@
                                 <div class="box-body">
 
                                     <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">code</label>
+                                        <label for="" class="col-sm-4 control-label">Code</label>
 
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="code" name="code" " placeholder="code" autocomplete="off">
+                                            <input type="text" class="form-control" id="code" name="code" placeholder="code" autocomplete="off">
                                         <small class="text-danger mt-1 code_err"></small>
                                         </div>
                                     </div>
-                                    <div class="form-group" id="editpass">
-                                        <label for="" class="col-sm-4 control-label">Password</label>
 
-                                        <div class="col-sm-6">
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off"  required>
-                                        <small class="text-danger mt-1 password_err"></small>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ชื่อ-สกุล</label>
-
-                                        <div class="col-sm-6">
-                                        <input type="fullname" class="form-control" id="fullname" name="fullname" placeholder="ชื่อ-สกุล" required>
-                                        <small class="text-danger mt-1 fullname_err"></small>
-                                        </div>
-                                    </div>
 
                                     <div class="form-group">
                                         <label for="" class="col-sm-4 control-label">ประเภทผู้ใช้งาน</label>
 
                                         <div class="col-sm-6">
-                                            <select class="form-control" id="role" name="role">
+                                            <select class="form-control" id="role_type" name="role_type">
                                                 <option value="">เลือก</option>
-                                                <option value="admin">Admin</option>
-                                                <option value="staff">Staff</option>
-                                                <option value="user">User</option>
+                                                <option value="Admin">Admin</option>
+                                                <option value="Staff">Staff</option>
+                                                <option value="Sell">Sell</option>
                                               </select>
                                               <small class="text-danger mt-1 role_err"></small>
                                         </div>
 
                                     </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ทีม</label>
 
-                                        <div class="col-sm-6">
-                                            <select class="form-control" name="team_id" required>
-                                                <option value="0">ไม่มีทีม</option>
-                                                <option value="1">ทีม 1</option>
-                                                <option value="2">ทีม 2</option>
-                                                <option value="3">ทีม 3</option>
-                                              </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">สถานะ</label>
-
-                                        <div class="col-sm-6">
-                                            <select class="form-control" name="active" required>
-                                                <option value="enable">Enable</option>
-                                                <option value="disable">Disable</option>
-                                              </select>
-                                        </div>
-                                    </div>
                                 </div>
                         </div>
                         <div class="modal-footer">
@@ -231,14 +217,14 @@
                                 <div class="box-body">
 
 
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ชื่อ-สกุล</label>
+                                    {{-- <div class="form-group">
+                                        <label for="" class="col-sm-4 control-label">Code</label>
 
                                         <div class="col-sm-6">
-                                        <input type="fullname" class="form-control" id="fullname_edit" name="fullname_edit" placeholder="ชื่อ-สกุล" required>
-                                        <small class="text-danger mt-1 fullname_err2"></small>
+                                            <input type="text" class="form-control" id="code_edit" name="code_edit" placeholder="code" autocomplete="off">
+                                        <small class="text-danger mt-1 code_err"></small>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="form-group">
                                         <label for="" class="col-sm-4 control-label">ประเภทผู้ใช้งาน</label>
@@ -246,36 +232,15 @@
                                         <div class="col-sm-6">
                                             <select class="form-control" id="role_edit" name="role_edit" required>
                                                 <option value="">เลือก</option>
-                                                <option value="admin">Admin</option>
-                                                <option value="staff">Staff</option>
-                                                <option value="user">User</option>
+                                                <option value="Admin">Admin</option>
+                                                <option value="Staff">Staff</option>
+                                                <option value="Sell">Sell</option>
                                               </select>
                                               <small class="text-danger mt-1 role_err2"></small>
                                         </div>
 
                                     </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">ทีม</label>
 
-                                        <div class="col-sm-6">
-                                            <select class="form-control" id="team_id_edit" name="team_id_edit" required>
-                                                <option value="0">ไม่มีทีม</option>
-                                                <option value="1">ทีม 1</option>
-                                                <option value="2">ทีม 2</option>
-                                                <option value="3">ทีม 3</option>
-                                              </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">สถานะ</label>
-
-                                        <div class="col-sm-6">
-                                            <select class="form-control" id="active_edit" name="active_edit" required>
-                                                <option value="enable">Enable</option>
-                                                <option value="disable">Disable</option>
-                                              </select>
-                                        </div>
-                                    </div>
                                 </div>
                         </div>
                         <div class="modal-footer">
@@ -291,12 +256,10 @@
                 </div>
                   <!-- /.modal -->
 
-
             </div>
             <!-- /.modal -->
 
-        </div>
-        <!-- /.row -->
+
 
 
     </section>
@@ -314,38 +277,38 @@
                 }
             });
 
-            const tableUser = $('#tableUser').DataTable({
-                processing: true,
-                serverSide: true,
-                scrollX: true,
-                order: [
-                    [0, 'desc']
-                ],
-                ajax: "{{ route('user') }}",
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
-                    },
-                    {
-                        data: 'code',
-                        name: 'code'
-                    },
-                    {
-                        data: 'fullname',
-                        name: 'fullname'
-                    },
-                    {
-                        data: 'role_type',
-                        name: 'role_type'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                ]
-            });
+            // const tableUser = $('#tableUser_').DataTable({
+            //     processing: true,
+            //     serverSide: true,
+            //     scrollX: true,
+            //     order: [
+            //         [0, 'desc']
+            //     ],
+            //     ajax: "{{ route('user') }}",
+            //     columns: [{
+            //             data: 'DT_RowIndex',
+            //             name: 'DT_RowIndex'
+            //         },
+            //         {
+            //             data: 'code',
+            //             name: 'code'
+            //         },
+            //         {
+            //             data: 'name',
+            //             name: 'name'
+            //         },
+            //         {
+            //             data: 'role_type',
+            //             name: 'role_type'
+            //         },
+            //         {
+            //             data: 'action',
+            //             name: 'action',
+            //             orderable: false,
+            //             searchable: false
+            //         },
+            //     ]
+            // });
 
             $('#createNewPost').click(function() {
                 $('#savedata').val("create-user");
@@ -359,14 +322,14 @@
                 $(this).html('รอสักครู่..');
                 const _token = $("input[name='_token']").val();
                 const code = $("#code").val();
-                const role = $("#role").val();
+                const role_type = $("#role_type").val();
 
                 $.ajax({
                     data: $('#userForm').serialize(),
                     url: "{{ route('user.insert') }}",
                     type: "POST",
                     dataType: 'json',
-                    //console.log(data);
+
                     success: function(data) {
                         //console.log(data.error)
                         if (data.success = true) {
@@ -382,7 +345,8 @@
                                 // $('#userForm').trigger("reset");
                                 $('#userForm')[0].reset();
                                 $('#modal-default').modal('hide');
-                                tableUser.draw();
+                                //tableUser.draw();
+                                window.location.href = '{{ route("user") }}';
                             } else {
                                 printErrorMsg(data.error);
                                 $('#savedata').html('ลองอีกครั้ง');
@@ -415,11 +379,11 @@
             });
 
 
-            $('body').on('click', '.deleteUser', function() {
+            $('body').on('click', '.delete-item', function() {
 
                 const user_id = $(this).data("id");
+                //console.log(user_id);
 
-                //confirm("Are You sure want to delete this Post!");
                 Swal.fire({
                     title: 'คุณแน่ใจไหม? ',
                     text: "หากต้องการลบข้อมูลนี้ โปรดยืนยัน การลบข้อมูล",
@@ -437,7 +401,8 @@
                             url: "user" + '/' + user_id,
 
                             success: function(data) {
-                                tableUser.draw();
+                                //tableUser.draw();
+                                window.location.href = '{{ route("user") }}';
                             },
                             error: function(data) {
                                 //console.log('Error:', data);
@@ -463,14 +428,11 @@
                 $('#modelHeading').html("แก้ไข");
 
                 $.get("user/edit" +'/' + user_id , function (data) {
-                    //console.log(data);
-                    $('#id_edit').val(data.id);
-                    // $('#code').val(data.code);
-                    // $('#password').val(data.password);
-                    $('#fullname_edit').val(data.fullname);
-                    $('#role_edit').val(data.role);
-                    $('#team_id_edit option[value="'+data.team_id+'"]').prop('selected', true);
-                    $('#active_edit').val(data.active);
+                    //console.log(data.user_ref[0].code);
+                   $('#id_edit').val(data.id);
+                   //console.log(data.id);
+                   //$('#code_edit').val(data.user_ref[0].code);
+                   $('#role_edit option[value="'+data.role_type+'"]').prop('selected', true);
                 });
             });
 
@@ -479,11 +441,9 @@
                 $(this).html('รอสักครู่..');
                 const _token = $("input[name='_token']").val();
                 const id = $("#id_edit").val();
-                const fullname= $("#fullname_edit").val();
+                //const code= $("#code_edit").val();
                 const role= $("#role_edit").val();
-                const team_id= $("#team_id_edit").val();
-                const active = $("#active_edit").val();
-
+                //console.log(role);
                 $.ajax({
                     data: $('#userFormEdit').serialize(),
                     url: "user/update"+'/'+id,
@@ -504,7 +464,8 @@
                                 });
                                 $('#userFormEdit').trigger("reset");
                                 $('#modal-update').modal('hide');
-                                tableUser.draw();
+                                //tableUser.draw();
+                                window.location.href = '{{ route("user") }}';
                             } else {
                                 printErrorMsg2(data.error);
                                 $('#update').html('ลองอีกครั้ง');

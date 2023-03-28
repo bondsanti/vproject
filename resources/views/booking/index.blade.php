@@ -87,7 +87,7 @@
                                 <label>โครงการ</label>
                                 <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" required>
                                 <option value="">เลือก</option>
-                                @foreach ($projects as $project )
+                                @foreach ($projects as $project)
                                 <option value="{{$project->id}}">{{$project->project_name}}</option>
                                 @endforeach
                                 </select>
@@ -303,11 +303,11 @@
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
-                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->fullname}}" disabled>
+                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" autocomplete="off" required>
+                                        <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" value="" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>

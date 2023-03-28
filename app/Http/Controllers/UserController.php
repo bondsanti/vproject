@@ -29,36 +29,40 @@ class UserController extends Controller
        $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
        $countUserSell= Role_user::where('role_type',"=",'Sell')->count();
        $users = Role_user::with('user_ref:id,code,name_th')->get();
+        //dd($users);
 
-       dd($users);
 
-        if ($request->ajax()) {
-           $allData = DataTables::of($users)
-           ->addIndexColumn()
-           ->addColumn('role_type' ,function($row){
-            if ($row->role_type =="Admin") {
-                $role_type = '<span class="label label-success">Admin</span>';
-            }else if($row->role_type =="Staff"){
-                $role_type = '<span class="label label-warning">Staff</span>';
-            }else{
-                $role_type = '<span class="label label-primary">Sell</span>';
-            }
-            return $role_type;
-            })
-           ->addColumn('action' ,function($row){
-            if ($row->role_type =="Admin") {
-                $btn = '-';
-            }else{
-                $btn = '<button  data-id="'.$row->id.'" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>';
-                $btn = $btn.' <button  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser"><i class="fa fa-trash"></i> ลบ</button>';
-            }
-            return $btn;
-            })
-            ->rawColumns(['role_type','action'])
-            ->make(true);
+        // if ($request->ajax()) {
+        //    $allData = DataTables::of($users)
+        //    ->addIndexColumn()
+        //    ->addColumn('name' ,function($row){
+        //      $name = $row->user_ref->name_th;
+        //     return $name;
+        //     })
+        //    ->addColumn('role_type' ,function($row){
+        //     if ($row->role_type =="Admin") {
+        //         $role_type = '<span class="label label-success">Admin</span>';
+        //     }else if($row->role_type =="Staff"){
+        //         $role_type = '<span class="label label-warning">Staff</span>';
+        //     }else{
+        //         $role_type = '<span class="label label-primary">Sell</span>';
+        //     }
+        //     return $role_type;
+        //     })
+        //    ->addColumn('action' ,function($row){
+        //     if ($row->role_type =="Admin") {
+        //         $btn = '-';
+        //     }else{
+        //         $btn = '<button  data-id="'.$row->id.'" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>';
+        //         $btn = $btn.' <button  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser"><i class="fa fa-trash"></i> ลบ</button>';
+        //     }
+        //     return $btn;
+        //     })
+        //     ->rawColumns(['name','role_type','action'])
+        //     ->make(true);
 
-            return $allData;
-        }
+        //     return $allData;
+        // }
 
 
 
@@ -74,34 +78,31 @@ class UserController extends Controller
 
    public function insert(Request $request){
 
+        $user = User::where('code',"=",$request->code)->first();
+
+        //dd($user);
+
         $validator = Validator::make($request->all(),[
-            'code'=>['required','unique:users'],
-            'password'=>['required','min:8'],
-            'fullname' => 'required',
-            'role'=>'required'
+            'code'=>'required',
+            'role_type'=>'required'
         ],[
-            'code.required'=>'ป้อนรหัสพนักงาน',
-            'code.unique'=>'รหัสนี้มีผู้ใช้แล้ว',
-            'fullname.required' => 'ป้อนชื่อ-นามสกุล',
-            'password.required' => 'ป้อนรหัสผ่าน',
-            'password.min' => 'รหัสผ่านต้องไม่ต่ำกว่า 8 ตัวอักษร',
-            'role.required' => 'เลือกประเภทผู้ใช้งาน',
+            'code.required'=>'กรอก Code',
+            'role_type.required' => 'เลือกประเภทผู้ใช้งาน',
         ]);
 
         if ($validator->passes()) {
-            User::updateOrCreate(['id' => $request->id],
-            [
-            'code' => $request->code,
-            'password' => Hash::make($request->password),
-            'fullname' => $request->fullname,
-            'role' => $request->role,
-            'team_id' => $request->team_id,
-            'active'=> $request->active
-        ]);
 
-        return response()->json([
-            'message' => 'เพิ่มข้อมูลสำเร็จ'
-        ], 201);
+            $role_user = New Role_user();
+            $role_user->user_id = $user->id;
+            $role_user->role_type = $request->role_type;
+            $role_user->save();
+
+            $user->active_vproject = "1";
+            $user->save();
+
+            return response()->json([
+                'message' => 'เพิ่มข้อมูลสำเร็จ'
+            ], 201);
 
         }
 
@@ -111,24 +112,40 @@ class UserController extends Controller
 
    public function destroy($id){
 
-            User::find($id)->delete($id);
+             $user = User::where('id',"=",$id)->first();
+             $user->active_vproject = "0";
+             $user->save();
+
+             Role_user::where('user_id',"=",$id)->delete($id);
+            //Role_user::find($id)->delete($id);
+
 
             return response()->json([
-                'success' => 'successfully!'
-            ]);
+                'message' => 'ลบข้อมูลสำเร็จ'
+            ], 201);
    }
 
    public function edit($id){
-        $user = User::find($id);
+        //$user = User::find($id);
+        //$user = Role_user::find($id);
+        // $user = DB::connection('mysql')->table('role_users')
+        // ->where('user_id', '=', $id)
+        // ->first();
+
+        $user = Role_user::with('user_ref:id,code,name_th')->where('user_id', '=', $id)->first();
 
         return response()->json($user, 200);
    }
 
     public function update(Request $request,$id){
 
-        $user = User::find($id);
 
-        if(!$user){
+        $role_user = Role_user::where('id', '=', $id)->first();
+        //dd($role_user);
+
+        //return response()->json($role_user, 200);
+
+        if(!$role_user){
             return response()->json([
                 'errors' => [
                     'message'=>'ไม่สามารถอัพเดทข้อมูลได้ ID ไม่ถูกต้อง..'
@@ -137,22 +154,16 @@ class UserController extends Controller
         }
 
         $validator = Validator::make($request->all(),[
-            'fullname_edit' => 'required',
             'role_edit'=>'required'
         ],[
-
-            'fullname_edit.required' => 'ป้อนชื่อ-นามสกุล',
             'role_edit.required' => 'เลือกประเภทผู้ใช้งาน',
         ]);
 
 
         if ($validator->passes()) {
 
-            $user->fullname = $request->fullname_edit;
-            $user->role = $request->role_edit;
-            $user->team_id = $request->team_id_edit;
-            $user->active = $request->active_edit;
-            $user->save();
+            $role_user->role_type = $request->role_edit;
+            $role_user->save();
 
             return response()->json([
                 'message' => 'อัพเดทข้อมูลสำเร็จ'

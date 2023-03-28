@@ -370,7 +370,7 @@
                     var url = '{{ route("booking.del", ":id") }}';
                     //console.log(url);
                     url = url.replace(':id', id);
-                    console.log(url);
+                    //console.log(url);
                     $.ajax({
                         url: url,
                         type: 'DELETE',

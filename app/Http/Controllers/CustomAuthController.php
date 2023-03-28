@@ -84,8 +84,8 @@ class CustomAuthController extends Controller
         ->orWhere('old_code', '=', $request->code)->first();
 
         //dd($user_hr);
-        if($user_hr){
-            if($user_hr->active !=0 or $user_hr->resign_date==null or $user_hr->active_vproject!=0){
+        if($user_hr->active_vproject!=0){
+            if($user_hr->active !=0 or $user_hr->resign_date==null){
 
                 $role_user = Role_user::where('user_id',"=",$user_hr->id)->first();
 

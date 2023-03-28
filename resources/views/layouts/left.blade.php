@@ -41,7 +41,7 @@
         {{-- <li><a href="{{route('logoutUser')}}" style="background-color: rgba(255, 23, 23, 0.3)"><i class="fa fa-sign-out"></i> ออกจากระบบ</a></li> --}}
         <li class="header">เมนู ผู้ดูแลระบบ</li>
 
-        <li class="treeview {{ request()->routeIs('user') ? 'active' : '' }}">
+        <li class="treeview {{ request()->routeIs('user') ? 'active' : '' }} {{ request()->routeIs('team') ? 'active' : '' }}">
             <a href="#">
               <i class="fa fa-cogs"></i> <span>ตั้งค่าระบบ</span>
               <span class="pull-right-container">
@@ -50,11 +50,8 @@
             </a>
             <ul class="treeview-menu">
                 <li class="{{ request()->routeIs('user') ? 'active' : '' }}"><a href="{{ route('user') }}"><i class="fa fa-user-plus"></i> <span>จัดการผู้ใช้งานระบบ </span></a></li>
-                <li class=""><a href=""><i class="fa fa-users"></i> <span>จัดการทีม </span></a></li>
-                <li class=""><a href=""><i class="fa fa-building"></i> <span>จัดการโครงการ </span></a></li>
-                <li class=""><a href=""><i class="fa fa-cog"></i> <span>จัดการระบบ </span></a></li>
-
-
+                <li class="{{ request()->routeIs('team') ? 'active' : '' }}"><a href="{{ route('team') }}"><i class="fa fa-user"></i> <span>จัดการทีม </span></a></li>
+                <li class="{{ request()->routeIs('subteam') ? 'active' : '' }}"><a href="{{ route('subteam') }}"><i class="fa fa-users"></i> <span>จัดการสายงาน </span></a></li>
             </ul>
         </li>
 

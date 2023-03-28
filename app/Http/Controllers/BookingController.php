@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Session;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Role_user;
 use App\Models\Project;
 use App\Models\Booking;
 use App\Models\Bookingdetail;
@@ -11,6 +12,7 @@ use App\Models\Team;
 use App\Models\Subteam;
 use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -21,19 +23,22 @@ class BookingController extends Controller
 
         $dataUserLogin = array();
         $events = [];
-        if (Session::has('loginId')) {
-           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
 
-           $projects = Project::where('is_active', 'enable')->get();
-           $teams = Team::get();
+        $dataUserLogin = DB::connection('mysql_user')->table('users')
+        ->where('id', '=', Session::get('loginId'))
+        ->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+
+
+        // $projects = DB::connection('mysql_project')->table('projects')->get();
+        // dd($projects);
+        $projects = Project::where('is_active', 'enable')->get();
+        $teams = Team::get();
+
         //    $subteams = Subteam::leftJoin('teams', 'teams.id', '=', 'subteams.team_id')
         //    ->select('subteams.*', 'teams.team_name')
         //    ->get();
-
         //    dd($subteams);
-
-
-        }
 
 
         if($request->ajax())
@@ -95,7 +100,7 @@ class BookingController extends Controller
             return response()->json($events);
     	}
 
-        return view("booking.index",compact('dataUserLogin','projects','teams'));
+        return view("booking.index",compact('dataUserLogin','dataRoleUser','projects','teams'));
     }
 
     public function listBooking(Request $request)
@@ -137,11 +142,36 @@ class BookingController extends Controller
 
             //dd($request);
             $dataUserLogin = array();
-            $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
+
+            $dataUserLogin = DB::connection('mysql_user')->table('users')
+            ->where('id', '=', Session::get('loginId'))
+            ->first();
 
             //หาเจ้าหน้าที่โครงการ
-            $users = User::where('active', 'enable')->where('role','staff')->orderBy('id')->first();
+            $employees = Role_user::orderBy('id')->get();
+            $count = $employees->count();
+            $selectedEmployee = $employees->firstWhere('id', session('selected_employee'));
 
+            if ($selectedEmployee) {
+                $index = $employees->search($selectedEmployee);
+                $employees = $employees->splice($index+1)->concat($employees->take($index+1));
+            }
+
+            $currentDate = Carbon::now()->format('Y-m-d');
+
+            $employees = DB::table('role_users')
+                ->select('role_users.*')
+                ->where('role_type', 'Staff')
+                ->whereNotIn('id', function ($query) use ($currentDate) {
+                    $query->select('user_id')
+                        ->from('holiday_users')
+                        ->where('start_date', '<', $currentDate)->where('end_date', '>', $currentDate);
+                })
+                ->orderBy('id')
+                ->get();
+
+            // $users = Role_user::with('user_ref:id,code,name_th')->get();
+           dd($employees);
 
 
 
@@ -157,7 +187,7 @@ class BookingController extends Controller
             $booking->booking_status = "0"; //สถานะ เยี่ยมโครงการ
             $booking->project_id = $request->project_id;
             $booking->booking_status_df = "0"; //สถานะ DF
-            $booking->teampro_id = $users->id; //เจ้าหน้าที่โครง
+            $booking->teampro_id = $employees->id; //เจ้าหน้าที่โครง
             $booking->team_id = $request->team_id;
             $booking->subteam_id = $request->subteam_id;
             $booking->user_id = $request->user_id; //ชื่อผู้จอง|ผู้ทำรายการจอง
