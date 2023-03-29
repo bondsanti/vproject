@@ -51,15 +51,20 @@ Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.up
 |--------------------------------------------------------------------------
 */
 Route::get('/team',[TeamController::class,'index'])->name('team')->middleware('isLogin');
-
-
-
+Route::post('/team',[TeamController::class,'insert'])->name('team.insert')->middleware('isLogin');
+Route::delete('/team/{id}',[TeamController::class,'destroy'])->name('team.destroy')->middleware('isLogin');
+Route::get('/team/edit/{id}',[TeamController::class,'edit'])->name('team.edit')->middleware('isLogin');
+Route::post('/team/update/{id}',[TeamController::class,'update'])->name('team.update')->middleware('isLogin');
 /*
 |--------------------------------------------------------------------------
 | subTeam Routes
 |--------------------------------------------------------------------------
 */
 Route::get('/subteam',[SubTeamController::class,'index'])->name('subteam')->middleware('isLogin');
+Route::post('/subteam',[SubTeamController::class,'insert'])->name('subteam.insert')->middleware('isLogin');
+Route::delete('/subteam/{id}',[SubTeamController::class,'destroy'])->name('subteam.destroy')->middleware('isLogin');
+Route::get('/subteam/edit/{id}',[SubTeamController::class,'edit'])->name('subteam.edit')->middleware('isLogin');
+Route::post('/subteam/update/{id}',[SubTeamController::class,'update'])->name('subteam.update')->middleware('isLogin');
 
 /*
 |--------------------------------------------------------------------------

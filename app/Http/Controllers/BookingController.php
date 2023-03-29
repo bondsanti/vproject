@@ -148,32 +148,12 @@ class BookingController extends Controller
             ->first();
 
             //หาเจ้าหน้าที่โครงการ
-            $employees = Role_user::orderBy('id')->get();
-            $count = $employees->count();
-            $selectedEmployee = $employees->firstWhere('id', session('selected_employee'));
-
-            if ($selectedEmployee) {
-                $index = $employees->search($selectedEmployee);
-                $employees = $employees->splice($index+1)->concat($employees->take($index+1));
-            }
-
-            $currentDate = Carbon::now()->format('Y-m-d');
-
-            $employees = DB::table('role_users')
-                ->select('role_users.*')
-                ->where('role_type', 'Staff')
-                ->whereNotIn('id', function ($query) use ($currentDate) {
-                    $query->select('user_id')
-                        ->from('holiday_users')
-                        ->where('start_date', '<', $currentDate)->where('end_date', '>', $currentDate);
-                })
-                ->orderBy('id')
-                ->get();
-
-            // $users = Role_user::with('user_ref:id,code,name_th')->get();
-           dd($employees);
+            // $employees = Role_user::orderBy('id')->get();
+            $employees = Role_user::with('user_ref:id,code,name_th')->where('role_type','Staff')->orderBy('id')->get();
+            $hasBooking = Booking::where('teampro_id','1')->first();
 
 
+            dd($hasBooking);
 
             $end_time = date('H:i', strtotime($request->time . ' +3 hours'));
             $booking_start = $request->date." ".$request->time;
@@ -187,7 +167,7 @@ class BookingController extends Controller
             $booking->booking_status = "0"; //สถานะ เยี่ยมโครงการ
             $booking->project_id = $request->project_id;
             $booking->booking_status_df = "0"; //สถานะ DF
-            $booking->teampro_id = $employees->id; //เจ้าหน้าที่โครง
+            $booking->teampro_id = $employees[0]->id; //เจ้าหน้าที่โครง
             $booking->team_id = $request->team_id;
             $booking->subteam_id = $request->subteam_id;
             $booking->user_id = $request->user_id; //ชื่อผู้จอง|ผู้ทำรายการจอง
@@ -247,7 +227,7 @@ class BookingController extends Controller
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$users->fullname."* \n".
+                'เจ้าหน้าที่โครงการ : *'.$employees[0]->id."* \n".
                 'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
 
                 return back();
