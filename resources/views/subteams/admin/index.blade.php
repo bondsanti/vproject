@@ -207,15 +207,27 @@
 
                 @csrf
                 <input type="hidden" name="id_edit" id="id_edit">
-            <div class="modal-body">
-                <div class="form-group">
-                     <label for="" class="col-sm-4 control-label">ชื่อทีม</label>
-                     <div class="col-sm-6">
-                          <input type="text" class="form-control" id="team_name_edit" name="team_name_edit" placeholder="Team name" autocomplete="off">
-                          <small class="text-danger mt-1 team2_err"></small>
-                     </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="" class="col-sm-4 control-label">เลือกทีม</label>
+                        <div class="col-sm-6">
+                        <select class="form-control select2" style="width: 100%;" id="team_id_edit" name="team_id_edit" autocomplete="off" required>
+                        <option value="">เลือก</option>
+                        @foreach ($teams as $team)
+                        <option value="{{$team->id}}">{{$team->team_name}}</option>
+                        @endforeach
+                        </select>
+                        <small class="text-danger mt-1 team_err"></small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label for="" class="col-sm-4 control-label">ชื่อสายงาน</label>
+                         <div class="col-sm-6">
+                              <input type="text" class="form-control" id="subteam_name_edit" name="subteam_name_edit" placeholder="" autocomplete="off">
+                              <small class="text-danger mt-1 subteam_err"></small>
+                         </div>
+                    </div>
                 </div>
-            </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button>
               <button type="button" class="btn btn-primary" id="updatedata">บันทึก</button>
@@ -287,7 +299,7 @@
 
                                 $('#addForm')[0].reset();
                                 $('#editData').modal('hide');
-                                setTimeout("location.href = '{{ route("subteam") }}';",2000);
+                                setTimeout("location.href = '{{ route("subteam") }}';",1300);
                                 //window.location.href = '{{ route("team") }}';
                             } else {
                                 printErrorMsg(data.error);
@@ -301,7 +313,7 @@
                                     icon: 'error',
                                     title: 'เกิดข้อผิดพลาด',
                                     showConfirmButton: true,
-                                    timer: 2500
+                                    timer: 1300
                                 });
                             }
 
@@ -311,7 +323,7 @@
                                 icon: 'error',
                                 title: 'เกิดข้อผิดพลาด!',
                                 showConfirmButton: true,
-                                timer: 2500
+                                timer: 1300
                             });
                             $('#addForm')[0].reset();
                         }
@@ -323,7 +335,8 @@
             });
 
             $('body').on('click', '.delete-item', function() {
-                const team_id = $(this).data("id");
+                const subteam_id = $(this).data("id");
+                //console.log(subteam_id);
                 Swal.fire({
                     title: 'คุณแน่ใจไหม? ',
                     text: "หากต้องการลบข้อมูลนี้ โปรดยืนยัน การลบข้อมูล",
@@ -338,11 +351,11 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "DELETE",
-                            url: "team" + '/' + team_id,
+                            url: "subteam" + '/' + subteam_id,
 
                             success: function(data) {
 
-                                setTimeout("location.href = '{{ route("team") }}';",1000);
+                                setTimeout("location.href = '{{ route("subteam") }}';",1000);
 
                             },
                             error: function(data) {
@@ -362,13 +375,16 @@
 
             $('body').on('click', '.editData', function () {
 
-                const team_id = $(this).data('id');
+                const subteam_id = $(this).data('id');
+                //console.log(subteam_id);
                 $('#editData').modal('show');
                 //$('#updatedata').val("edit-data");
-                $.get("team/edit" +'/' + team_id , function (data) {
-                    //console.log(data.team_name);
+                $.get("subteam/edit" +'/' + subteam_id , function (data) {
+
                    $('#id_edit').val(data.id);
-                   $('#team_name_edit').val(data.team_name);
+                   $('#team_id_edit option[value="'+data.team_id+'"]').prop('selected', true);
+                   $('#subteam_name_edit').val(data.subteam_name);
+
                 });
             });
 
@@ -377,11 +393,12 @@
                 $(this).html('รอสักครู่..');
                 const _token = $("input[name='_token']").val();
                 const id = $("#id_edit").val();
-                const team_name= $("#team_name_edit").val();
-                console.log(id);
+                const team_id= $("#team_id_edit").val();
+                const subteam_name= $("#subteam_name_edit").val();
+                //console.log(id);
                 $.ajax({
                     data: $('#editForm').serialize(),
-                    url: "team/update"+'/'+id,
+                    url: "subteam/update"+'/'+id,
                     type: "POST",
                     dataType: 'json',
 
@@ -400,10 +417,11 @@
                                 $('#editData').trigger("reset");
                                 $('#editData').modal('hide');
                                 //tableUser.draw();
-                                setTimeout("location.href = '{{ route("team") }}';",2000);
+                                setTimeout("location.href = '{{ route("subteam") }}';",1300);
                             } else {
                                 printErrorMsg2(data.error);
-                                $('.team2_err').text(data.error.team_name_edit);
+                                $('.team2_err').text(data.error.team_id_edit);
+                                $('.subteam2_err').text(data.error.subteam_name_edit);
                                 $('#editData').trigger("reset");
                                 $('#updatedata').html('ลองอีกครั้ง');
 
@@ -413,7 +431,7 @@
                                     icon: 'error',
                                     title: 'เกิดข้อผิดพลาด',
                                     showConfirmButton: true,
-                                    timer: 2500
+                                    timer: 1300
                                 });
                             }
 
@@ -423,7 +441,7 @@
                                 icon: 'error',
                                 title: 'เพิ่มข้อมูลสำเร็จ!',
                                 showConfirmButton: true,
-                                timer: 2500
+                                timer: 1300
                             });
                             $('#userFormEdit').trigger("reset");
                         }

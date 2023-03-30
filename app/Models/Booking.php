@@ -18,4 +18,14 @@ class Booking extends Model
     // {
     //     return $this->belongsTo(Project::class,'id','project_id');
     // }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($booking) {
+            $y = date('Y')+543;
+            $last_two_digits = substr($y, -2);
+            $booking->id = $last_two_digits. sprintf('%03d', static::count() + 1);
+        });
+    }
 }

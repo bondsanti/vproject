@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 23, 2023 at 10:44 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Mar 30, 2023 at 08:07 PM
+-- Server version: 10.4.25-MariaDB
+-- PHP Version: 7.4.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `bookingdetails` (
   `id` int(11) NOT NULL,
-  `booking_id` varchar(5) NOT NULL COMMENT 'ref_ตารางจอง',
+  `booking_id` varchar(10) NOT NULL COMMENT 'ref_ตารางจอง',
   `customer_name` varchar(100) NOT NULL,
   `customer_tel` varchar(10) NOT NULL,
   `customer_req` text NOT NULL COMMENT 'ข้อมูลลูกค้าเข้าชม',
@@ -42,16 +42,14 @@ CREATE TABLE `bookingdetails` (
   `num_statement` int(1) DEFAULT NULL COMMENT 'เอกสาร Statement',
   `room_no` varchar(10) NOT NULL,
   `room_price` int(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `bookingdetails`
 --
 
 INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel`, `customer_req`, `customer_req_bank`, `customer_req_bank_other`, `customer_doc_personal`, `num_home`, `num_idcard`, `num_app_statement`, `num_statement`, `room_no`, `room_price`) VALUES
-(19, '22', 'สันติ ชูประยูร', '0652595505', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, '99/9', 2000000),
-(20, '23', 'สมศักดิ์ ใจดี', '0454545454', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'กสิกร,ธอส.,', NULL, 'สำเนาทะเบียนบ้าน,สำเนาบัตรประชาชน,หนังสือรับรองเงินเดือน,เอกสาร Statement', 1, 1, 1, 1, '42/329', 2000000),
-(21, '24', 'as', '0540545454', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'กสิกร,กรุงไทย,', NULL, '', NULL, NULL, NULL, NULL, '99/9', 2000000);
+(3, '69001', 'ทดสอบ นะ', '0655555555', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'กสิกร,กรุงไทย,', NULL, 'สำเนาทะเบียนบ้าน,สำเนาบัตรประชาชน,หนังสือรับรองเงินเดือน,เอกสาร Statement', 1, 2, 3, 4, '33/3', 3000000);
 
 -- --------------------------------------------------------
 
@@ -60,7 +58,7 @@ INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel
 --
 
 CREATE TABLE `bookings` (
-  `id` int(11) NOT NULL,
+  `id` varchar(11) NOT NULL,
   `booking_title` varchar(50) NOT NULL,
   `booking_start` varchar(100) NOT NULL,
   `booking_end` varchar(100) NOT NULL,
@@ -76,16 +74,14 @@ CREATE TABLE `bookings` (
   `because_cancel_remark` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจอง',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `bookings`
 --
 
 INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `created_at`, `updated_at`) VALUES
-(22, 'เยี่ยมโครงการ', '2023-03-21 08:00', '2023-03-21 11:00', 5, 1, 0, 30, 1, 1, 1, '0629640011', 'ทดสอบ', 'ถูกยกเลิกอัตโนมัติ', '2023-03-20 04:54:30', '2023-03-21 10:03:51'),
-(23, 'เยี่ยมโครงการ', '2023-03-21 08:00', '2023-03-21 11:00', 5, 3, 0, 30, 1, 1, 1, '0644444444', 'ทดสอบ', 'ถูกยกเลิกอัตโนมัติ', '2023-03-20 05:03:17', '2023-03-21 10:03:56'),
-(24, 'เยี่ยมโครงการ', '2023-03-23 08:00', '2023-03-23 11:00', 0, 1, 0, 30, 1, 1, 1, '0999999999', NULL, NULL, '2023-03-22 08:21:03', '2023-03-22 08:21:03');
+('69001', 'เยี่ยมโครงการ', '2023-03-31 15:00', '2023-03-31 18:00', 0, 1, 0, 2, 3, 5, 3464, '0999999999', 'ทดสอบ', NULL, '2023-03-30 17:55:02', '2023-03-30 17:55:02');
 
 -- --------------------------------------------------------
 
@@ -99,7 +95,7 @@ CREATE TABLE `holiday_users` (
   `start_date` varchar(50) NOT NULL,
   `end_date` varchar(50) NOT NULL,
   `status` int(1) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `holiday_users`
@@ -116,8 +112,8 @@ INSERT INTO `holiday_users` (`id`, `user_id`, `start_date`, `end_date`, `status`
 
 CREATE TABLE `projects` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `project_name` varchar(255) NOT NULL,
-  `is_active` varchar(10) NOT NULL,
+  `project_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_active` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -141,14 +137,15 @@ CREATE TABLE `role_users` (
   `id` int(10) NOT NULL,
   `user_id` int(5) NOT NULL,
   `role_type` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `role_users`
 --
 
 INSERT INTO `role_users` (`id`, `user_id`, `role_type`) VALUES
-(1, 3464, 'Admin');
+(1, 3464, 'Admin'),
+(2, 3539, 'Staff');
 
 -- --------------------------------------------------------
 
@@ -158,7 +155,7 @@ INSERT INTO `role_users` (`id`, `user_id`, `role_type`) VALUES
 
 CREATE TABLE `subteams` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `subteam_name` varchar(255) NOT NULL,
+  `subteam_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `team_id` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -171,7 +168,7 @@ CREATE TABLE `subteams` (
 INSERT INTO `subteams` (`id`, `subteam_name`, `team_id`, `created_at`, `updated_at`) VALUES
 (1, 'สายงาน bigbull', 1, '2023-03-04 19:19:12', '2023-03-04 19:19:12'),
 (2, 'สายงาน BKK', 2, '2023-03-04 19:19:12', '2023-03-04 19:19:12'),
-(3, 'สายงาน VIP', 1, '2023-03-04 19:24:42', '2023-03-04 19:24:42');
+(5, 'สาย บันเทิง', 3, '2023-03-30 16:24:01', '2023-03-30 16:53:58');
 
 -- --------------------------------------------------------
 
@@ -181,7 +178,7 @@ INSERT INTO `subteams` (`id`, `subteam_name`, `team_id`, `created_at`, `updated_
 
 CREATE TABLE `teams` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `team_name` varchar(255) NOT NULL,
+  `team_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -192,7 +189,8 @@ CREATE TABLE `teams` (
 
 INSERT INTO `teams` (`id`, `team_name`, `created_at`, `updated_at`) VALUES
 (1, 'VIP', '2023-03-04 19:16:09', '2023-03-04 19:16:09'),
-(2, 'คุณเซน', '2023-03-04 19:16:09', '2023-03-04 19:16:09');
+(2, 'คุณเซน', '2023-03-04 19:16:09', '2023-03-04 19:16:09'),
+(3, 'คุณบอนด์', '2023-03-30 15:55:51', '2023-03-30 15:55:51');
 
 -- --------------------------------------------------------
 
@@ -202,13 +200,13 @@ INSERT INTO `teams` (`id`, `team_name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `code` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `fullname` varchar(255) NOT NULL,
-  `role` varchar(255) NOT NULL,
-  `team_id` varchar(255) NOT NULL,
-  `active` varchar(255) NOT NULL,
-  `tel` varchar(10) DEFAULT NULL,
+  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fullname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `team_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `active` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tel` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -284,13 +282,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookingdetails`
 --
 ALTER TABLE `bookingdetails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
--- AUTO_INCREMENT for table `bookings`
---
-ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `holiday_users`
@@ -308,19 +300,19 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT for table `role_users`
 --
 ALTER TABLE `role_users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `subteams`
 --
 ALTER TABLE `subteams`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`

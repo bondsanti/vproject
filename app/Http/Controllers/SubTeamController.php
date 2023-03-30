@@ -8,6 +8,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role_user;
 use App\Models\Team;
+use App\Models\SubTeam;
 use Illuminate\Http\Request;
 
 class SubTeamController extends Controller
@@ -27,7 +28,7 @@ class SubTeamController extends Controller
 
         $subteamsList = DB::table('subteams')
         ->leftJoin('teams', 'teams.id', '=', 'subteams.team_id')
-        ->select('teams.id', 'teams.team_name', 'subteams.subteam_name')
+        ->select('subteams.id', 'teams.team_name', 'subteams.subteam_name')
         ->orderBy('subteams.id')
         ->get();
         //dd($subteamsList);
@@ -52,9 +53,10 @@ class SubTeamController extends Controller
 
         if ($validator->passes()) {
 
-            $team = New Team();
-            $team->team_name = $request->team_name;
-            $team->save();
+            $subteam = New SubTeam();
+            $subteam->team_id = $request->team_id;
+            $subteam->subteam_name = $request->subteam_name;
+            $subteam->save();
 
             return response()->json([
                 'message' => 'เพิ่มข้อมูลสำเร็จ'
@@ -70,9 +72,16 @@ class SubTeamController extends Controller
     public function destroy($id){
 
 
-        $team = Team::where('id',"=",$id)->delete($id);
+        $subteam = SubTeam::where('id',"=",$id)->delete($id);
        //Role_user::find($id)->delete($id);
 
+       if(!$subteam){
+        return response()->json([
+            'errors' => [
+                'message'=>'ไม่สามารถลบข้อมูลได้'
+                ]
+        ],400);
+    }
        return response()->json([
            'message' => 'ลบข้อมูลสำเร็จ'
        ], 201);
@@ -81,18 +90,18 @@ class SubTeamController extends Controller
 
     public function edit($id){
 
-        $team = Team::where('id', '=', $id)->first();
+        $subteam = SubTeam::where('id', '=', $id)->first();
 
-        return response()->json($team, 200);
+        return response()->json($subteam, 200);
     }
 
     public function update(Request $request,$id){
 
 
-        $team = Team::where('id', '=', $id)->first();
+        $subteam = SubTeam::where('id', '=', $id)->first();
 
 
-        if(!$team){
+        if(!$subteam){
             return response()->json([
                 'errors' => [
                     'message'=>'ไม่สามารถอัพเดทข้อมูลได้ ID ไม่ถูกต้อง..'
@@ -101,17 +110,20 @@ class SubTeamController extends Controller
         }
 
         $validator = Validator::make($request->all(),[
-            'team_name_edit' => 'required',
+            'team_id_edit' => 'required',
+            'subteam_name_edit' => 'required',
         ],[
-            'team_name_edit.required'=>'กรอก ชื่อทีม',
+            'team_id_edit.required'=>'กรุณาเลือกทีม',
+            'subteam_name_edit.required'=>'ป้อนชื่อสายงาน',
         ]);
 
 
 
         if ($validator->passes()) {
 
-            $team->team_name = $request->team_name_edit;
-            $team->save();
+            $subteam->team_id = $request->team_id_edit;
+            $subteam->subteam_name = $request->subteam_name_edit;
+            $subteam->save();
 
             return response()->json([
                 'message' => 'แก้ไขข้อมูลสำเร็จ'

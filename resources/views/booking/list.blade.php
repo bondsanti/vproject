@@ -32,6 +32,7 @@
                         <table id="table" style="width:100%" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th class="text-center"><button id="print-button">Print</button></th>
                                     <th class="text-center">#</th>
                                     <th class="text-center">ประเภท</th>
                                     <th class="text-center">โครงการ</th>
@@ -68,6 +69,9 @@
 
 
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" name="select[]" value="{{ $loop->index+1 }}">
+                                    </td>
                                     <td>
                                         {{ $loop->index+1 }}
                                     </td>
@@ -331,11 +335,11 @@
             });
             $('#table').DataTable({
                 'paging'      : true,
-                'lengthChange': false,
+                'lengthChange': true,
                 'searching'   : true,
-                'ordering'    : true,
-                'info'        : true,
-                'autoWidth'   : false
+                'ordering'    : false,
+                'info'        : false,
+                'autoWidth'   : true
             })
 
         });

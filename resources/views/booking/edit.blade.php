@@ -338,7 +338,7 @@
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
-                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->fullname}}" disabled>
+                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
