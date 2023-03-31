@@ -121,7 +121,8 @@ class BookingController extends Controller
         $projects = Project::where('is_active', 'enable')->get();
         $teams = Team::get();
 
-         $bookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+         $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
+         ->leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
         ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
@@ -130,7 +131,6 @@ class BookingController extends Controller
         ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
         'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->get();
-
 
 
        return view("booking.list",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
@@ -160,7 +160,7 @@ class BookingController extends Controller
            // $hasBooking = Booking::where('teampro_id','1')->first();
 
 
-            //dd($employees[0]->user_ref[0]->name_th);
+           // dd($employees[0]);
 
             $end_time = date('H:i', strtotime($request->time . ' +3 hours'));
             $booking_start = $request->date." ".$request->time;
@@ -174,7 +174,7 @@ class BookingController extends Controller
             $booking->booking_status = "0"; //สถานะ เยี่ยมโครงการ
             $booking->project_id = $request->project_id;
             $booking->booking_status_df = "0"; //สถานะ DF
-            $booking->teampro_id = $employees[0]->id; //เจ้าหน้าที่โครง
+            $booking->teampro_id = $employees[0]->user_id; //เจ้าหน้าที่โครง
             $booking->team_id = $request->team_id;
             $booking->subteam_id = $request->subteam_id;
             $booking->user_id = $request->user_id; //ชื่อผู้จอง|ผู้ทำรายการจอง
@@ -340,25 +340,24 @@ class BookingController extends Controller
 
             //หาเจ้าหน้าที่โครงการ
             // $employees = Role_user::orderBy('id')->get();
-            $employees = Role_user::with('user_ref:id,code,name_th')->where('role_type','Staff')->orderBy('id')->get();
-            $hasBooking = Booking::where('teampro_id','1')->first();
+            $employees = Role_user::with('user_ref:id,code,name_th')->where('user_id',$request->teampro_id)->first();
+            //dd($employees);
+            $booking = Booking::where('bookings.id',"=",$request->booking_id)->first();
 
 
-            //dd($hasBooking);
+            //dd($booking);
 
             $end_time = date('H:i', strtotime($request->time . ' +3 hours'));
             $booking_start = $request->date." ".$request->time;
             $booking_end = $request->date." ".$end_time;
 
-            //insert booking
-            //$booking = New Booking();
-            $booking->booking_title = $request->booking_title; //หัวข้อการจอง
+
             $booking->booking_start = $booking_start;
             $booking->booking_end = $booking_end;
             $booking->booking_status = "0"; //สถานะ เยี่ยมโครงการ
             $booking->project_id = $request->project_id;
             $booking->booking_status_df = "0"; //สถานะ DF
-            $booking->teampro_id = $employees[0]->id; //เจ้าหน้าที่โครง
+
             $booking->team_id = $request->team_id;
             $booking->subteam_id = $request->subteam_id;
             $booking->user_id = $request->user_id; //ชื่อผู้จอง|ผู้ทำรายการจอง
@@ -367,8 +366,8 @@ class BookingController extends Controller
 
             $res1 = $booking->save();
 
-
-            $id_booking = Booking::latest()->first();
+            //dd($booking);
+            //$id_booking = Booking::latest()->first();
 
             $projects = Project::where('id', $request->project_id)->first();
 
@@ -376,8 +375,8 @@ class BookingController extends Controller
 
 
             //insert detail customer
-            //$bookingdetail = New Bookingdetail();
-            $bookingdetail->booking_id = $id_booking->id; //ref booking_id
+            $bookingdetail = Bookingdetail::where('booking_id','=',$request->booking_id)->first();
+            //$bookingdetail->booking_id = $request->booking_id; //ref booking_id
             $bookingdetail->customer_name = $request->customer_name;
             $bookingdetail->customer_tel = $request->customer_tel;
 
@@ -413,13 +412,14 @@ class BookingController extends Controller
                 Alert::success('แก้ไขข้อมูลการจองสำเร็จ!', '');
                 $token_line = config('line-notify.access_token_project');
                 $line = new Line($token_line);
-                $line->send('อัพเดทข้อมูลการจองใหม่ '.$request->booking_title." \n".
-                'อัพเดทข้อมูลการจองใหม่ '.$request->booking_title." \n".
+                $line->send('อัพเดทข้อมูลการจองใหม่ '." \n".
+                'หมายเลขการจอง : *'.$request->booking_id."* \n".
+                'นัด *'.$request->booking_title."* \n".
                 '*'.$projects->project_name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$employees[0]->id."* \n".
+                'เจ้าหน้าที่โครงการ : *'.$employees->user_ref[0]->name_th."* \n \n".
                 'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
 
                 return back();

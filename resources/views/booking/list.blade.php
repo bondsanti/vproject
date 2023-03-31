@@ -73,7 +73,7 @@
                                         <input type="checkbox" name="select[]" value="{{ $loop->index+1 }}">
                                     </td>
                                     <td>
-                                        {{ $loop->index+1 }}
+                                        {{$booking->id}}
                                     </td>
                                     <td>
                                         <p>
@@ -92,7 +92,8 @@
                                         </small>
                                     </td>
                                     <td>
-                                        <p> <strong>{{$booking->customer_name}}</strong></p>
+                                        <a><strong>{{$booking->customer_name}}</strong></a>
+                                        <br />
                                         <small>
                                             {{$booking->customer_tel}}
                                         </small>
@@ -278,20 +279,21 @@
                                                         }
                                                     @endphp
                                                 </dd>
+                                                <dt>หมายเหตุ</dt>
+                                                <dd>{{$booking->remark}}</dd>
                                             </dl>
                                             <dl  class="dl-horizontal">
                                                 <hr>
                                             </dl>
                                             <dl  class="dl-horizontal">
-                                                <dt>ทีม ขาย</dt>
+                                                <dt>ทีม/สายงาน</dt>
                                                 <dd><strong class="text-primary">{{$booking->team_name}}</strong> - {{$booking->subteam_name}}</dd>
-                                                <dt>เบอร์ Sale</dt>
-                                                <dd>{{$booking->user_tel}} </dd>
+                                                <dt>ชื่อ Sale</dt>
+                                                <dd>{{$booking->booking_user_ref[0]->name_th}}, {{$booking->user_tel}} </dd>
 
                                                 <dt>ทีม หน้าโครงการ</dt>
-                                                <dd>{{$booking->emp_name}} </dd>
-                                                <dt>เบอร์เจ้าหน้าที่ โครงการ</dt>
-                                                <dd>{{$booking->tel}} </dd>
+                                                <dd>{{$booking->booking_emp_ref[0]->name_th}}, {{$booking->booking_emp_ref[0]->phone}}</dd>
+
                                             </dl>
                                         </div>
 

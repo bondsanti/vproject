@@ -33,24 +33,25 @@
         <!-- Info boxes -->
         <div class="row">
             <div class="col-md-12">
-            <div class="alert alert-warning alert-dismissible">
+            {{-- <div class="alert alert-warning alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-warning"></i> Alert!</h4>
                 จองล่วงหน้าได้เท่านั้น !!!
-              </div>
+              </div> --}}
             </div>
             <div class="col-md-4 col-xs-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
                       <li class="active"><a href="#tab_1" data-toggle="tab">เยี่ยมโครงการ</a></li>
-                      <li><a href="#tab_2" data-toggle="tab">   ประเมินห้องชุด</a></li>
+                      <li><a href="#tab_2" data-toggle="tab">ประเมินห้องชุด</a></li>
                       <li><a href="#tab_3" data-toggle="tab">ตรวจ DF/ รับมอบห้อง</a></li>
                     </ul>
                     <div class="tab-content">
                       <div class="tab-pane active" id="tab_1">
-                        <form action="{{route('createBookingProject.create')}}" method="post">
+                        <form action="{{route('updateBookingProject')}}" method="post">
                             @csrf
-                            <input type="hidden" name="booking_title" value="เยี่ยมโครงการ">
+                            <input type="hidden" name="booking_id" value="{{$bookings->bkid}}">
+                            <input type="hidden" name="booking_title" value="{{$bookings->booking_title}}">
                             <input type="hidden" name="user_id" value="{{$bookings->user_id}}">
                             <input type="hidden" name="teampro_id" value="{{$bookings->teampro_id}}">
                         <div class="box-body">
@@ -328,7 +329,7 @@
                             </div>
                             <div class="form-group">
                                 <label>ชื่อสายงาน</label>
-                                <select class="form-control select2" id="subteamSelect" name="subteam_id" style="width: 100%;" disabled required>
+                                <select class="form-control select2" id="subteamSelect" name="subteam_id" style="width: 100%;" required>
                                 <option value="{{ $bookings->subteam_id }}">{{ $bookings->subteam_name }}</option>
 
                                 </select>

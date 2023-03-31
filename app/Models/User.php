@@ -16,4 +16,10 @@ class User extends Model
 
         return $this->belongsTo(Role_user::class,'id','user_id');
     }
+
+    public function user_ref_booking()
+    {
+
+        return $this->belongsTo(Role_user::class,'id','user_id');
+    }
 }

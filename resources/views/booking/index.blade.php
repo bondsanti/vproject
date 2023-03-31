@@ -307,7 +307,7 @@
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" value="" autocomplete="off" required>
+                                        <input type="text" class="form-control" name="user_tel" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>
@@ -465,7 +465,7 @@ $(document).ready(function() {
       datesDisabled: [new Date()], // disables today's date in the datepicker
       todayHighlight: true, // highlights today's date in the datepicker
     })
-
+    $('[data-mask]').inputmask()
     $.ajaxSetup({
         headers:{
             'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')

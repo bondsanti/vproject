@@ -14,10 +14,14 @@ class Booking extends Model
     //     ,'subteam_id','user_id','user_tel','remark'
     // ];
 
-    // public function project_ref()
-    // {
-    //     return $this->belongsTo(Project::class,'id','project_id');
-    // }
+    public function booking_user_ref()
+    {
+        return $this->hasMany(User::class,'id','user_id');
+    }
+    public function booking_emp_ref()
+    {
+        return $this->hasMany(User::class,'id','teampro_id');
+    }
     protected static function boot()
     {
         parent::boot();
