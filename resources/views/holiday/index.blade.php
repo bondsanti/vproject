@@ -110,11 +110,13 @@
 
                             <td>
                                @if ($dataRoleUser->role_type == "Admin" || $dataRoleUser->role_type == "HeadStaff")
+                               @if ($holiday->status=="0")
                                 <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
                                     <i class="fa fa-refresh">
                                     </i>
                                     สถานะ
                                   </button>
+                                  @endif
                                 @endif
                                 @if ($holiday->status=="0")
                                 <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
@@ -277,18 +279,13 @@
         $('#datepicker2').datepicker('setEndDate', maxDate);
     });
 
-    // $('#datepicker1_e').datepicker({
-    //     format:'yyyy-mm-dd',
-    //     autoclose: true,
-    //     startDate: new Date(), // sets the minimum date to today
-    //     datesDisabled: [new Date()], // disables today's date in the datepicker
-    //     todayHighlight: true, // highlights today's date in the datepicker
-    // }).on('changeDate', function(selected){
-    //     var minDate = new Date(selected.date.valueOf());
-    //     var maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()+3);
-    //     $('#datepicker2_e').datepicker('setStartDate_e', minDate);
-    //     $('#datepicker2_e').datepicker('setEndDate_e', maxDate);
-    // });
+    $('#datepicker1_e').datepicker({
+        format:'yyyy-mm-dd',
+        autoclose: true,
+        startDate: new Date(), // sets the minimum date to today
+        datesDisabled: [new Date()], // disables today's date in the datepicker
+        todayHighlight: true, // highlights today's date in the datepicker
+    });
 
 
     $('#datepicker2').datepicker({
@@ -307,21 +304,13 @@
         }
     });
 
-    // $('#datepicker2_e').datepicker({
-    //     format:'yyyy-mm-dd',
-    //     autoclose: true,
-    //     startDate: new Date(), // sets the minimum date to today
-    //     datesDisabled: [new Date()], // disables today's date in the datepicker
-    //     todayHighlight: true, // highlights today's date in the datepicker
-    // }).on('show', function(){
-    //     var minDate = $('#datepicker1_e').val();
-    //     if(minDate){
-    //         minDate = new Date(minDate);
-    //         var maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()+3);
-    //         $(this).datepicker('setStartDate_e', minDate);
-    //         $(this).datepicker('setEndDate_e', maxDate);
-    //     }
-    // });
+    $('#datepicker2_e').datepicker({
+        format:'yyyy-mm-dd',
+        autoclose: true,
+        startDate: new Date(), // sets the minimum date to today
+        datesDisabled: [new Date()], // disables today's date in the datepicker
+        todayHighlight: true, // highlights today's date in the datepicker
+    });
 </script>
 
 <script>
@@ -479,8 +468,8 @@
 
                     //console.log(data);
                     $('#id_edit').val(data.id);
-                    // $('#datepicker1_e').val(data.start_date);
-                    // $('#datepicker2_e').val(data.end_date);
+                    $('#datepicker1_e').val(data.start_date);
+                    $('#datepicker2_e').val(data.end_date);
                     $('#remark_edit').val(data.remark);
 
                     });
@@ -491,8 +480,8 @@
                     $(this).html('รอสักครู่..');
                     const _token = $("input[name='_token']").val();
                     // const id_edit = $("#id_edit").val();
-                    // const start_date_edit = $("#datepicker1_e").val();
-                    // const end_date_edit = $("#datepicker2_e").val();
+                    const start_date_edit = $("#datepicker1_e").val();
+                    const end_date_edit = $("#datepicker2_e").val();
                     const remark_edit = $("#remark_edit").val();
                     //console.log(start_date_edit);
 

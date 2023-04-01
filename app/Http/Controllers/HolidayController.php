@@ -192,20 +192,10 @@ class HolidayController extends Controller
     public function updateData(Request $request,$id){
 
         $holiday = Holiday::where('id',"=",$request->id_edit)->first();
-        //dd($holiday);
-        // $validator = Validator::make($request->all(),[
-        //     'start_date_edit' => 'required',
-        //     'end_date_edit' => 'required',
-        // ],[
-        //     'start_date_edit.required'=>'เลือกวันที่เริ่มต้น',
-        //     'end_date_edit.required'=>'เลือกวันที่สิ้นสุด',
-        // ]);
 
 
-        // if ($validator->passes()) {
-
-            // $holiday->start_date = $request->start_date_edit;
-            // $holiday->end_date = $request->end_date_edit;
+            $holiday->start_date = $request->start_date_edit;
+            $holiday->end_date = $request->end_date_edit;
             $holiday->remark = ($request->remark_edit == NULL)? "หยุดงาน" : $request->remark_edit;
             $holiday->save();
 
@@ -217,13 +207,11 @@ class HolidayController extends Controller
                 return response()->json([
                     'message' => 'ไม่สามารถเพิ่มข้อมูลได้'
                 ], 404);
-            // }
+
+             }
 
 
-        }
 
-
-        // return response()->json(['error'=>$validator->errors()]);
 
     }
 

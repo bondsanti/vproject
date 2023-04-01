@@ -85,7 +85,7 @@ Route::delete('/booking/list/{id}',[BookingController::class,'destroyBooking'])-
 Route::put('/booking/list/update-status',[BookingController::class,'updateStatus'])->name('booking.update.status')->middleware('isLogin');
 Route::post('/booking/list/update',[BookingController::class,'updateBookingProject'])->name('updateBookingProject')->middleware('isLogin');
 Route::get('/booking/edit/{id}',[BookingController::class,'editBooking'])->name('booking.edit')->middleware('isLogin');
-
+Route::get('/booking/print/{id}',[BookingController::class,'printBooking'])->middleware('isLogin');
 
 /*
 |--------------------------------------------------------------------------

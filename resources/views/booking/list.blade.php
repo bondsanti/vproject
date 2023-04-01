@@ -16,10 +16,10 @@
     <!-- Main content -->
     <section class="content">
 
-
         <!-- table boxes -->
         <div class="row">
             <!-- /.col -->
+
             <div class="col-md-12">
                 <div class="box box-primary">
                     <div class="box-header">
@@ -32,7 +32,7 @@
                         <table id="table" style="width:100%" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center"><button id="print-button">Print</button></th>
+                                    {{-- <th class="text-center"><button id="print-button" onclick="printChecked()">Print</button></th> --}}
                                     <th class="text-center">#</th>
                                     <th class="text-center">ประเภท</th>
                                     <th class="text-center">โครงการ</th>
@@ -69,9 +69,9 @@
 
 
                                 <tr>
-                                    <td>
+                                    {{-- <td>
                                         <input type="checkbox" name="select[]" value="{{ $loop->index+1 }}">
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         {{$booking->id}}
                                     </td>
@@ -120,6 +120,12 @@
 
                                     </td>
                                     <td class="project-actions text-center">
+                                        <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
+                                            <i class="fa fa-print">
+                                            </i>
+                                            พิมพ์
+                                        </a>
+
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                             <i class="fa fa-folder">
                                             </i>
@@ -131,11 +137,20 @@
                                             สถานะ
                                           </button>
                                           @if ($booking->booking_title=="เยี่ยมโครงการ")
-                                          <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
-                                            <i class="fa fa-pencil">
-                                            </i>
-                                            แก้ไข
-                                        </a>
+                                            @if ($booking->booking_status > 0)
+                                                <button class="btn btn-info btn-sm" disabled>
+                                                    <i class="fa fa-pencil">
+                                                    </i>
+                                                    แก้ไข
+                                                </button>
+                                            @else
+                                            <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
+                                                <i class="fa fa-pencil">
+                                                </i>
+                                                แก้ไข
+                                            </a>
+                                            @endif
+
                                           @endif
                                           @if ($booking->booking_title=="ประเมินห้องชุด")
                                           <a class="btn btn-info btn-sm" href="">
@@ -151,11 +166,20 @@
                                             แก้ไข
                                          </a>
                                           @endif
+                                          @if ($booking->booking_status > 0)
+                                        <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
+                                            <i class="fa fa-trash">
+                                            </i>
+                                            ลบ
+                                        </button>
+                                        @else
                                         <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                             <i class="fa fa-trash">
                                             </i>
                                             ลบ
                                         </button>
+                                        @endif
+
                                     </td>
                                 </tr>
 
@@ -175,7 +199,10 @@
                                             <div class="form-group">
                                                 <label>สถานะการจอง</label>
                                                 <select class="form-control" name="booking_status" id="my-dropdown" required>
-                                                <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
+                                                    @if ($booking->booking_status <=0)
+                                                    <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
+                                                    @endif
+
                                                 <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
                                                 <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
                                                 </select>
@@ -411,6 +438,32 @@
         });
 
 
+        function printChecked() {
+    // get all the checkboxes in the table body
+    const checkboxes = document.querySelectorAll('#table tbody input[type="checkbox"]');
+
+    // create a new document to hold the rows to be printed
+    const printDoc = document.createElement('div');
+
+    // loop through each checkbox and add its corresponding row to the new document if it's checked
+    checkboxes.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+            // get the row that corresponds to the checked checkbox
+            const row = checkbox.closest('tr');
+
+            // create a copy of the row to add to the new document
+            const newRow = row.cloneNode(true);
+
+            // add the new row to the new document
+            printDoc.appendChild(newRow);
+        }
+    });
+
+    // open the new document in a new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.body.appendChild(printDoc);
+    printWindow.print();
+}
 
 
 
