@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\SubTeamController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\HolidayController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -83,3 +85,16 @@ Route::delete('/booking/list/{id}',[BookingController::class,'destroyBooking'])-
 Route::put('/booking/list/update-status',[BookingController::class,'updateStatus'])->name('booking.update.status')->middleware('isLogin');
 Route::post('/booking/list/update',[BookingController::class,'updateBookingProject'])->name('updateBookingProject')->middleware('isLogin');
 Route::get('/booking/edit/{id}',[BookingController::class,'editBooking'])->name('booking.edit')->middleware('isLogin');
+
+
+/*
+|--------------------------------------------------------------------------
+| holiday Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/holiday',[HolidayController::class,'index'])->name('holiday')->middleware('isLogin');
+Route::post('/holiday',[HolidayController::class,'insert'])->name('holiday.insert')->middleware('isLogin');
+Route::get('/holiday/{id}',[HolidayController::class,'showStatus'])->name('showStatus')->middleware('isLogin');
+Route::post('/holiday/update_status/{id}',[HolidayController::class,'updateStatus'])->name('holiday.update.status')->middleware('isLogin');
+Route::post('/holiday/update/{id}',[HolidayController::class,'updateData'])->name('holiday.update')->middleware('isLogin');
+Route::delete('/holiday/{id}',[HolidayController::class,'destroy'])->name('holiday.destroy')->middleware('isLogin');
