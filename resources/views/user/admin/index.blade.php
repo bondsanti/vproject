@@ -118,6 +118,7 @@
                                     <td>{{$user->role_type}}</td>
 
                                     <td>
+                                        @if ($user->role_type!="SuperAdmin")
                                         <button  data-id="{{$user->user_id}}" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>
 
 
@@ -126,6 +127,7 @@
                                             </i>
                                             ลบ
                                         </button>
+                                        @endif
                                     </td>
                                 </tr>
 

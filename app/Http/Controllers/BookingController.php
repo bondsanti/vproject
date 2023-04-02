@@ -154,34 +154,87 @@ class BookingController extends Controller
             ->where('id', '=', Session::get('loginId'))
             ->first();
 
-            //หาเจ้าหน้าที่โครงการ
-            // $employees = Role_user::orderBy('id')->get();
-            $employees = Role_user::with('user_ref:id,code,name_th')->where('role_type','Staff')->orderBy('id')->get();
-           // $hasBooking = Booking::where('teampro_id','1')->first();
-
-
-           // dd($employees[0]);
 
             $end_time = date('H:i', strtotime($request->time . ' +3 hours'));
+            $booking_date = $request->date;
             $booking_start = $request->date." ".$request->time;
             $booking_end = $request->date." ".$end_time;
+            //dd($booking_date);
+            // $employees_not_on_holiday = Role_user::leftJoin('holiday_users', function ($join) use ($booking_date) {
+            //     $join->on('role_users.user_id', '=', 'holiday_users.user_id')
+            //          ->where('start_date', '<=', $booking_date)
+            //          ->where('end_date', '>=', $booking_date)
+            //          //->whereNotIn('holiday_users.status', [1]);
+            // })
+            // ->where(function ($query) use ($booking_date) {
+            //     $query->whereNull('holiday_users.status')->whereIn('role_type', ['Staff']);
 
-            //insert booking
-            $booking = New Booking();
-            $booking->booking_title = $request->booking_title; //หัวข้อการจอง
-            $booking->booking_start = $booking_start;
-            $booking->booking_end = $booking_end;
-            $booking->booking_status = "0"; //สถานะ เยี่ยมโครงการ
-            $booking->project_id = $request->project_id;
-            $booking->booking_status_df = "0"; //สถานะ DF
-            $booking->teampro_id = $employees[0]->user_id; //เจ้าหน้าที่โครง
-            $booking->team_id = $request->team_id;
-            $booking->subteam_id = $request->subteam_id;
-            $booking->user_id = $request->user_id; //ชื่อผู้จอง|ผู้ทำรายการจอง
-            $booking->user_tel = $request->user_tel;
-            $booking->remark = $request->remark;
+            // })
+            // ->select('role_users.*')
+            // ->orderBy('role_users.id')
+            // ->get();
+            //เช็คพนักงานวันหยุดและมีสถานะ = 1 อนุมัติ ออกไป
+            $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th')
+            ->leftJoin('holiday_users', function ($join) use ($booking_date) {
+                $join->on('role_users.user_id', '=', 'holiday_users.user_id')
+                     ->where(function($query) use ($booking_date) {
+                        $query->where('start_date', '>=', $booking_date)
+                              ->Where('end_date', '<=', $booking_date);
+                     })
+                     ->orWhere(function($query) {
+                        $query->whereNotIn('holiday_users.status', [1]);
+                     });
+            })
+            ->where(function ($query) use ($booking_date) {
+                $query->whereNull('holiday_users.status')->whereIn('role_type', ['Staff']);
+            })
+            ->select('role_users.*')
+            ->orderBy('role_users.id') // เรียงลำดับตาม ID พนักงาน
+            ->get();
 
-            $res1 = $booking->save();
+            //dd($employees_not_on_holiday );
+
+            foreach ($employees_not_on_holiday as $employee) {
+                //dd($employee);
+                $booking_count = Booking::where('booking_start', $booking_start)
+                    ->where('teampro_id', $employee->user_id)
+                    ->count();
+                    //dd($booking_count);
+                if ($booking_count == 0 && !in_array($employee->user_id, session()->get('booked_employee_ids', []))) {
+                    //เรียกค่าของ session ของ booked_employee_ids หากไม่มีข้อมูล จะ return ค่าว่างไว้ก่อน
+                    session()->push('booked_employee_ids', $employee->user_id);
+                    break; // หลังจาก insert แล้ว ให้ break การวน loop เพื่อให้เลือกพนักงานคนต่อไป
+
+                }
+                if ($employee->user_id == $employees_not_on_holiday->last()->user_id) {
+                    // ถ้าถึงคนสุดท้ายแล้ว ให้ reset ค่า array ที่เก็บไว้ใน session
+                    session()->forget('booked_employee_ids');
+                    session()->save();
+                    reset($employees_not_on_holiday); // ให้วน loop จากตัวแรกอีกครั้ง
+                    break; // หลังจาก reset ให้ break การวน loop เพื่อให้เลือกพนักงานคนต่อไป
+                }
+            }
+            //สรุป ระบบจะทำการเลือกพนักงานตามลำดับ ID จนครบสมาชิกและเริ่มเลือกพนักงานคนใหม่ หากถึงคนสุดท้ายแล้ว ณ วันที่ นั้น ๆ
+            //หากเปลี่ยนวัน ก็จะเลอืกพนักงานตามลำดับ ID ใหม่เหมื่อนเดิม
+            //แต่จะเลือกคนที่ไม่หยุดและมีสถานะอนุมัติแล้ว ในวันนั้น
+
+                        $booking = New Booking();
+                        $booking->booking_title = $request->booking_title; //หัวข้อการจอง
+                        $booking->booking_start = $booking_start;
+                        $booking->booking_end = $booking_end;
+                        $booking->booking_status = "0"; //สถานะ เยี่ยมโครงการ
+                        $booking->project_id = $request->project_id;
+                        $booking->booking_status_df = "0"; //สถานะ DF
+                        $booking->teampro_id = $employee->user_id; //เจ้าหน้าที่โครง
+                        $booking->team_id = $request->team_id;
+                        $booking->subteam_id = $request->subteam_id;
+                        $booking->user_id = $request->user_id; //ชื่อผู้จอง|ผู้ทำรายการจอง
+                        $booking->user_tel = $request->user_tel;
+                        $booking->remark = $request->remark;
+
+
+                        $res1 = $booking->save();
+
 
 
             $id_booking = Booking::latest()->first();
@@ -220,7 +273,7 @@ class BookingController extends Controller
             $bookingdetail->num_app_statement = $request->num_app_statement;
             $bookingdetail->num_statement = $request->num_statement;
             $bookingdetail->room_no = $request->room_no;
-            $bookingdetail->room_price = str_replace(',', '', $request->room_price);
+            $bookingdetail->room_price = ($request->room_price) ? str_replace(',', '', $request->room_price) : NULL;
 
             $res2 = $bookingdetail->save();
 
@@ -235,7 +288,7 @@ class BookingController extends Controller
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$employees[0]->user_ref[0]->name_th."* \n".
+                'เจ้าหน้าที่โครงการ : *'.$employee->user_ref[0]->name_th ."* \n".
                 'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
 
                 return back();
@@ -447,5 +500,62 @@ class BookingController extends Controller
         ->where('bookings.id',"=",$id)->first();
         //dd($bookings);
         return view("booking.print",compact('bookings'));
+    }
+
+    public function testUser(){
+
+        // $date = '2023-04-20';
+
+        // $employees_not_on_holiday = DB::table('role_users')
+        //     ->leftJoin('holiday_users', function ($join) use ($date) {
+        //         $join->on('role_users.id', '=', 'holiday_users.user_id')
+        //              ->where(function($query) use ($date) {
+        //                  $query->where('start_date', '<=', $date)
+        //                        ->where('end_date', '>=', $date);
+        //              });
+        //             //  ->whereNotIn('status', [1]); // เช็คว่า status ไม่ใช่ 1
+        //     })
+        //     ->whereNull('holiday_users.user_id')
+        //     ->whereIn('role_type', ['HeadStaff', 'Staff'])
+        //     ->select('role_users.*')
+        //     ->get();
+
+
+        $date = '2023-04-20';
+
+        $employees_not_on_holiday = DB::table('role_users')
+            ->leftJoin('holiday_users', function ($join) use ($date) {
+                $join->on('role_users.user_id', '=', 'holiday_users.user_id')
+                     ->where('start_date', '<=', $date)
+                     ->where('end_date', '>=', $date)
+                     ->whereIn('status', [0, 2]); // สถานะเป็น 0 หรือ 2 เท่านั้น
+            })
+            ->where(function ($query) use ($date) {
+                $query->whereNull('holiday_users.user_id')->whereIn('role_type', ['HeadStaff', 'Staff']);
+                      //->orWhere('holiday_users.status', '<>', 1); // ไม่ได้อนุมัติหยุดหรืออนุมัติแล้ว
+            })
+            ->select('role_users.*')
+            ->get();
+
+            // เก็บ ID ของพนักงานที่เลือกแล้ว
+            $selected_employee_ids = [];
+
+        // loop พนักงานที่ไม่หยุดและ status เป็น 0 หรือ 2 ในวันที่กำหนด
+        foreach ($employees_not_on_holiday as $employee) {
+            // ถ้า ID ของพนักงานนี้ยังไม่ถูกเลือก ก็ insert เข้าตาราง booking และเก็บ ID ของพนักงานนี้
+            if (!in_array($employee->id, $selected_employee_ids)) {
+                DB::table('booking')->insert([
+                    'employee_id' => $employee->id,
+                    'booking_date' => $date,
+                ]);
+                $selected_employee_ids[] = $employee->id;
+            }
+        }
+
+
+
+
+            return response()->json($employees_not_on_holiday, 200);
+
     }
 }

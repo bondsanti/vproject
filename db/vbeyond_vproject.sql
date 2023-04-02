@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 30, 2023 at 08:07 PM
+-- Generation Time: Apr 02, 2023 at 08:31 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -40,8 +40,8 @@ CREATE TABLE `bookingdetails` (
   `num_idcard` int(1) DEFAULT NULL COMMENT 'สำเนาบัตรประชาชน',
   `num_app_statement` int(1) DEFAULT NULL COMMENT 'หนังสือรับรองเงินเดือน',
   `num_statement` int(1) DEFAULT NULL COMMENT 'เอกสาร Statement',
-  `room_no` varchar(10) NOT NULL,
-  `room_price` int(10) DEFAULT NULL
+  `room_no` varchar(10) DEFAULT NULL,
+  `room_price` int(10) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -49,7 +49,7 @@ CREATE TABLE `bookingdetails` (
 --
 
 INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel`, `customer_req`, `customer_req_bank`, `customer_req_bank_other`, `customer_doc_personal`, `num_home`, `num_idcard`, `num_app_statement`, `num_statement`, `room_no`, `room_price`) VALUES
-(3, '69001', 'ทดสอบ นะ', '0655555555', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'กสิกร,กรุงไทย,', NULL, 'สำเนาทะเบียนบ้าน,สำเนาบัตรประชาชน,หนังสือรับรองเงินเดือน,เอกสาร Statement', 1, 2, 3, 4, '33/3', 3000000);
+(1, '66001', 'สมศักดิ์ ใจดี', '0999999999', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, '99/4', 2000000);
 
 -- --------------------------------------------------------
 
@@ -69,7 +69,7 @@ CREATE TABLE `bookings` (
   `team_id` int(3) NOT NULL COMMENT 'ทีมสายงาน',
   `subteam_id` int(3) NOT NULL COMMENT 'ชื่อสายงาน',
   `user_id` int(3) NOT NULL COMMENT 'ref_ผู้ทำรายงาน',
-  `user_tel` varchar(10) NOT NULL,
+  `user_tel` varchar(20) NOT NULL,
   `remark` text DEFAULT NULL COMMENT 'หมายเหตุการจอง',
   `because_cancel_remark` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจอง',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `created_at`, `updated_at`) VALUES
-('69001', 'เยี่ยมโครงการ', '2023-03-31 15:00', '2023-03-31 18:00', 0, 1, 0, 2, 3, 5, 3464, '0999999999', 'ทดสอบ', NULL, '2023-03-30 17:55:02', '2023-03-30 17:55:02');
+('66001', 'เยี่ยมโครงการ', '2023-04-13 08:00', '2023-04-13 11:00', 0, 2, 0, 3539, 3, 5, 3464, '(099) 999-9999', 'ทดสอบ', NULL, '2023-04-02 17:42:17', '2023-04-02 17:52:38');
 
 -- --------------------------------------------------------
 
@@ -91,18 +91,20 @@ INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `
 
 CREATE TABLE `holiday_users` (
   `id` int(11) NOT NULL,
-  `user_id` int(3) NOT NULL,
+  `user_id` int(10) NOT NULL,
   `start_date` varchar(50) NOT NULL,
   `end_date` varchar(50) NOT NULL,
-  `status` int(1) NOT NULL DEFAULT 0
+  `remark` text DEFAULT NULL,
+  `status` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `holiday_users`
 --
 
-INSERT INTO `holiday_users` (`id`, `user_id`, `start_date`, `end_date`, `status`) VALUES
-(1, 30, '2023-03-22', '2023-03-22', 0);
+INSERT INTO `holiday_users` (`id`, `user_id`, `start_date`, `end_date`, `remark`, `status`) VALUES
+(11, 3510, '2023-04-20', '2023-04-21', 'หยุดงาน', 1),
+(17, 1233, '2023-04-13', '2023-04-13', 'หยุดงาน', 1);
 
 -- --------------------------------------------------------
 
@@ -124,7 +126,7 @@ CREATE TABLE `projects` (
 
 INSERT INTO `projects` (`id`, `project_name`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'โครงการ Altitude  Unicorn', 'enable', NULL, NULL),
-(2, 'โครงการมอนเต้ พระราม 9', 'disable', NULL, NULL),
+(2, 'โครงการมอนเต้ พระราม 9', 'enable', NULL, NULL),
 (3, 'โครงการ Be condo', 'enable', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -144,8 +146,12 @@ CREATE TABLE `role_users` (
 --
 
 INSERT INTO `role_users` (`id`, `user_id`, `role_type`) VALUES
-(1, 3464, 'Admin'),
-(2, 3539, 'Staff');
+(1, 3464, 'SuperAdmin'),
+(2, 3539, 'Staff'),
+(3, 1233, 'Staff'),
+(4, 3526, 'Sell'),
+(5, 3510, 'Staff'),
+(6, 1603, 'Admin');
 
 -- --------------------------------------------------------
 
@@ -282,13 +288,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookingdetails`
 --
 ALTER TABLE `bookingdetails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `holiday_users`
 --
 ALTER TABLE `holiday_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `projects`
@@ -300,7 +306,7 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT for table `role_users`
 --
 ALTER TABLE `role_users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `subteams`

@@ -87,6 +87,8 @@ Route::post('/booking/list/update',[BookingController::class,'updateBookingProje
 Route::get('/booking/edit/{id}',[BookingController::class,'editBooking'])->name('booking.edit')->middleware('isLogin');
 Route::get('/booking/print/{id}',[BookingController::class,'printBooking'])->middleware('isLogin');
 
+Route::get('/user/test',[BookingController::class,'testUser']);
+
 /*
 |--------------------------------------------------------------------------
 | holiday Routes

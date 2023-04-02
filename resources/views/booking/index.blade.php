@@ -349,6 +349,7 @@
                     <h5>
                         &nbsp;&nbsp;สถานะ <span class="label label-default">รอรับงาน</span>
                         &nbsp;<span class="label label-warning">รับงานแล้ว</span>
+                        {{-- &nbsp;<span class="label label-primary">SL คอนเฟริมแล้ว</span> --}}
                         &nbsp;<span class="label label-info">จองสำเร็จ / รอเข้าเยี่ยม</span>
                         &nbsp;<span class="label label-success">เยี่ยมชมเรียบร้อย</span>
                         &nbsp;<span class="label label-danger">ยกเลิก</span>
@@ -475,7 +476,7 @@ $(document).ready(function() {
   $('#calendar').fullCalendar({
     locale: 'th',
     defaultView: 'month',
-    eventLimit: false,
+    eventLimit: true,
     timeZone: 'Asia/Bangkok',
     header    : {
         left  : 'prev,next today',
