@@ -19,6 +19,11 @@
         <div class="row">
             <!-- /.col -->
             <div class="col-md-12">
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-info"></i> Alert!</h4>
+                    หาก Team ไหนมีข้อมูลการจอง จะไม่สามารถ ลบ ได้
+                  </div>
                 <div class="box box-primary">
                     <div class="box-header">
                         <h3 class="box-title">

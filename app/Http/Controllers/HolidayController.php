@@ -17,23 +17,24 @@ class HolidayController extends Controller
 {
     public function index(Request $request)
     {
-
         $dataUserLogin = array();
 
-        $dataUserLogin = DB::connection('mysql_user')->table('users')
-        ->where('id', '=', Session::get('loginId'))
-        ->first();
+        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+        $userSelected = Role_user::with('user_ref:id,code,name_th')->whereIn('role_type',['Admin','Staff'])->get();
 
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
-        // $holidays = Holiday::with('user_ref:id,name_th')->get();
         //dd($dataRoleUser);
         $events = [];
 
-        if ($dataRoleUser->role_type =="Admin") {
-            $holidays = Holiday::with('user_ref:id,name_th')->get();
+        $holidays = Holiday::with('user_ref:id,name_th')->get();
+
+        if (in_array($dataRoleUser->role_type, ["Admin", "SuperAdmin"])){
+
+
+
             if($request->ajax())
                 {
-                    $holidays = Holiday::with('user_ref:id,name_th')->get();
+                    // $holidays = Holiday::with('user_ref:id,name_th')->get();
                     foreach ($holidays as $holiday)
                         {
                                 // $start_time = Carbon::parse($holiday->start_date)->toIso8601String();
@@ -75,11 +76,8 @@ class HolidayController extends Controller
                     return response()->json($events);
                 }
 
-            return view('holiday.index',compact('dataUserLogin','dataRoleUser','holidays'));
+            return view('holiday.admin',compact('dataUserLogin','dataRoleUser','holidays','userSelected'));
 
-        }elseif ($dataRoleUser->role_type =="Staff"){
-
-        // return view('calendar.staff.index',compact('dataUserLogin'));
 
         }else{
 

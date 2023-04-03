@@ -39,7 +39,6 @@
         {{-- <li><a href="{{route('logoutUser')}}" style="background-color: rgba(255, 23, 23, 0.3)"><i class="fa fa-sign-out"></i> ออกจากระบบ</a></li> --}}
         @if ($dataRoleUser->role_type=="SuperAdmin")
         <li class="header">เมนู ผู้ดูแลระบบ</li>
-
         <li class="treeview {{ request()->routeIs('user') ? 'active' : '' }} {{ request()->routeIs('team') ? 'active' : '' }} {{ request()->routeIs('subteam') ? 'active' : '' }}">
 
             <a href="#">

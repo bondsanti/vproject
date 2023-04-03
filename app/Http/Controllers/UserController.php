@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 use Session;
-use App\Models\User;
 use DataTables;
 use App\Models\Role_user;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -27,8 +27,9 @@ class UserController extends Controller
        $countUser = Role_user::count();
        $countUserAdmin = Role_user::where('role_type',"=",'Admin')->count();
        $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
-       $countUserSell= Role_user::where('role_type',"=",'Sell')->count();
+       $countUserSale= Role_user::where('role_type',"=",'Sale')->count();
        $users = Role_user::with('user_ref:id,code,name_th')->get();
+
         //dd($users);
 
 
@@ -67,12 +68,12 @@ class UserController extends Controller
 
 
 
-    return view('user.admin.index',compact(
+    return view('user.index',compact(
         'dataUserLogin','dataRoleUser',
         'countUser',
         'countUserAdmin',
         'countUserStaff',
-        'countUserSell',
+        'countUserSale',
         'users'));
    }
 
@@ -126,11 +127,6 @@ class UserController extends Controller
    }
 
    public function edit($id){
-        //$user = User::find($id);
-        //$user = Role_user::find($id);
-        // $user = DB::connection('mysql')->table('role_users')
-        // ->where('user_id', '=', $id)
-        // ->first();
 
         $user = Role_user::with('user_ref:id,code,name_th')->where('user_id', '=', $id)->first();
 
@@ -141,9 +137,6 @@ class UserController extends Controller
 
 
         $role_user = Role_user::where('id', '=', $id)->first();
-        //dd($role_user);
-
-        //return response()->json($role_user, 200);
 
         if(!$role_user){
             return response()->json([

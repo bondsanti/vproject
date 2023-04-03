@@ -18,6 +18,7 @@
 
         <!-- Info boxes -->
         <div class="row">
+
             <div class="col-lg-3 col-xs-6">
                 <!-- small box -->
                 <div class="small-box bg-aqua">
@@ -67,9 +68,9 @@
                 <!-- small box -->
                 <div class="small-box bg-blue">
                     <div class="inner">
-                        <h3>{{ $countUserSell }}</h3>
+                        <h3>{{ $countUserSale }}</h3>
 
-                        <p>ผู้ใช้งาน [Sell]</p>
+                        <p>ผู้ใช้งาน [Sale]</p>
                     </div>
                     <div class="icon">
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
@@ -84,6 +85,11 @@
         <div class="row">
             <!-- /.col -->
             <div class="col-md-12">
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-info"></i> Alert!</h4>
+                    หาก Staff & Sale ท่านไหนมีข้อมูลการจอง จะไม่สามารถ ลบ ได้ หากไม่ใช้งาน User นั้นแล้วให้ทำการ <strong> Disable </strong> เพื่อปิดใช้งาน
+                  </div>
                 <div class="box box-primary">
                     <div class="box-header">
                         <h3 class="box-title">
@@ -97,7 +103,7 @@
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <table id="tableUser" style="width:100%" class="table table-bordered table-striped">
+                        <table id="table_show" style="width:100%" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th class="text-center">#</th>
@@ -145,6 +151,8 @@
             <!-- /.col -->
         </div>
         <!-- /.row -->
+
+
             <div class="modal fade" id="modal-default">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -153,10 +161,11 @@
                                 <span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="">เพิ่มข้อมูล</h4>
                         </div>
+                        <form id="userForm" name="userForm" class="form-horizontal">
+                            @csrf
                         <div class="modal-body">
                             <!-- form start -->
-                            <form id="userForm" name="userForm" class="form-horizontal">
-                                @csrf
+
                                 <input type="hidden" name="id" id="id">
                                 <div class="box-body">
 
@@ -175,12 +184,12 @@
 
                                         <div class="col-sm-6">
                                             <select class="form-control" id="role_type" name="role_type">
-                                                <option value="">เลือก</option>
+
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
-                                                <option value="Sell">Sell</option>
+                                                <option value="Sale">Sale</option>
                                               </select>
-                                              <small class="text-danger mt-1 role_err"></small>
+                                              <small class="text-danger mt-1"></small>
                                         </div>
 
                                     </div>
@@ -193,16 +202,13 @@
                           {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
                         </div>
                         </form>
-                      </div>
-                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog -->
+                      <!-- /.modal-content -->
                 </div>
+                    <!-- /.modal-dialog -->
+            </div>
                   <!-- /.modal -->
 
-
-            </div>
-            <!-- /.modal -->
             <div class="modal fade" id="modal-update">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -218,16 +224,6 @@
                                 <input type="hidden" name="id_edit" id="id_edit">
                                 <div class="box-body">
 
-
-                                    {{-- <div class="form-group">
-                                        <label for="" class="col-sm-4 control-label">Code</label>
-
-                                        <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="code_edit" name="code_edit" placeholder="code" autocomplete="off">
-                                        <small class="text-danger mt-1 code_err"></small>
-                                        </div>
-                                    </div> --}}
-
                                     <div class="form-group">
                                         <label for="" class="col-sm-4 control-label">ประเภทผู้ใช้งาน</label>
 
@@ -236,7 +232,7 @@
                                                 <option value="">เลือก</option>
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
-                                                <option value="Sell">Sell</option>
+                                                <option value="Sale">Sale</option>
                                               </select>
                                               <small class="text-danger mt-1 role_err2"></small>
                                         </div>
@@ -246,17 +242,13 @@
                                 </div>
                         </div>
                         <div class="modal-footer">
-                          {{-- <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button> --}}
                           <button type="submit" class="btn btn-success btn-block" id="update" >อัพเดท</button>
-                          {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
                         </div>
                         </form>
                       </div>
                       <!-- /.modal-content -->
                     </div>
                     <!-- /.modal-dialog -->
-                </div>
-                  <!-- /.modal -->
 
             </div>
             <!-- /.modal -->
@@ -270,6 +262,18 @@
 
 
 @push('script')
+<script>
+    $(function () {
+
+      $('#table_show').DataTable({
+        'paging'      : true,
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'autoWidth'   : false
+      })
+    })
+  </script>
     <script>
         $(document).ready(function() {
 
@@ -353,7 +357,8 @@
                                 printErrorMsg(data.error);
                                 $('#savedata').html('ลองอีกครั้ง');
                                 $('#userForm').trigger("reset");
-                                // $('#userForm')[0].reset();
+                                $('.code_err').text(data.error.code);
+                                $('.role_err').text(data.error.role_type);
                                 Swal.fire({
                                     position: 'top-center',
                                     icon: 'error',
@@ -469,7 +474,7 @@
                                 //tableUser.draw();
                                 window.location.href = '{{ route("user") }}';
                             } else {
-                                printErrorMsg2(data.error);
+
                                 $('#update').html('ลองอีกครั้ง');
 
                                 //$('#userFormEdit').trigger("reset");
@@ -506,12 +511,7 @@
                     $('.' + key + '_err').text(value);
                 });
             }
-            function printErrorMsg2(msg) {
-                $.each(msg, function(key, value) {
-                    //console.log(key);
-                    $('.' + key + '_err2').text(value);
-                });
-            }
+
         });
     </script>
 @endpush
