@@ -475,7 +475,8 @@ class BookingController extends Controller
                 'เจ้าหน้าที่โครงการ : *'.$employees->user_ref[0]->name_th."* \n \n".
                 'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
 
-                return back();
+                Alert::success('แก้ไขสำเร็จ');
+                return redirect('/booking/list');
             }else{
                 Alert::error('Error', '');
                 return back();

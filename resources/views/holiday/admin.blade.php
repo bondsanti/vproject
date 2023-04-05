@@ -187,7 +187,8 @@
                         <div class="col-sm-6">
                         <select class="form-control"  id="status" name="status" autocomplete="off">
                         <option value="">เลือก</option>
-                        <option value="0">รออนุมัติ</option>
+
+                        {{-- <option value="0">รออนุมัติ</option> --}}
                         <option value="1">อนุมัติ</option>
                         <option value="2">ไม่อนุมัติ</option>
                         </select>
@@ -493,7 +494,7 @@
                     $('#updateData').modal('show');
                     $.get("holiday" +'/' + id , function (data) {
 
-                    console.log(data);
+                    //console.log(data);
                     $('#id_edit').val(data.id);
                     $('#user_id option[value="'+data.user_id+'"]').prop('selected', true);
                     $('#datepicker1_e').val(data.start_date);

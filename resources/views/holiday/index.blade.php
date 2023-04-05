@@ -35,7 +35,7 @@
         <!-- Info boxes -->
         <div class="row">
               <!-- /.col -->
-              <div class="col-md-4 col-xs-12">
+              {{-- <div class="col-md-4 col-xs-12">
                 <div class="box box-primary">
                         <div class="box-header with-border">
                         <h3 class="box-title">ลงวันหยุด</h3>
@@ -109,15 +109,8 @@
                             <td>{{$holiday->user_ref->name_th}}</td>
 
                             <td>
-                               @if ($dataRoleUser->role_type == "Admin" || $dataRoleUser->role_type == "HeadStaff")
-                               @if ($holiday->status=="0")
-                                <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
-                                    <i class="fa fa-refresh">
-                                    </i>
-                                    สถานะ
-                                  </button>
-                                  @endif
-                                @endif
+
+
                                 @if ($holiday->status=="0")
                                 <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
                                 <button class="btn btn-danger btn-xs delete-item" data-id="{{$holiday->id}}">
@@ -134,14 +127,14 @@
                     </div>
                 </div>
 
-              </div>
-              <div class="col-md-8 col-xs-12">
+              </div> --}}
+              <div class="col-md-12 col-xs-12">
                 <div class="box box-primary">
                   <div class="box-body no-padding">
                     <h5>
-                        &nbsp;&nbsp;สถานะ <span class="label label-default">รออนุมัติ</span>
-                        &nbsp;<span class="label label-success">อนุมัติแล้ว</span>
-                        &nbsp;<span class="label label-danger">ยกเลิก/ไม่อนุมัติ</span>
+                        &nbsp;&nbsp;สถานะ <span class="label label-default">วันหยุด</span>
+                        {{-- &nbsp;<span class="label label-success">อนุมัติแล้ว</span> --}}
+                        &nbsp;<span class="label label-danger">ยกเลิก</span>
                     </h5>
                     <div id="calendar"></div>
                   </div>
@@ -623,18 +616,18 @@
 
                 eventClick: function(event, jsEvent, view) {
 
-                    Swal.fire({
-                        title: 'คุณ '+ event.title,
-                        html: `
-                        <h5>ขออนุญาต <strong>${event.remark}</strong></h5>
-                        <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY')} <strong> - </strong> ${event.showEnd}</h5>
+                    // Swal.fire({
+                    //     title: 'คุณ '+ event.title,
+                    //     html: `
+                    //     <h5>ขออนุญาต <strong>${event.remark}</strong></h5>
+                    //     <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY')} <strong> - </strong> ${event.showEnd}</h5>
 
-                        <hr>
-                        <h5><strong>สถานะ ${event.status}</strong></h5>
-                        `,
-                        // icon: 'info',
-                        confirmButtonText: 'OK'
-                    });
+                    //     <hr>
+                    //     <h5><strong>สถานะ ${event.status}</strong></h5>
+                    //     `,
+                    //     // icon: 'info',
+                    //     confirmButtonText: 'OK'
+                    // });
                 },
 
 

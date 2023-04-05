@@ -21,16 +21,15 @@ class HolidayController extends Controller
 
         $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
         $userSelected = Role_user::with('user_ref:id,code,name_th')->whereIn('role_type',['Admin','Staff'])->get();
-
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
         //dd($dataRoleUser);
         $events = [];
 
-        $holidays = Holiday::with('user_ref:id,name_th')->get();
+
 
         if (in_array($dataRoleUser->role_type, ["Admin", "SuperAdmin"])){
 
-
+            $holidays = Holiday::with('user_ref:id,name_th')->get();
 
             if($request->ajax())
                 {
@@ -80,8 +79,53 @@ class HolidayController extends Controller
 
 
         }else{
+            $holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId'))->get();
 
-            //return view('calendar.user.index',compact('dataUserLogin'));
+            if($request->ajax())
+            {
+                // $holidays = Holiday::with('user_ref:id,name_th')->get();
+                foreach ($holidays as $holiday)
+                    {
+                            // $start_time = Carbon::parse($holiday->start_date)->toIso8601String();
+                            // $end_time = Carbon::parse($holiday->end_date)->toIso8601String();
+                            $end_date = date('Y-m-d', strtotime($holiday->end_date. ' +1 day'));
+                            $start_date_th = date('d/m/Y', strtotime($holiday->start_date.' +543 year'));
+                            $end_date_th = date('d/m/Y', strtotime($holiday->end_date.' +543 year'));
+
+                            if($holiday->status==0){
+                                $backgroundColor="#a6a6a6";
+                                $borderColor="#a6a6a6";
+                                $textStatus="รออนุมัติ";
+                            // }elseif($holiday->status==1){
+                            //     $backgroundColor="#00a65a";
+                            //     $borderColor="#00a65a";
+                            //     $textStatus="อนุมัติ";
+                            }else{
+                                $backgroundColor="#dd4b39";
+                                $borderColor="#dd4b39";
+                                $textStatus="ยกเลิก/ไม่อนุมัติ";
+                            }
+
+                            $event = [
+                                'id' => $holiday->id,
+                                'title' => "OFF / วันหยุด",
+                                'remark' => $holiday->remark,
+                                'start' => $holiday->start_date,
+                                'end' => $end_date,
+                                'showStart' => $start_date_th,
+                                'showEnd' => $end_date_th,
+                                'allDay' => false,
+                                'status' => $textStatus,
+                                'backgroundColor' => $backgroundColor,
+                                'borderColor' => $borderColor,
+                            ];
+                            array_push($events, $event);
+                    }
+
+                return response()->json($events);
+            }
+
+            return view('holiday.index',compact('dataUserLogin','dataRoleUser','holidays'));
 
         }
 

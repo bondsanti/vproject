@@ -28,10 +28,9 @@ class UserController extends Controller
        $countUserAdmin = Role_user::where('role_type',"=",'Admin')->count();
        $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
        $countUserSale= Role_user::where('role_type',"=",'Sale')->count();
-       $users = Role_user::with('user_ref:id,code,name_th')->get();
+       $users = Role_user::with('user_ref:id,code,name_th,active_vproject')->get();
 
         //dd($users);
-
 
         // if ($request->ajax()) {
         //    $allData = DataTables::of($users)
@@ -128,7 +127,7 @@ class UserController extends Controller
 
    public function edit($id){
 
-        $user = Role_user::with('user_ref:id,code,name_th')->where('user_id', '=', $id)->first();
+        $user = Role_user::with('user_ref:id,code,name_th,active_vproject')->where('user_id', '=', $id)->first();
 
         return response()->json($user, 200);
    }
@@ -136,8 +135,12 @@ class UserController extends Controller
     public function update(Request $request,$id){
 
 
-        $role_user = Role_user::where('id', '=', $id)->first();
+        $role_user = Role_user::with('user_ref:id,code,name_th,active_vproject')->where('id', '=', $id)->first();
 
+        //dd($role_user->user_ref[0]->id);
+        $user = User::where('id',"=",$role_user->user_ref[0]->id)->first();
+
+     //dd($user);
         if(!$role_user){
             return response()->json([
                 'errors' => [
@@ -156,7 +159,11 @@ class UserController extends Controller
         if ($validator->passes()) {
 
             $role_user->role_type = $request->role_edit;
+
             $role_user->save();
+
+            $user->active_vproject = $request->r1;
+            $user->save();
 
             return response()->json([
                 'message' => 'อัพเดทข้อมูลสำเร็จ'

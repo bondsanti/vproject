@@ -20,11 +20,18 @@
 
         <li class="{{ request()->routeIs('main') ? 'active' : '' }}"><a href="{{ route('main') }}"><i class="fa fa-dashboard"></i> <span>แดชบอร์ด </span></a></li>
         <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>ปฏิทินงาน </span></a></li>
+        @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Sale")
         <li class="{{ request()->routeIs('bookingProject') ? 'active' : '' }}{{ request()->routeIs('booking.edit') ? 'active' : '' }}"><a href="{{ route('bookingProject') }}"><i class="fa fa-calendar-plus-o"></i> <span>นัดหมาย </span></a></li>
+        @endif
+        @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin")
         <li class="{{ request()->routeIs('listBooking') ? 'active' : '' }}"><a href="{{ route('listBooking') }}"><i class="fa fa-table"></i> <span>ตารางข้อมูลนัดหมาย </span></a></li>
-        @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Staff" || $dataRoleUser->role_type=="Admin")
         <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar"></i> <span>ข้อมูลวันหยุด ทีม</span></a></li>
         @endif
+        @if ($dataRoleUser->role_type=="Staff")
+        <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar"></i> <span>ข้อมูลวันหยุด</span></a></li>
+        @endif
+
+        @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin")
         <li class="treeview">
             <a href="#">
               <i class="fa fa-files-o"></i> <span>รายงาน</span>
@@ -36,6 +43,7 @@
                 <li class=""><a href=""><i class="fa fa-file"></i> <span>Comming soon </span></a></li>
             </ul>
         </li>
+        @endif
         {{-- <li><a href="{{route('logoutUser')}}" style="background-color: rgba(255, 23, 23, 0.3)"><i class="fa fa-sign-out"></i> ออกจากระบบ</a></li> --}}
         @if ($dataRoleUser->role_type=="SuperAdmin")
         <li class="header">เมนู ผู้ดูแลระบบ</li>

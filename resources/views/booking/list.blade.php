@@ -15,6 +15,81 @@
 
     <!-- Main content -->
     <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                  <h3 class="box-title">ค้นหาข้อมูล</h3>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <label>โครงการ</label>
+                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
+                                    <option value="">เลือก</option>
+                                    @foreach ($projects as $project)
+                                    <option value="{{$project->id}}">{{$project->project_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-xs-3">
+                                <label>ประเภท</label>
+                                <select class="form-control select2" style="width: 100%;" name="booking_title" autocomplete="off" >
+                                    <option value="">เลือก</option>
+
+                                </select>
+                            </div>
+                            <div class="col-xs-3">
+                                <label>วันที่เริ่ม</label>
+                            <input type="text" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-xs-3">
+                                <label>วันที่สิ้นสุด</label>
+                                <input type="text" class="form-control" placeholder="">
+                                </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <label>สถานะ</label>
+                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
+                                    <option value="">เลือก</option>
+                                    @foreach ($projects as $project)
+                                    <option value="{{$project->id}}">{{$project->project_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-xs-3">
+                                <label>ชื่อลูกค้า</label>
+                                <select class="form-control select2" style="width: 100%;" name="booking_title" autocomplete="off" >
+                                    <option value="">เลือก</option>
+
+                                </select>
+                            </div>
+                            <div class="col-xs-3">
+                                <label>ชื่อ Sale</label>
+                            <input type="text" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-xs-3">
+                                <label>ชื่อเจ้าหน้าทีโครงการ</label>
+                                <input type="text" class="form-control" placeholder="">
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <button type="submit" class="btn btn-primary ">ค้นหา</button>
+                    <button type="reset" class="btn btn-danger">เคลียร์</button>
+                  </div>
+              </div>
+              <!-- /.box -->
+            </div>
+        </div>
 
         <!-- table boxes -->
         <div class="row">

@@ -31,7 +31,7 @@ class CalendarController extends Controller
         $events = [];
 
 
-            if ($dataRoleUser->role_type =="Admin") {
+
 
 
                 if($request->ajax())
@@ -95,15 +95,7 @@ class CalendarController extends Controller
 
                 return view('calendar.admin.index',compact('dataUserLogin','dataRoleUser'));
 
-            }elseif ($dataRoleUser->role_type =="Staff"){
 
-            // return view('calendar.staff.index',compact('dataUserLogin'));
-
-            }else{
-
-                //return view('calendar.user.index',compact('dataUserLogin'));
-
-            }
 
 
     }

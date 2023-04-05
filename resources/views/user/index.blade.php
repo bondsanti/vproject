@@ -110,6 +110,7 @@
                                     <th class="text-center">Code</th>
                                     <th class="text-center">ชื่อ-สกุล</th>
                                     <th class="text-center">ประเภทผู้ใช้งาน</th>
+                                    <th class="text-center">สถานะ</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -122,10 +123,12 @@
                                     <td>{{ $user->user_ref[0]->code }}</td>
                                     <td>{{ $user->user_ref[0]->name_th }}</td>
                                     <td>{{$user->role_type}}</td>
+                                    <td>{{($user->user_ref[0]->active_vproject=="0") ? "Disable":"Enable"}}</td>
 
                                     <td>
                                         @if ($user->role_type!="SuperAdmin")
                                         <button  data-id="{{$user->user_id}}" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>
+
 
 
                                           <button class="btn btn-danger btn-sm delete-item" data-id="{{$user->user_id}}">
@@ -192,6 +195,7 @@
                                               <small class="text-danger mt-1"></small>
                                         </div>
 
+
                                     </div>
 
                                 </div>
@@ -222,6 +226,7 @@
                             <form id="userFormEdit" name="userFormEdit" class="form-horizontal">
                                 @csrf
                                 <input type="hidden" name="id_edit" id="id_edit">
+                                <input type="hidden" name="user_id" id="user_id">
                                 <div class="box-body">
 
                                     <div class="form-group">
@@ -235,6 +240,20 @@
                                                 <option value="Sale">Sale</option>
                                               </select>
                                               <small class="text-danger mt-1 role_err2"></small>
+                                        </div>
+                                        <label for="" class="col-sm-4 control-label">สถานะใช้งาน</label>
+                                        <div class="col-sm-6">
+                                            <div style="margin-top:10px">
+                                                <label>
+                                                  <input type="radio" id="r1" name="r1" value="1" class="minimal">
+                                                  Enable
+                                                </label>
+                                                <label>
+                                                  <input type="radio" id="r1" name="r1" value="0" class="minimal">
+                                                  Disable
+                                                </label>
+                                            </div>
+
                                         </div>
 
                                     </div>
@@ -435,11 +454,14 @@
                 $('#modelHeading').html("แก้ไข");
 
                 $.get("user/edit" +'/' + user_id , function (data) {
-                    //console.log(data.user_ref[0].code);
+                    //console.log(data.user_ref[0].active_vproject);
                    $('#id_edit').val(data.id);
+                   $('#user_id').val(data.user_ref[0].user_id);
                    //console.log(data.id);
                    //$('#code_edit').val(data.user_ref[0].code);
                    $('#role_edit option[value="'+data.role_type+'"]').prop('selected', true);
+                   $('input[name="r1"][value="'+data.user_ref[0].active_vproject+'"]').prop('checked', true);
+
                 });
             });
 
@@ -448,9 +470,11 @@
                 $(this).html('รอสักครู่..');
                 const _token = $("input[name='_token']").val();
                 const id = $("#id_edit").val();
+                const user_id = $("#user_id").val();
                 //const code= $("#code_edit").val();
                 const role= $("#role_edit").val();
-                //console.log(role);
+                const r1= $("#r1").val();
+                //console.log(r1);
                 $.ajax({
                     data: $('#userFormEdit').serialize(),
                     url: "user/update"+'/'+id,
