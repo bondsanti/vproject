@@ -103,7 +103,7 @@ class HolidayController extends Controller
                             }else{
                                 $backgroundColor="#dd4b39";
                                 $borderColor="#dd4b39";
-                                $textStatus="ยกเลิก/ไม่อนุมัติ";
+                                $textStatus="ยกเลิก";
                             }
 
                             $event = [
