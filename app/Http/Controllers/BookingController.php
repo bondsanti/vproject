@@ -30,9 +30,9 @@ class BookingController extends Controller
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
 
 
-        // $projects = DB::connection('mysql_project')->table('projects')->get();
-        // dd($projects);
-        $projects = Project::where('is_active', 'enable')->get();
+        $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
+        //dd($projects);
+        //$projects = Project::where('is_active', 'enable')->get();
         $teams = Team::get();
 
         //    $subteams = Subteam::leftJoin('teams', 'teams.id', '=', 'subteams.team_id')
@@ -41,14 +41,17 @@ class BookingController extends Controller
         //    dd($subteams);
 
 
+
         if($request->ajax())
     	{
 
-                $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
+                // $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
+                // ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
+
+                $bookings = Booking::with('booking_project_ref:id,name')->with('booking_emp_ref:id,code,name_th,phone')
                 ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
+                //dd($bookings);
 
-
-            //dd($bookings);
             foreach ($bookings as $booking) {
                     $start_time = Carbon::parse($booking->booking_start)->toIso8601String();
                     $end_time = Carbon::parse($booking->booking_end)->toIso8601String();
@@ -83,9 +86,10 @@ class BookingController extends Controller
 
                     $event = [
                         'title' => $booking->booking_title,
-                        'project' => $booking->project_name,
+                        'project' => $booking->booking_project_ref[0]->name,
                         'status' => $textStatus,
                         'customer' => $booking->customer_name." ".$booking->customer_tel,
+                        'employee'=> $booking->booking_emp_ref[0]->name_th." ".$booking->booking_emp_ref[0]->phone,
                         'room_no'=>$booking->room_no,
                         'room_price'=> number_format($booking->room_price),
                         'cus_req'=>$booking->customer_req,
@@ -118,17 +122,19 @@ class BookingController extends Controller
         ->first();
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
 
-        $projects = Project::where('is_active', 'enable')->get();
+        //$projects = Project::where('is_active', 'enable')->get();
+        $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
         $teams = Team::get();
 
-         $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
-         ->leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+         $bookings = Booking::with('booking_user_ref:id,code,name_th')
+         ->with('booking_emp_ref:id,code,name_th,phone')
+         ->with('booking_project_ref:id,name')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
         ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
         ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-        ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+        ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
         'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->get();
 
@@ -160,19 +166,6 @@ class BookingController extends Controller
             $booking_start = $request->date." ".$request->time;
             $booking_end = $request->date." ".$end_time;
             //dd($booking_date);
-            // $employees_not_on_holiday = Role_user::leftJoin('holiday_users', function ($join) use ($booking_date) {
-            //     $join->on('role_users.user_id', '=', 'holiday_users.user_id')
-            //          ->where('start_date', '<=', $booking_date)
-            //          ->where('end_date', '>=', $booking_date)
-            //          //->whereNotIn('holiday_users.status', [1]);
-            // })
-            // ->where(function ($query) use ($booking_date) {
-            //     $query->whereNull('holiday_users.status')->whereIn('role_type', ['Staff']);
-
-            // })
-            // ->select('role_users.*')
-            // ->orderBy('role_users.id')
-            // ->get();
             //เช็คพนักงานวันหยุดและมีสถานะ = 1 อนุมัติ ออกไป
             $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th')
             ->leftJoin('holiday_users', function ($join) use ($booking_date) {
@@ -182,7 +175,7 @@ class BookingController extends Controller
                               ->Where('end_date', '<=', $booking_date);
                      })
                      ->orWhere(function($query) {
-                        $query->whereNotIn('holiday_users.status', [1]);
+                        $query->whereNotIn('holiday_users.status', [0]);
                      });
             })
             ->where(function ($query) use ($booking_date) {
@@ -239,7 +232,8 @@ class BookingController extends Controller
 
             $id_booking = Booking::latest()->first();
 
-            $projects = Project::where('id', $request->project_id)->first();
+            //$projects = Project::where('id', $request->project_id)->first();
+            $projects = DB::connection('mysql_project')->table('projects')->where('id', $request->project_id)->first();
 
             $Strdate_start = date('d/m/Y',strtotime($request->date));
 
@@ -284,7 +278,7 @@ class BookingController extends Controller
                 $line = new Line($token_line);
                 $line->send('มีนัด '.$request->booking_title." \n".
                 'หมายเลขการจอง : *'.$id_booking->id."* \n".
-                '*'.$projects->project_name."* \n".
+                'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 '-------------------'." \n".

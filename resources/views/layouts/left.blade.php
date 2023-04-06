@@ -22,13 +22,15 @@
         <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>ปฏิทินงาน </span></a></li>
         @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Sale")
         <li class="{{ request()->routeIs('bookingProject') ? 'active' : '' }}{{ request()->routeIs('booking.edit') ? 'active' : '' }}"><a href="{{ route('bookingProject') }}"><i class="fa fa-calendar-plus-o"></i> <span>นัดหมาย </span></a></li>
+
         @endif
         @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin")
         <li class="{{ request()->routeIs('listBooking') ? 'active' : '' }}"><a href="{{ route('listBooking') }}"><i class="fa fa-table"></i> <span>ตารางข้อมูลนัดหมาย </span></a></li>
         <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar"></i> <span>ข้อมูลวันหยุด ทีม</span></a></li>
         @endif
+
         @if ($dataRoleUser->role_type=="Staff")
-        <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar"></i> <span>ข้อมูลวันหยุด</span></a></li>
+        <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar-times-o"></i> <span>ปฏิทินวันหยุด</span></a></li>
         @endif
 
         @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin")

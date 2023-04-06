@@ -12,7 +12,9 @@
 /* .fc-event:hover {
   cursor: pointer;
 } */
-
+.swal-wide{
+    width:450px !important;
+}
 
 </style>
 
@@ -69,7 +71,7 @@
                                             <div class="input-group-addon">
                                             <i class="fa fa-clock-o"></i>
                                             </div>
-                                            <select class="form-control select2" style="width: 100%;" name="time" autocomplete="off" required>
+                                            <select class="form-control" style="width: 100%;" name="time" autocomplete="off" required>
                                                 <option value="">เลือก</option>
                                                 <option value="08:00">08.00</option>
                                                 <option value="09:00">09.00</option>
@@ -88,7 +90,7 @@
                                 <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" required>
                                 <option value="">เลือก</option>
                                 @foreach ($projects as $project)
-                                <option value="{{$project->id}}">{{$project->project_name}}</option>
+                                <option value="{{$project->id}}">{{$project->name}}</option>
                                 @endforeach
                                 </select>
                             </div>
@@ -100,7 +102,7 @@
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" placeholder="099xxxxxxx" maxlength="10" name="customer_tel" autocomplete="off" required>
+                                        <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" name="customer_tel" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>
@@ -473,6 +475,8 @@ $(document).ready(function() {
         }
     });
 
+  $('.select2').select2();
+
   $('#calendar').fullCalendar({
     locale: 'th',
     defaultView: 'month',
@@ -500,15 +504,19 @@ $(document).ready(function() {
             // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
             // `,
             html: `
+
             <h5><strong>${event.project}</strong></h5>
+
             <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
             <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
             <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
             <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
             <hr>
-            <h5><strong>สถานะ ${event.status}</strong></h5>
+            <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
+            <h4><strong>สถานะ ${event.status}</strong></h4>
             `,
-            // icon: 'info',
+            icon: 'info',
+            customClass: 'swal-wide',
             confirmButtonText: 'OK'
         });
         },

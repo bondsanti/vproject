@@ -20,7 +20,7 @@
         <h1>
             ปฏิทินวันหยุด
             <small>
-                Holiday Calendar</small>
+                OFF Days</small>
         </h1>
         {{-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -128,14 +128,9 @@
                 </div>
 
               </div> --}}
-              <div class="col-md-12 col-xs-12">
+              <div class="col-md-9 col-xs-12">
                 <div class="box box-primary">
                   <div class="box-body no-padding">
-                    <h5>
-                        &nbsp;&nbsp;สถานะ <span class="label label-default">วันหยุด</span>
-                        {{-- &nbsp;<span class="label label-success">อนุมัติแล้ว</span> --}}
-                        &nbsp;<span class="label label-danger">ยกเลิก</span>
-                    </h5>
                     <div id="calendar"></div>
                   </div>
                   <!-- /.box-body -->
@@ -143,6 +138,31 @@
                 <!-- /. box -->
               </div>
               <!-- /.col -->
+              <div class="col-md-3 col-xs-12">
+                <div class="box box-solid">
+
+                    <div class="box-header with-border">
+                        <i class="fa fa-bullhorn"></i>
+                    <h4 class="box-title">สถานะ</h4>
+                    </div>
+
+                    <div class="box-body">
+
+                        <div id="external-events">
+                            <div class="external-event bg-gray">OFF / วันหยุด</div>
+                            <div class="external-event bg-red"> Cancel OFF / ยกเลิก วันหยุด</div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-info"></i> Information!</h4>
+                        - วันหยุดของคุณจะถูกจัดการโดย Manager หรือ Supervisor <br>
+                        - เมื่อคุณลงวันหยุด ระบบจะไม่ทำการเลือกคุณในกรณีที่ Sale นัดหมาย/จอง
+                    </div>
+              </div>
 
         </div>
         <!-- /.row -->
@@ -258,7 +278,7 @@
         'ordering'    : false,
          'info'        : false,
          'autoWidth'   : true
-    })
+    });
     $('#datepicker1').datepicker({
         format:'yyyy-mm-dd',
         autoclose: true,
@@ -583,19 +603,25 @@
                             //console.log(key);
                             $('.' + key + '_err').text(value);
                         });
-                    }
-                    function printErrorMsg2(msg) {
+                }
+                function printErrorMsg2(msg) {
                             $.each(msg, function(key, value) {
                                 //console.log(key);
                                 $('.' + key + '_err2').text(value);
                             });
-                    }
+                }
         });
 
 </script>
 
 <script>
     $(document).ready(function() {
+        const currentDate = moment(); // get the current date
+        const currentMonth = currentDate.month(); // get the current month
+        const currentYear = currentDate.year(); // get the current year
+        const startDate = moment([currentYear, currentMonth, 25]);
+        const endDate = moment([currentYear, currentMonth + 1, 25]).subtract(1, 'second');
+
         $('#calendar').fullCalendar({
             locale: 'th',
             defaultView: 'month',
@@ -611,6 +637,8 @@
             slotDuration: '12:00:00',
             slotLabelInterval: '1 day',
             slotEventOverlap: false,
+            minDate: startDate.format('YYYY-MM-DD'), // set the minimum date range
+            maxDate: endDate.format('YYYY-MM-DD'), // set the maximum date range
 
             events:'/holiday',
 
@@ -630,11 +658,9 @@
                     // });
                 },
 
-
                 eventRender: function(event, element) {
 
                     element.addClass('my-event');
-
 
                 },
                 dayClick: function(date, jsEvent, view) {

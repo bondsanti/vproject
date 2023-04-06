@@ -5,6 +5,7 @@ use Session;
 use App\Models\User;
 use App\Models\Main;
 use App\Models\Role_user;
+use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -24,10 +25,42 @@ class MainController extends Controller
         ->first();
 
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
+        //dd($CountBooking);
 
+        if ($dataRoleUser->role_type== "SuperAdmin"){
+            return view('index',compact('dataUserLogin','dataRoleUser'));
+        }elseif ($dataRoleUser->role_type=="Admin") {
+            return view('admin',compact('dataUserLogin','dataRoleUser'));
+        }elseif ($dataRoleUser->role_type=="Staff") {
 
+            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
+            ->leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+           ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+           ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
+           ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
+           ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+           ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+           ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+           'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+           ->where('teampro_id',Session::get('loginId'))->get();
 
-        return view('index',compact('dataUserLogin','dataRoleUser'));
+            return view('staff',compact('dataUserLogin','dataRoleUser','bookings'));
+        }else{
+
+            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
+            ->leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+           ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+           ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
+           ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
+           ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+           ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+           ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+           'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+           ->where('user_id',Session::get('loginId'))->get();
+
+            return view('sale',compact('dataUserLogin','dataRoleUser','bookings'));
+        }
     }
 
 

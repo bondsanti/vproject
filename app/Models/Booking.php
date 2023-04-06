@@ -22,6 +22,10 @@ class Booking extends Model
     {
         return $this->hasMany(User::class,'id','teampro_id');
     }
+    public function booking_project_ref()
+    {
+        return $this->hasMany(Project::class,'id','project_id');
+    }
     protected static function boot()
     {
         parent::boot();

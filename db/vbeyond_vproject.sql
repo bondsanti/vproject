@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 02, 2023 at 08:31 PM
+-- Generation Time: Apr 06, 2023 at 08:28 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -31,7 +31,7 @@ CREATE TABLE `bookingdetails` (
   `id` int(11) NOT NULL,
   `booking_id` varchar(10) NOT NULL COMMENT 'ref_ตารางจอง',
   `customer_name` varchar(100) NOT NULL,
-  `customer_tel` varchar(10) NOT NULL,
+  `customer_tel` varchar(20) NOT NULL,
   `customer_req` text NOT NULL COMMENT 'ข้อมูลลูกค้าเข้าชม',
   `customer_req_bank` text DEFAULT NULL COMMENT 'เอกสารขอกู้ธนาคาร',
   `customer_req_bank_other` text DEFAULT NULL,
@@ -49,7 +49,8 @@ CREATE TABLE `bookingdetails` (
 --
 
 INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel`, `customer_req`, `customer_req_bank`, `customer_req_bank_other`, `customer_doc_personal`, `num_home`, `num_idcard`, `num_app_statement`, `num_statement`, `room_no`, `room_price`) VALUES
-(1, '66001', 'สมศักดิ์ ใจดี', '0999999999', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, '99/4', 2000000);
+(1, '66001', 'สมชาย เดชคงทน', '(065) 111-1111', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'ไทยพาณิชย์,TTB,', NULL, 'สำเนาทะเบียนบ้าน,สำเนาบัตรประชาชน,หนังสือรับรองเงินเดือน,เอกสาร Statement', 1, 1, 1, 1, '99/9', 2000000),
+(2, '66002', 'ศิริพร อำไพ', '(045) 411-1121', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, '432/7', 1500000);
 
 -- --------------------------------------------------------
 
@@ -72,6 +73,7 @@ CREATE TABLE `bookings` (
   `user_tel` varchar(20) NOT NULL,
   `remark` text DEFAULT NULL COMMENT 'หมายเหตุการจอง',
   `because_cancel_remark` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจอง',
+  `because_cancel_other` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจองอื่น ๆ',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -80,8 +82,9 @@ CREATE TABLE `bookings` (
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `created_at`, `updated_at`) VALUES
-('66001', 'เยี่ยมโครงการ', '2023-04-13 08:00', '2023-04-13 11:00', 0, 2, 0, 3539, 3, 5, 3464, '(099) 999-9999', 'ทดสอบ', NULL, '2023-04-02 17:42:17', '2023-04-02 17:52:38');
+INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `because_cancel_other`, `created_at`, `updated_at`) VALUES
+('66001', 'เยี่ยมโครงการ', '2023-04-07 08:00', '2023-04-07 11:00', 1, 193, 0, 1233, 1, 1, 3526, '(099) 999-9999', 'ทดสอบ', NULL, NULL, '2023-04-06 16:06:14', '2023-04-06 16:06:14'),
+('66002', 'เยี่ยมโครงการ', '2023-04-09 10:00', '2023-04-09 13:00', 0, 136, 0, 3510, 2, 2, 3526, '(054) 545-4545', 'ทดสอบ', NULL, NULL, '2023-04-06 16:17:00', '2023-04-06 16:17:00');
 
 -- --------------------------------------------------------
 
@@ -103,8 +106,8 @@ CREATE TABLE `holiday_users` (
 --
 
 INSERT INTO `holiday_users` (`id`, `user_id`, `start_date`, `end_date`, `remark`, `status`) VALUES
-(11, 3510, '2023-04-20', '2023-04-21', 'หยุดงาน', 1),
-(17, 1233, '2023-04-13', '2023-04-13', 'หยุดงาน', 1);
+(11, 3510, '2023-04-20', '2023-04-21', 'หยุดงาน', 0),
+(17, 1233, '2023-04-13', '2023-04-13', 'หยุดงาน', 0);
 
 -- --------------------------------------------------------
 
@@ -149,7 +152,7 @@ INSERT INTO `role_users` (`id`, `user_id`, `role_type`) VALUES
 (1, 3464, 'SuperAdmin'),
 (2, 3539, 'Staff'),
 (3, 1233, 'Staff'),
-(4, 3526, 'Sell'),
+(4, 3526, 'Sale'),
 (5, 3510, 'Staff'),
 (6, 1603, 'Admin');
 
@@ -288,7 +291,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookingdetails`
 --
 ALTER TABLE `bookingdetails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `holiday_users`

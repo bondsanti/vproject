@@ -29,7 +29,7 @@
                                 <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
                                     <option value="">เลือก</option>
                                     @foreach ($projects as $project)
-                                    <option value="{{$project->id}}">{{$project->project_name}}</option>
+                                    <option value="{{$project->id}}">{{$project->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -55,19 +55,21 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <label>สถานะ</label>
-                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
+                                <select class="form-control" name="project_id" autocomplete="off" >
                                     <option value="">เลือก</option>
-                                    @foreach ($projects as $project)
-                                    <option value="{{$project->id}}">{{$project->project_name}}</option>
-                                    @endforeach
+                                    <option value="0">รอรับงาน</option>
+                                    <option value="1">รับงานแล้ว</option>
+                                    <option value="2">จองสำเร็จ / รอเข้าเยี่ยม</option>
+                                    <option value="3">เยี่ยมชมเรียบร้อย</option>
+                                    <option value="4">ยกเลิก</option>
+                                    <option value="4">ยกเลิกอัตโนมัติ</option>
+
+
                                 </select>
                             </div>
                             <div class="col-xs-3">
                                 <label>ชื่อลูกค้า</label>
-                                <select class="form-control select2" style="width: 100%;" name="booking_title" autocomplete="off" >
-                                    <option value="">เลือก</option>
-
-                                </select>
+                                <input type="text" class="form-control" placeholder="">
                             </div>
                             <div class="col-xs-3">
                                 <label>ชื่อ Sale</label>
@@ -285,13 +287,21 @@
                                             <div class="form-group">
                                                 <div id="my-element" style="display:none">
                                                     <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                <select class="form-control" name="because_cancel_remark">
-                                                    <option value="">เลือก</option>
-                                                {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
-                                                <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
-                                                <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
-                                                <option value="อื่นๆ">อื่น ๆ</option>
-                                                </select>
+                                                    <select class="form-control" id="my-dropdown2" name="because_cancel_remark">
+                                                        <option value="">เลือก</option>
+                                                    {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
+                                                    <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
+                                                    <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
+                                                    <option value="อื่นๆ">อื่น ๆ</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                            <div class="form-group">
+                                                <div id="my-element-text" style="display:none">
+                                                    <label>ระบุเหตุผลอื่น ๆ</label>
+
+                                                    <input type="text" name="because_cancel_other" id="because_cancel_other" value="">
                                                 </div>
 
                                             </div>
@@ -458,7 +468,17 @@
 
                 $("#my-element").hide();
             }
+        });
+        $("#my-dropdown2").change(function () {
+        const result2 = $("#my-dropdown2").val();
+            console.log(result2);
+            if (result2 == 'อื่นๆ') {
+                $("#my-element-text").show();
 
+            } else {
+
+                $("#my-element-text").hide();
+            }
         });
         //Delete
         $(document).on('click', '.delete-item', function() {
@@ -513,32 +533,7 @@
         });
 
 
-        function printChecked() {
-    // get all the checkboxes in the table body
-    const checkboxes = document.querySelectorAll('#table tbody input[type="checkbox"]');
 
-    // create a new document to hold the rows to be printed
-    const printDoc = document.createElement('div');
-
-    // loop through each checkbox and add its corresponding row to the new document if it's checked
-    checkboxes.forEach((checkbox, index) => {
-        if (checkbox.checked) {
-            // get the row that corresponds to the checked checkbox
-            const row = checkbox.closest('tr');
-
-            // create a copy of the row to add to the new document
-            const newRow = row.cloneNode(true);
-
-            // add the new row to the new document
-            printDoc.appendChild(newRow);
-        }
-    });
-
-    // open the new document in a new window for printing
-    const printWindow = window.open('', '_blank');
-    printWindow.document.body.appendChild(printDoc);
-    printWindow.print();
-}
 
 
 
