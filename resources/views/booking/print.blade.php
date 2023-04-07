@@ -40,22 +40,26 @@
         border-bottom: 2px dotted;
       }
       p {
-  font-size: 0.875em;
-}
+        font-size: 0.875em;
+        }
+        .border-doc {
+        border: 1px solid black; /* This will set the thickness, style, and color of the border */
+        padding: 10px; /* This will add some padding inside the border */
+        }
   </style>
 </head>
 <body onload="window.print()">
         <!-- Main content -->
-        <section class="content">
+        <section class="content border-doc">
 
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-4 text-center">
                     <img src="{{url('/uploads/logo_vbeyond.png')}}" width="170px" alt="">
-                    <h3>แจ้งขอนัดชมโครงการ</h3>
-                    <h4>ชื่อ <span class="under-line-dot"> {{$bookings->project_name}} </span></h4>
-                    <h4>วันเวลา <span class="under-line-dot"> {{$Strdate_start = date('d/m/Y H:00', strtotime($bookings->booking_start . ' +543 years'))}} -
-                        {{$Strdate_end = date('H:00', strtotime($bookings->booking_end))}} น.</span></h4>
+                    <h4>แจ้งขอนัดชมโครงการ</h4>
+                    <h5>ชื่อ <span class="under-line-dot"> {{$bookings->booking_project_ref[0]->name}} </span></h5>
+                    <h5>วันเวลา <span class="under-line-dot"> {{$Strdate_start = date('d/m/Y H:00', strtotime($bookings->booking_start . ' +543 years'))}} -
+                        {{$Strdate_end = date('H:00', strtotime($bookings->booking_end))}} น.</span></h5>
                 </div>
                 <div class="col-md-4"></div>
             </div>
@@ -64,7 +68,7 @@
                 <!-- /.col -->
                 <div class="col-md-12">
 
-                    <table id="table" style="width:60%" align="center" class="table table-striped">
+                    <table id="table" style="width:60%" align="center" class="table table-striped ">
                         <thead>
                             <tr>
                                 {{-- <th class="text-center"><button id="print-button" onclick="printChecked()">Print</button></th> --}}
@@ -78,8 +82,9 @@
                             </tr>
                             <tr>
                                 <td class="text-right">ชื่อ ลูกค้า :</td>
-                                <td class="text-left">คุณ{{$bookings->customer_name}} </td>
+                                <td class="text-left">คุณ {{$bookings->customer_name}}, {{$bookings->customer_tel}} </td>
                             </tr>
+
                             <tr>
                                 <td class="text-right">ข้อมูลเข้าชม :</td>
                                 <td class="text-left"> {{$bookings->customer_req}}
@@ -98,6 +103,15 @@
                                     }
                                     @endphp
                                 </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">ชื่อ Sale :</td>
+                                <td class="text-left"> {{$bookings->booking_user_ref[0]->name_th}}, {{$bookings->user_tel}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">เจ้าหน้าที่โครงการ :</td>
+                                <td class="text-left">คุณ {{$bookings->booking_emp_ref[0]->name_th}}, {{$bookings->booking_emp_ref[0]->phone}} </td>
                             </tr>
                             <tr>
                                 <td class="text-right">เอกสารขอกู้ธนาคาร :</td>

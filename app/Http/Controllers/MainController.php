@@ -34,32 +34,53 @@ class MainController extends Controller
             return view('admin',compact('dataUserLogin','dataRoleUser'));
         }elseif ($dataRoleUser->role_type=="Staff") {
 
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
-            ->leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
            ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
            ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-           ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+           ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
            'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
            ->where('teampro_id',Session::get('loginId'))->get();
 
-            return view('staff',compact('dataUserLogin','dataRoleUser','bookings'));
+           $countAllBooking = Booking::where('teampro_id', Session::get('loginId'))->count();
+           $countSucessBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',3)->count();
+           $countCancelBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',4)->count();
+           $countExitBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',5)->count();
+
+            return view('staff',compact('dataUserLogin',
+            'dataRoleUser',
+            'bookings',
+            'countAllBooking',
+            'countSucessBooking',
+            'countCancelBooking',
+            'countExitBooking'));
+
         }else{
 
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
-            ->leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
+            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
            ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
            ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-           ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+           ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
            'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
            ->where('user_id',Session::get('loginId'))->get();
 
-            return view('sale',compact('dataUserLogin','dataRoleUser','bookings'));
+           $countAllBooking = Booking::where('user_id', Session::get('loginId'))->count();
+           $countSucessBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',3)->count();
+           $countCancelBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',4)->count();
+           $countExitBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',5)->count();
+            //dd($countAllBooking);
+            return view('sale',compact('dataUserLogin',
+            'dataRoleUser',
+            'bookings',
+            'countAllBooking',
+            'countSucessBooking',
+            'countCancelBooking',
+            'countExitBooking'));
         }
     }
 

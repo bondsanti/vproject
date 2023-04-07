@@ -22,7 +22,7 @@
             <!-- small box -->
             <div class="small-box bg-aqua">
               <div class="inner">
-                <h3>0</h3>
+                <h3>{{$countAllBooking}}</h3>
 
                 <p>นัดหมายทั้งหมด</p>
               </div>
@@ -36,7 +36,7 @@
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
-              <h3>0</h3>
+              <h3>{{$countSucessBooking}}</h3>
 
               <p>สำเร็จแล้ว</p>
             </div>
@@ -51,7 +51,7 @@
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>0</h3>
+              <h3>{{$countCancelBooking}}</h3>
 
               <p>ยกเลิก</p>
             </div>
@@ -66,7 +66,7 @@
           <!-- small box -->
           <div class="small-box" style="background-color: #b342f5;color:white">
             <div class="inner">
-              <h3>0</h3>
+              <h3>{{$countExitBooking}}</h3>
 
               <p>ยกเลิกอัตโนมัติ</p>
             </div>
@@ -81,6 +81,14 @@
 
     <div class="row">
         <div class="col-md-12">
+
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                    - ถ้าสถานะการจอง <b><u>รับงานแล้ว</u></b> จะไม่สามารถ แก้ไข รายละเอียดการจองได้<br>
+                    - จะคอนเฟริ์มนัดได้ สถานะการจองต้องเป็น <b><u>รับงานแล้ว</u></b>
+
+            </div>
         <div class="box box-info box-solid">
             <div class="box-header">
                 <h3 class="box-title">ตารางข้อมูลของคุณ</h3>
@@ -100,7 +108,7 @@
                             <th class="text-center">ประเภท</th>
                             <th class="text-center">โครงการ</th>
                             <th class="text-center">ลูกค้า</th>
-                            <th class="text-center">ชื่อ Sale</th>
+                            <th class="text-center">เจ้าหน้าที่โครงการ</th>
 
                             <th class="text-center">สถานะ</th>
                             <th class="text-center">Action</th>
@@ -120,7 +128,7 @@
                                 </p>
                             </td>
                             <td>
-                                <a>{{$booking->project_name}}</a>
+                                <a>{{$booking->booking_project_ref[0]->name}}</a>
                                 <br />
                                 <small>
                                     เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
@@ -140,7 +148,7 @@
                             </td>
 
                             <td class="project-state">
-                                <a>{{$booking->booking_user_ref[0]->name_th}}</a>
+                                <a>{{$booking->booking_emp_ref[0]->name_th}}</a>
                                 <br />
                                 <small>
                                     {{$booking->user_tel}}
@@ -152,13 +160,13 @@
                                 if($booking->booking_status==0){
                                      echo $textStatus="<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
                                  }elseif($booking->booking_status==1){
-                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#3c8dbc\">รับงานแล้ว</span>";
+                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
                                  }elseif($booking->booking_status==2){
-                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#00a65a\">จองสำเร็จ</span>";
+                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
                                  }elseif($booking->booking_status==3){
                                      echo $textStatus="<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
                                  }elseif($booking->booking_status==4){
-                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#cc2d2d\">ยกเลิก</span>";
+                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
                                  }else{
                                      echo $textStatus="<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
                                  }
@@ -176,12 +184,37 @@
                                     </i>
                                     รายละเอียด
                                   </button>
+                                  @if ($booking->booking_title=="เยี่ยมโครงการ")
+                                  @if ($booking->booking_status > 0)
+                                      <button class="btn btn-default btn-sm" disabled>
+                                          <i class="fa fa-pencil">
+                                          </i>
+                                          แก้ไข
+                                      </button>
+                                  @else
+                                  <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
+                                      <i class="fa fa-pencil">
+                                      </i>
+                                      แก้ไข
+                                  </a>
+                                  @endif
+
+                                @endif
+                                @if ($booking->booking_status > 1)
+
+                                <button type="button" class="btn btn-default btn-sm" disabled>
+                                    <i class="fa fa-refresh">
+                                    </i>
+                                    สถานะ
+                                  </button>
+                                  @else
                                   <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
                                     <i class="fa fa-refresh">
                                     </i>
                                     สถานะ
                                   </button>
-                                  @if ($booking->booking_status > 0)
+                                  @endif
+                                  {{-- @if ($booking->booking_status > 0)
                                   <button class="btn btn- btn-sm delete-item" data-id="" disabled>
                                       <i class="fa fa-trash">
                                       </i>
@@ -193,7 +226,7 @@
                                       </i>
                                       ลบ
                                   </button>
-                                  @endif
+                                  @endif --}}
 
 
 
@@ -204,7 +237,7 @@
                             <div class="modal-dialog modal-sm">
                             <form id="updateStatusForm" method="POST" name="updateStatusForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
                                     @csrf
-                                    @method('PUT')
+                                   {{-- @method('PUT') --}}
                                     <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
                               <div class="modal-content">
                                 <div class="modal-header">
@@ -216,12 +249,11 @@
                                     <div class="form-group">
                                         <label>สถานะการจอง</label>
                                         <select class="form-control" name="booking_status" id="my-dropdown" required>
-                                            @if ($booking->booking_status <=0)
-                                            <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
-                                            @endif
-
-                                        <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
-                                        <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
+                                            <option value="">เลือก</option>
+                                        @if ($booking->booking_status == 1)
+                                        <option value="2">คอนเฟิร์ม</option>
+                                        @endif
+                                        <option value="4">ยกเลิก</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -273,7 +305,7 @@
                                 <div class="modal-body">
                                     <dl class="dl-horizontal">
                                         <dt>โครงการ</dt>
-                                        <dd><span class="badge bg-blue">{{$booking->project_name}}</span></dd>
+                                        <dd><span class="badge bg-blue">{{$booking->booking_project_ref[0]->name}}</span></dd>
                                         <dt>วัน / เวลา</dt>
                                         <dd><span class="badge bg-yellow">{{date('d/m/Y',strtotime($booking->booking_start))}}</span>
                                             <span class="badge bg-yellow">{{date('H:i',strtotime($booking->booking_start))}}

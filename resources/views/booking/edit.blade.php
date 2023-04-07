@@ -12,7 +12,9 @@
 /* .fc-event:hover {
   cursor: pointer;
 } */
-
+.swal-wide{
+    width:450px !important;
+}
 
 </style>
 
@@ -95,7 +97,7 @@
                                 <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" required>
                                 <option value="">เลือก</option>
                                 @foreach ($projects as $project )
-                                <option value="{{$project->id}}" {{ $bookings->project_id == $project->id ? 'selected' : '' }}>{{$project->project_name}}</option>
+                                <option value="{{$project->id}}" {{ $bookings->project_id == $project->id ? 'selected' : '' }}>{{$project->name}}</option>
                                 @endforeach
                                 </select>
                             </div>

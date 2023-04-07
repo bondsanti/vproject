@@ -66,7 +66,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h4><i class="icon fa fa-info"></i> Information!</h4>
                         - ปฎิทินงานจะแสดงเฉพาะงานของคุณเอง<br>
-                        - คุณสามารถกดรับงานได้ที่ปฎิทิน
+                        {{-- - คุณสามารถกดรับงานได้ที่ปฎิทิน --}}
 
                 </div>
                 <div class="alert alert-warning alert-dismissible">

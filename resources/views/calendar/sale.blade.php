@@ -127,7 +127,6 @@
                     `,
                     icon: 'info',
                     customClass: 'swal-wide'
-                    // confirmButtonText: 'OK'
                 });
 
                 },

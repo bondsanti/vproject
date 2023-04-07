@@ -97,11 +97,13 @@ class CalendarController extends Controller
 
             if($request->ajax())
             {
-                $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
+                // $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
+                // ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')
+                // ->where('user_id',Session::get('loginId'))
+                // ->get();
+                $bookings = Booking::with('booking_project_ref:id,name')->with('booking_emp_ref:id,code,name_th,phone')
                 ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')
-                ->where('teampro_id',Session::get('loginId'))
-                ->get();
-
+                ->where('teampro_id',Session::get('loginId'))->get();
                 //dd($bookings);
 
                 foreach ($bookings as $booking)
@@ -134,12 +136,14 @@ class CalendarController extends Controller
                                 $borderColor="#b342f5";
                                 $textStatus="ยกเลิกอัตโนมัติ";
                             }
-
                             $event = [
+                                'id' => $booking->id,
                                 'title' => $booking->booking_title,
-                                'project' => $booking->project_name,
+                                'project' => $booking->booking_project_ref[0]->name,
                                 'status' => $textStatus,
+                                'booking_status' => $booking->booking_status,
                                 'customer' => $booking->customer_name." ".$booking->customer_tel,
+                                'employee'=> $booking->booking_emp_ref[0]->name_th." ".$booking->booking_emp_ref[0]->phone,
                                 'room_no'=>$booking->room_no,
                                 'room_price'=> number_format($booking->room_price),
                                 'cus_req'=>$booking->customer_req,
@@ -149,6 +153,7 @@ class CalendarController extends Controller
                                 'backgroundColor' => $backgroundColor,
                                 'borderColor' => $borderColor,
                             ];
+
                             array_push($events, $event);
                     }
 

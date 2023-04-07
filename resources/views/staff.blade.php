@@ -18,11 +18,25 @@
 
     <!-- Info boxes -->
     <div class="row">
-        <div class="col-lg-4 col-xs-6">
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-aqua">
+              <div class="inner">
+                <h3>{{$countAllBooking}}</h3>
+
+                <p>นัดหมายทั้งหมด</p>
+              </div>
+              <div class="icon">
+                <i class="fa fa-align-justify"></i>
+              </div>
+              <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
-              <h3>0</h3>
+              <h3>{{$countSucessBooking}}</h3>
 
               <p>สำเร็จแล้ว</p>
             </div>
@@ -33,11 +47,11 @@
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-4 col-xs-6">
+        <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>0</h3>
+              <h3>{{$countCancelBooking}}</h3>
 
               <p>ยกเลิก</p>
             </div>
@@ -48,11 +62,11 @@
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-4 col-xs-6">
+        <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box" style="background-color: #b342f5;color:white">
             <div class="inner">
-              <h3>0</h3>
+              <h3>{{$countExitBooking}}</h3>
 
               <p>ยกเลิกอัตโนมัติ</p>
             </div>
@@ -106,7 +120,7 @@
                                 </p>
                             </td>
                             <td>
-                                <a>{{$booking->project_name}}</a>
+                                <a>{{$booking->booking_project_ref[0]->name}}</a>
                                 <br />
                                 <small>
                                     เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
@@ -138,35 +152,41 @@
                                 if($booking->booking_status==0){
                                      echo $textStatus="<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
                                  }elseif($booking->booking_status==1){
-                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#3c8dbc\">รับงานแล้ว</span>";
+                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
                                  }elseif($booking->booking_status==2){
-                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#00a65a\">จองสำเร็จ</span>";
+                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
                                  }elseif($booking->booking_status==3){
                                      echo $textStatus="<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
                                  }elseif($booking->booking_status==4){
-                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#cc2d2d\">ยกเลิก</span>";
+                                     echo $textStatus="<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
                                  }else{
                                      echo $textStatus="<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
                                  }
 
                                  @endphp</td>
+
                             <td class="project-actions text-center">
+                                @if ($booking->booking_status < 2)
                                 <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                     <i class="fa fa-print">
                                     </i>
                                     พิมพ์
                                 </a>
-
+                                @endif
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                     <i class="fa fa-folder">
                                     </i>
                                     รายละเอียด
                                   </button>
+                                  @if ($booking->booking_status < 2)
+
                                   <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
                                     <i class="fa fa-refresh">
                                     </i>
                                     สถานะ
                                   </button>
+
+                                  @endif
 
 
 
@@ -190,18 +210,17 @@
                                     <div class="form-group">
                                         <label>สถานะการจอง</label>
                                         <select class="form-control" name="booking_status" id="my-dropdown" required>
-                                            @if ($booking->booking_status <=0)
-                                            <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
-                                            @endif
-
-                                        <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
-                                        <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
+                                            <option value="">เลือก</option>
+                                        @if ($booking->booking_status == 0)
+                                        <option value="1">รับงาน</option>
+                                        @endif
+                                        <option value="4">ยกเลิก</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <div id="my-element" style="display:none">
                                             <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                        <select class="form-control" name="because_cancel_remark">
+                                        <select class="form-control" id="my-dropdown2" name="because_cancel_remark">
                                             <option value="">เลือก</option>
                                         {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
                                         <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
@@ -211,6 +230,17 @@
                                         </div>
 
                                     </div>
+                                    <div class="form-group">
+                                        <div id="my-element-text" style="display:none">
+
+                                            <label>ระบุเหตุผลอื่น ๆ</label>
+
+                                            <input type="text" class="form-control" name="because_cancel_other" id="because_cancel_other" value="">
+                                        </div>
+
+                                    </div>
+
+
                                 </div>
                                 <div class="modal-footer">
 
@@ -236,7 +266,7 @@
                                 <div class="modal-body">
                                     <dl class="dl-horizontal">
                                         <dt>โครงการ</dt>
-                                        <dd><span class="badge bg-blue">{{$booking->project_name}}</span></dd>
+                                        <dd><span class="badge bg-blue">{{$booking->booking_project_ref[0]->name}}</span></dd>
                                         <dt>วัน / เวลา</dt>
                                         <dd><span class="badge bg-yellow">{{date('d/m/Y',strtotime($booking->booking_start))}}</span>
                                             <span class="badge bg-yellow">{{date('H:i',strtotime($booking->booking_start))}}
@@ -338,13 +368,43 @@
 
 @push('script')
 <script>
-    $(function () {
+    $(document).ready(function() {
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
     $('#table').DataTable({
     'paging'      : true,
     'searching'   : true,
     'ordering'    : false
-    })
-    })
+    });
+
+    $("#my-dropdown").change(function () {
+        const result = $("#my-dropdown").val();
+        //console.log(v);
+        if (result == '4') {
+            $("#my-element").show();
+        } else {
+            $("#my-element").hide();
+        }
+
+        });
+
+        $("#my-dropdown2").change(function () {
+        const result2 = $("#my-dropdown2").val();
+            //console.log(result2);
+            if (result2 == 'อื่นๆ') {
+                $("#my-element-text").show();
+
+            } else {
+
+                $("#my-element-text").hide();
+            }
+        });
+
+    });
   </script>
   @endpush
