@@ -34,7 +34,7 @@
         @endif
 
         @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin")
-        <li class="treeview">
+        <li class="treeview {{ request()->routeIs('report.book.project') ? 'active' : '' }} {{ request()->routeIs('report.book.team') ? 'active' : '' }}">
             <a href="#">
               <i class="fa fa-files-o"></i> <span>รายงาน</span>
               <span class="pull-right-container">
@@ -42,7 +42,8 @@
               </span>
             </a>
             <ul class="treeview-menu">
-                <li class=""><a href=""><i class="fa fa-file"></i> <span>Comming soon </span></a></li>
+                <li class="{{ request()->routeIs('report.book.project') ? 'active' : '' }}"><a href="{{ route('report.book.project') }}"><i class="fa fa-file"></i> <span>รายงาน โครงการ </span></a></li>
+                <li class="{{ request()->routeIs('report.book.team') ? 'active' : '' }}"><a href="{{ route('report.book.team') }}"><i class="fa fa-file"></i> <span>รายงาน ทีม/สายงาน </span></a></li>
             </ul>
         </li>
         @endif

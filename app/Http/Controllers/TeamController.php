@@ -20,7 +20,7 @@ class TeamController extends Controller
         $teams = Team::get();
 
 
-        return view('teams.admin.index',compact(
+        return view('teams.index',compact(
             'dataUserLogin',
             'dataRoleUser',
             'teams'));

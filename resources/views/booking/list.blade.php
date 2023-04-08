@@ -15,7 +15,7 @@
 
     <!-- Main content -->
     <section class="content">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-md-12">
             <div class="box box-danger">
                 <div class="box-header with-border">
@@ -91,7 +91,7 @@
               </div>
               <!-- /.box -->
             </div>
-        </div>
+        </div> --}}
 
         <!-- table boxes -->
         <div class="row">

@@ -33,7 +33,7 @@ class SubTeamController extends Controller
         ->get();
         //dd($subteamsList);
 
-        return view('subteams.admin.index',compact(
+        return view('subteams.index',compact(
             'dataUserLogin',
             'dataRoleUser',
             'teams','subteams','subteamsList'));

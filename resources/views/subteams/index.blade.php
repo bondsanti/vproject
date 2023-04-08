@@ -89,13 +89,8 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="box-body">
-
-
 
                     <!-- /.box-header -->
-
-
 
             </div>
             <!-- /.col -->

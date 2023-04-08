@@ -7,7 +7,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\SubTeamController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\HolidayController;
-
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+Route::get('PY0A3A9$G55KlasS90xxQwA9FvvLkiIQdZxpO09s1A/{id}&{token}',[CustomAuthController::class,'AllowLoginConnect']);
 
 Route::get('/login',[CustomAuthController::class,'login'])->middleware('alreadyLogin');
 Route::get('/regis',[CustomAuthController::class,'regis'])->middleware('alreadyLogin');
@@ -100,3 +100,17 @@ Route::get('/holiday/{id}',[HolidayController::class,'showStatus'])->name('showS
 Route::post('/holiday/update_status/{id}',[HolidayController::class,'updateStatus'])->name('holiday.update.status')->middleware('isLogin');
 Route::post('/holiday/update/{id}',[HolidayController::class,'updateData'])->name('holiday.update')->middleware('isLogin');
 Route::delete('/holiday/{id}',[HolidayController::class,'destroy'])->name('holiday.destroy')->middleware('isLogin');
+
+
+/*
+|--------------------------------------------------------------------------
+| Report
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/report/booking/project',[ReportController::class,'reportByProject'])->name('report.book.project')->middleware('isLogin');
+Route::get('/report/booking/group/project',[ReportController::class,'reportGroupByProject'])->middleware('isLogin');
+Route::get('/report/booking/group/project/pie',[ReportController::class,'reportGroupByProjectPie'])->middleware('isLogin');
+
+Route::get('/report/booking/team',[ReportController::class,'reportByTeam'])->name('report.book.team')->middleware('isLogin');
+Route::get('/report/booking/group/project/team',[ReportController::class,'reportGroupProjectByTeam'])->middleware('isLogin');
