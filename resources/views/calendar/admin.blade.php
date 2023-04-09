@@ -8,7 +8,9 @@
   padding: 7px;
   cursor: pointer;
 }
-
+.swal-wide{
+    width:450px !important;
+}
 </style>
 
     <section class="content-header">
@@ -28,28 +30,41 @@
         <!-- Info boxes -->
         <div class="row">
               <!-- /.col -->
-              <div class="col-md-2">
-              </div>
-              <div class="col-md-8 col-xs-12">
+              <div class="col-md-9 col-xs-12">
                 <div class="box box-primary">
                   <div class="box-body no-padding">
-                    <h5>
-                        &nbsp;&nbsp;สถานะ <span class="label label-default">รอรับงาน</span>
-                        &nbsp;<span class="label label-warning">รับงานแล้ว</span>
-                        {{-- &nbsp;<span class="label label-primary">SL คอนเฟริมแล้ว</span> --}}
-                        &nbsp;<span class="label label-info">จองสำเร็จ / รอเข้าเยี่ยม</span>
-                        &nbsp;<span class="label label-success">เยี่ยมชมเรียบร้อย</span>
-                        &nbsp;<span class="label label-danger">ยกเลิก</span>
-                        &nbsp;<span class="label" style="background-color:#b342f5">ยกเลิกอัตโนมัติ</span>
-                    </h5>
+
                     <div id="calendar"></div>
                   </div>
                   <!-- /.box-body -->
                 </div>
                 <!-- /. box -->
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3 col-xs-12">
+                <div class="box box-solid">
+
+                    <div class="box-header with-border">
+                        <i class="fa fa-bullhorn"></i>
+                    <h4 class="box-title">สถานะ</h4>
+                    </div>
+
+                    <div class="box-body">
+
+                        <div id="external-events">
+                            <div class="external-event bg-gray" style="color:white">รอรับงาน</div>
+                            <div class="external-event bg-yellow">รับงานแล้ว</div>
+                            <div class="external-event bg-aqua">จองสำเร็จ</div>
+                            <div class="external-event bg-green">เยี่ยมชมเรียบร้อย</div>
+                            <div class="external-event bg-red">ยกเลิก</div>
+                            <div class="external-event" style="background-color: #b342f5;color:white">ยกเลิก อัตโนมัติ</div>
+                        </div>
+
+                    </div>
+
                 </div>
+
+              </div>
+
               <!-- /.col -->
         </div>
         <!-- /.row -->
@@ -87,15 +102,20 @@
                     // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
                     // `,
                     html: `
+
                     <h5><strong>${event.project}</strong></h5>
+
                     <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
                     <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
                     <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
                     <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
                     <hr>
-                    <h5><strong>สถานะ ${event.status}</strong></h5>
+                    <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
+                    <h4><strong>สถานะ ${event.status}</strong></h4>
+
                     `,
-                    // icon: 'info',
+                    icon: 'info',
+                    customClass: 'swal-wide',
                     confirmButtonText: 'OK'
                 });
                 },

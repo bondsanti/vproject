@@ -45,21 +45,21 @@ class HolidayController extends Controller
                                 if($holiday->status==0){
                                     $backgroundColor="#a6a6a6";
                                     $borderColor="#a6a6a6";
-                                    $textStatus="รออนุมัติ";
-                                }elseif($holiday->status==1){
-                                    $backgroundColor="#00a65a";
-                                    $borderColor="#00a65a";
-                                    $textStatus="อนุมัติ";
+                                    $textStatus="หยุด / OFF";
+                                // }elseif($holiday->status==1){
+                                //     $backgroundColor="#00a65a";
+                                //     $borderColor="#00a65a";
+                                //     $textStatus="อนุมัติ";
                                 }else{
                                     $backgroundColor="#dd4b39";
                                     $borderColor="#dd4b39";
-                                    $textStatus="ยกเลิก/ไม่อนุมัติ";
+                                    $textStatus="ยกเลิก";
                                 }
 
                                 $event = [
                                     'id' => $holiday->id,
                                     'title' => $holiday->user_ref->name_th,
-                                    'remark' => $holiday->remark,
+                                    'remark' => ($holiday->remark)? $holiday->remark:"-",
                                     'start' => $holiday->start_date,
                                     'end' => $end_date,
                                     'showStart' => $start_date_th,
@@ -95,7 +95,7 @@ class HolidayController extends Controller
                             if($holiday->status==0){
                                 $backgroundColor="#a6a6a6";
                                 $borderColor="#a6a6a6";
-                                $textStatus="รออนุมัติ";
+                                $textStatus="หยุด / OFF";
                             // }elseif($holiday->status==1){
                             //     $backgroundColor="#00a65a";
                             //     $borderColor="#00a65a";
@@ -109,7 +109,7 @@ class HolidayController extends Controller
                             $event = [
                                 'id' => $holiday->id,
                                 'title' => "OFF / วันหยุด",
-                                'remark' => $holiday->remark,
+                                'remark' => ($holiday->remark)? $holiday->remark:"-",
                                 'start' => $holiday->start_date,
                                 'end' => $end_date,
                                 'showStart' => $start_date_th,
@@ -146,10 +146,12 @@ class HolidayController extends Controller
         if ($validator->passes()) {
 
             $holiday = New Holiday();
-            $holiday->user_id = Session::get('loginId');
+            //$holiday->user_id = Session::get('loginId');
+            $holiday->user_id = $request->user_id;
             $holiday->start_date = $request->start_date;
             $holiday->end_date = $request->end_date;
-            $holiday->remark = ($request->remark == NULL)? "หยุดงาน" : $request->remark;
+            $holiday->remark = $request->remark;
+            //$holiday->remark = ($request->remark == NULL)? "หยุดงาน" : $request->remark;
             $holiday->status = 0;
             $holiday->save();
 
@@ -238,7 +240,7 @@ class HolidayController extends Controller
 
             $holiday->start_date = $request->start_date_edit;
             $holiday->end_date = $request->end_date_edit;
-            $holiday->remark = ($request->remark_edit == NULL)? "หยุดงาน" : $request->remark_edit;
+            $holiday->remark = $request->remark_edit;
             $holiday->save();
 
             if ($holiday) {

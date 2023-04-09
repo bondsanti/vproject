@@ -20,7 +20,7 @@
         <h1>
             ปฏิทินวันหยุด
             <small>
-                Holiday Calendar</small>
+                OFF Days</small>
         </h1>
         {{-- <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -109,7 +109,7 @@
                             <tr>
                             <th>#</th>
                             <th>ชื่อ-สกุล</th>
-                            <th>สถานะ</th>
+
                             <th>Action</th>
                             </tr>
                             </thead>
@@ -120,7 +120,7 @@
                             <tr>
                             <td>{{ $loop->index+1 }}</td>
                             <td>{{$holiday->user_ref->name_th}}</td>
-                            <td></td>
+
 
                             <td>
 
@@ -153,9 +153,9 @@
                 <div class="box box-primary">
                   <div class="box-body no-padding">
                     <h5>
-                        &nbsp;&nbsp;สถานะ <span class="label label-default">รออนุมัติ</span>
-                        &nbsp;<span class="label label-success">อนุมัติแล้ว</span>
-                        &nbsp;<span class="label label-danger">ยกเลิก/ไม่อนุมัติ</span>
+                        &nbsp;&nbsp;สถานะ <span class="label label-default">วันหยุด / OFF</span>
+                        {{-- &nbsp;<span class="label label-success">อนุมัติแล้ว</span> --}}
+                        &nbsp;<span class="label label-danger">ยกเลิก</span>
                     </h5>
                     <div id="calendar"></div>
                   </div>
@@ -176,21 +176,21 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">อนุมัติ?</h4>
+              <h4 class="modal-title">แก้ไขสถานะ?</h4>
             </div>
             <form id="updateForm" name="updateForm" class="form-horizontal">
                 @csrf
                 <input type="hidden" name="id" id="id">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="" class="col-sm-4 control-label">สถานะ</label>
-                        <div class="col-sm-6">
+                        <label for="" class="col-sm-3 control-label">สถานะ</label>
+                        <div class="col-sm-9">
                         <select class="form-control"  id="status" name="status" autocomplete="off">
                         <option value="">เลือก</option>
 
                         {{-- <option value="0">รออนุมัติ</option> --}}
-                        <option value="1">อนุมัติ</option>
-                        <option value="2">ไม่อนุมัติ</option>
+                        {{-- <option value="1">อนุมัติ</option> --}}
+                        <option value="1">ยกเลิก</option>
                         </select>
                         <small class="text-danger mt-1 status_err"></small>
                         </div>
@@ -655,13 +655,13 @@
                     Swal.fire({
                         title: 'คุณ '+ event.title,
                         html: `
-                        <h5>ขออนุญาต <strong>${event.remark}</strong></h5>
+                        <h5>สถานะ <strong class="text-success">${event.status}</strong></h5>
                         <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY')} <strong> - </strong> ${event.showEnd}</h5>
 
                         <hr>
-                        <h5><strong>สถานะ ${event.status}</strong></h5>
+                        <h5>หมายเหตุ <strong>${event.remark}</strong></h5>
                         `,
-                        // icon: 'info',
+                        icon: 'info',
                         confirmButtonText: 'OK'
                     });
                 },

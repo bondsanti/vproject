@@ -158,6 +158,36 @@ class ReportController extends Controller
         ));
     }
 
+    public function reportBySubTeam(Request $request)
+    {
+
+        $dataUserLogin = array();
+        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+
+
+
+        if ($request->ajax()) {
+            $currentYear = Carbon::now()->year;
+            $bookings = Booking::leftJoin('subteams', 'bookings.subteam_id', '=', 'subteams.id')
+            ->select(
+                DB::raw('COUNT(subteam_id) as total_bookings'),
+                DB::raw('MONTH(booking_start) as month'),
+                'subteams.subteam_name'
+            )
+            ->whereYear('booking_start', $currentYear)
+            ->groupBy('month', 'subteams.subteam_name')
+            ->orderBy('month')
+            ->get();
+
+            return response()->json($bookings);
+        }
+        return view('report.booking.team', compact(
+            'dataUserLogin',
+            'dataRoleUser'
+        ));
+    }
+
     public function reportGroupProjectByTeam(Request $request)
     {
 
@@ -175,6 +205,9 @@ class ReportController extends Controller
             ->groupBy('month', 'teams.team_name', 'project_id')
             ->orderBy('month')
             ->get();
+
+
+
 
             return response()->json($bookings);
         }

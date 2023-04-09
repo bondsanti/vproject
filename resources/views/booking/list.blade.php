@@ -158,7 +158,7 @@
                                         </p>
                                     </td>
                                     <td>
-                                        <a>{{$booking->project_name}}</a>
+                                        <a>{{$booking->booking_project_ref[0]->name}}</a>
                                         <br />
                                         <small>
                                             เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
@@ -330,7 +330,7 @@
                                         <div class="modal-body">
                                             <dl class="dl-horizontal">
                                                 <dt>โครงการ</dt>
-                                                <dd><span class="badge bg-blue">{{$booking->project_name}}</span></dd>
+                                                <dd><span class="badge bg-blue">{{$booking->booking_project_ref[0]->name}}</span></dd>
                                                 <dt>วัน / เวลา</dt>
                                                 <dd><span class="badge bg-yellow">{{date('d/m/Y',strtotime($booking->booking_start))}}</span>
                                                     <span class="badge bg-yellow">{{date('H:i',strtotime($booking->booking_start))}}

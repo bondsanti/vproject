@@ -177,9 +177,9 @@
                         const chartSeries = [{
                             type: 'column',
                             name: 'จำนวนรายการจอง',
-                            colorByPoint: true,
                             data: chartData,
                             showInLegend: false,
+                            colorByPoint: true,
                             dataLabels: {
                             enabled: true,
                             color: '#000',

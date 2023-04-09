@@ -165,31 +165,37 @@ class BookingController extends Controller
             $booking_date = $request->date;
             $booking_start = $request->date." ".$request->time;
             $booking_end = $request->date." ".$end_time;
+            $testdate="2023-04-18";
             //dd($booking_end);
             //เช็คพนักงานวันหยุดและมีสถานะ = 1 อนุมัติ ออกไป
+            $booking_date = '2023-04-18';
+
             $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th')
             ->leftJoin('holiday_users', function ($join) use ($booking_date) {
                 $join->on('role_users.user_id', '=', 'holiday_users.user_id')
                      ->where(function($query) use ($booking_date) {
-                        $query->where('start_date', '>=', $booking_date)
-                              ->Where('end_date', '<=', $booking_date);
+                        $query->where('start_date', '>', $booking_date)
+                        ->orWhere('end_date', '<', $booking_date);
                      })
                      ->orWhere(function($query) {
                         $query->whereNotIn('holiday_users.status', [0]);
+                        //$query->whereIn('holiday_users.status', [1]);
                      });
             })
             ->where(function ($query) use ($booking_date) {
-                $query->whereNull('holiday_users.status')->whereIn('role_type', ['Staff']);
+                $query->whereNull('holiday_users.user_id')->whereIn('role_type', ['Staff']);
             })
             ->select('role_users.*')
             ->orderBy('role_users.id') // เรียงลำดับตาม ID พนักงาน
             ->get();
 
-            //dd($employees_not_on_holiday );
+            //dd($employees_not_on_holiday);
 
             foreach ($employees_not_on_holiday as $employee) {
                 //dd($employee);
                 $booking_count = Booking::where('booking_start', $booking_start)
+                ->where('booking_end', $booking_end)
+                //->where('project_id', $request->project_id)
                     ->where('teampro_id', $employee->user_id)
                     ->count();
                     //dd($booking_count);
@@ -285,6 +291,18 @@ class BookingController extends Controller
                 '-------------------'." \n".
                 'เจ้าหน้าที่โครงการ : *'.$employee->user_ref[0]->name_th ."* \n".
                 'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
+
+
+                $token_line2 = config('line-notify.access_token_sale');
+                $line = new Line($token_line2);
+                $line->send('คุณได้จองนัด '.$request->booking_title." \n".
+                'หมายเลขการจอง : *'.$id_booking->id."* \n".
+                'โครงการ : *'.$projects->name."* \n".
+                'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
+                'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
+                '-------------------'." \n".
+                'เจ้าหน้าที่โครงการ : *'.$employee->user_ref[0]->name_th ."* \n".
+                'โปรดรอเจ้าหน้าที่โครงการ กดรับงานภายใน 1 ชั่วโมง');
 
                 return back();
             }else{
@@ -620,16 +638,27 @@ class BookingController extends Controller
                 Alert::success('แก้ไขข้อมูลการจองสำเร็จ!', '');
                 $token_line = config('line-notify.access_token_project');
                 $line = new Line($token_line);
-                $line->send('*อัพเดทข้อมูลการจองใหม่!* '." \n".
+                $line->send('*ขออภัย อัพเดทข้อมูลการจองใหม่!* '." \n".
                 'หมายเลขการจอง : *'.$request->booking_id."* \n".
                 'นัด *'.$request->booking_title."* \n".
-                '*'.$projects->name."* \n".
+                'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 '-------------------'." \n".
                 'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th."* \n".
                 'กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด ระบบจะยกเลิกการจองอัตโนมัติ!');
 
+                $token_line2 = config('line-notify.access_token_sale');
+                $line = new Line($token_line2);
+                $line->send('*ขออภัย อัพเดทข้อมูลการจองใหม่!* '." \n".
+                'หมายเลขการจอง : *'.$request->booking_id."* \n".
+                'นัด *'.$request->booking_title."* \n".
+                'โครงการ : *'.$projects->name."* \n".
+                'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
+                'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
+                '-------------------'." \n".
+                'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th."* \n".
+                'โปรดรอเจ้าหน้าที่โครงการ กดรับงานภายใน 1 ชั่วโมง');
 
                 if (in_array($dataRoleUser->role_type, ["Sale", "Staff"])){
                     Alert::success('แก้ไขสำเร็จ');

@@ -29,9 +29,40 @@ class MainController extends Controller
         //dd($CountBooking);
 
         if ($dataRoleUser->role_type== "SuperAdmin"){
-            return view('index',compact('dataUserLogin','dataRoleUser'));
+
+            $countAllBooking = Booking::count();
+            $countSucessBooking = Booking::where('booking_status',3)->count();
+            $countCancelBooking = Booking::where('booking_status',4)->count();
+            $countExitBooking = Booking::where('booking_status',5)->count();
+
+             return view('index',compact('dataUserLogin',
+             'dataRoleUser',
+             'countAllBooking',
+             'countSucessBooking',
+             'countCancelBooking',
+             'countExitBooking'));
         }elseif ($dataRoleUser->role_type=="Admin") {
-            return view('admin',compact('dataUserLogin','dataRoleUser'));
+            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
+            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
+            ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
+            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+            'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')->orderBy('bookings.id')->get();
+
+            $countAllBooking = Booking::count();
+            $countSucessBooking = Booking::where('booking_status',3)->count();
+            $countCancelBooking = Booking::where('booking_status',4)->count();
+            $countExitBooking = Booking::where('booking_status',5)->count();
+
+             return view('admin',compact('dataUserLogin',
+             'dataRoleUser',
+             'bookings',
+             'countAllBooking',
+             'countSucessBooking',
+             'countCancelBooking',
+             'countExitBooking'));
         }elseif ($dataRoleUser->role_type=="Staff") {
 
             $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
