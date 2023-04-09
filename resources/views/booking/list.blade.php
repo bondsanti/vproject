@@ -214,19 +214,13 @@
                                             สถานะ
                                           </button>
                                           @if ($booking->booking_title=="เยี่ยมโครงการ")
-                                            @if ($booking->booking_status > 0)
-                                                <button class="btn btn-info btn-sm" disabled>
-                                                    <i class="fa fa-pencil">
-                                                    </i>
-                                                    แก้ไข
-                                                </button>
-                                            @else
+
                                             <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
                                                 <i class="fa fa-pencil">
                                                 </i>
                                                 แก้ไข
                                             </a>
-                                            @endif
+
 
                                           @endif
                                           @if ($booking->booking_title=="ประเมินห้องชุด")
@@ -243,19 +237,13 @@
                                             แก้ไข
                                          </a>
                                           @endif
-                                          @if ($booking->booking_status > 0)
-                                        <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
-                                            <i class="fa fa-trash">
-                                            </i>
-                                            ลบ
-                                        </button>
-                                        @else
+
                                         <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                             <i class="fa fa-trash">
                                             </i>
                                             ลบ
                                         </button>
-                                        @endif
+
 
                                     </td>
                                 </tr>

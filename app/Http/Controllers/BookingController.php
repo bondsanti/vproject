@@ -398,7 +398,7 @@ class BookingController extends Controller
                 '-------------------'." \n".
                 'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
                 'สถานะจอง : *'.$textStatus."* \n".
-                'กรุณา *คอนเฟริ์ม* ก่อนหนัดหมาย ภายใน 1 ชม. '." \n".'หากไม่ *คอนเฟิร์ม* นัดหมายจะยกเลิกทันที ระบบจะยกเลิกการจองอัตโนมัติ!');
+                'กรุณา *คอนเฟริ์ม* ก่อนหนัดหมาย ภายใน 1 ชม. '." \n".'หากไม่ *คอนเฟิร์ม* ระบบจะยกเลิกการจองอัตโนมัติ!');
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
 
@@ -430,11 +430,41 @@ class BookingController extends Controller
                 '-------------------'." \n".
                 'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
                 'สถานะจอง : *'.$textStatus."* \n");
+
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
 
             }elseif($request->booking_status==3){
                 $textStatus="เยี่ยมชมเรียบร้อย";
+                $Strdate_start = date('d/m/Y', strtotime($booking->booking_start.' +543 year'));
+                $Strtime_start = date('H:i', strtotime($booking->booking_start));
+                $Strtime_end = date('H:i', strtotime($booking->booking_end));
+
+                $token_line1 = config('line-notify.access_token_project');
+                $line = new Line($token_line1);
+                $line->send('นัด '.$booking->booking_title." \n".
+                'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                'โครงการ : *'.$projects->name."* \n".
+                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
+                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                '-------------------'." \n".
+                'สถานะ : *'.$textStatus."* \n"
+                );
+
+                $token_line2 = config('line-notify.access_token_sale');
+                $line = new Line($token_line2);
+                $line->send('นัด '.$booking->booking_title." \n".
+                'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                'โครงการ : *'.$projects->name."* \n".
+                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
+                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                '-------------------'." \n".
+                'สถานะ : *'.$textStatus."* \n"
+                );
+                Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
+                return redirect()->back();
             }elseif($request->booking_status==4){
 
                 $textStatus="ยกเลิก";
@@ -500,13 +530,6 @@ class BookingController extends Controller
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             }
-
-
-
-
-
-
-
 
 
         }
@@ -693,6 +716,49 @@ class BookingController extends Controller
         ->where('bookings.id',"=",$id)->first();
         //dd($bookings);
         return view("booking.print",compact('bookings'));
+    }
+
+    public function showJob($id)
+    {
+
+        $bookings = Booking::where('id', '=', $id)->first();
+        //dd($bookings);
+        return response()->json($bookings, 200);
+    }
+
+    public function updateshowJob(Request $request,$id){
+
+dd($request);
+        $bookings = Booking::where('id', '=', $request->id)->first();
+
+
+
+     //dd($user);
+        if(!$bookings){
+            return response()->json([
+                'errors' => [
+                    'message'=>'ไม่สามารถอัพเดทข้อมูลได้ ID ไม่ถูกต้อง..'
+                    ]
+            ],400);
+        }
+           // Get image file
+        $imageFile = $request->file('job_img');
+
+        // Generate unique file name
+        $fileName = time().'.'.$imageFile->getClientOriginalExtension();
+
+        // Upload image to storage
+        $path = $imageFile->storeAs('public/images', $fileName);
+
+            $bookings->job_detailsubmission = $request->job_detailsubmission;
+            $bookings->job_img = $path;
+            $bookings->save();
+
+            return response()->json([
+                'message' => 'อัพเดทข้อมูลสำเร็จ'
+            ], 201);
+
+
     }
 
     public function testUser(){

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 06, 2023 at 08:28 PM
+-- Generation Time: Apr 09, 2023 at 08:27 PM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -49,8 +49,7 @@ CREATE TABLE `bookingdetails` (
 --
 
 INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel`, `customer_req`, `customer_req_bank`, `customer_req_bank_other`, `customer_doc_personal`, `num_home`, `num_idcard`, `num_app_statement`, `num_statement`, `room_no`, `room_price`) VALUES
-(1, '66001', 'สมชาย เดชคงทน', '(065) 111-1111', 'ชมห้องตัวอย่าง,พาชมห้องราคา', 'ไทยพาณิชย์,TTB,', NULL, 'สำเนาทะเบียนบ้าน,สำเนาบัตรประชาชน,หนังสือรับรองเงินเดือน,เอกสาร Statement', 1, 1, 1, 1, '99/9', 2000000),
-(2, '66002', 'ศิริพร อำไพ', '(045) 411-1121', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, '432/7', 1500000);
+(23, '66001', 'สมศักดิ์ ใจดี', '(069) 554-5121', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, 'A420', 1200000);
 
 -- --------------------------------------------------------
 
@@ -74,6 +73,9 @@ CREATE TABLE `bookings` (
   `remark` text DEFAULT NULL COMMENT 'หมายเหตุการจอง',
   `because_cancel_remark` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจอง',
   `because_cancel_other` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจองอื่น ๆ',
+  `job_detailsubmission` text DEFAULT NULL COMMENT 'รายละเอียดรับงาน',
+  `job_img` varchar(255) DEFAULT NULL COMMENT 'รูป',
+  `job_score` int(11) DEFAULT NULL COMMENT 'คะแนน',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -82,9 +84,8 @@ CREATE TABLE `bookings` (
 -- Dumping data for table `bookings`
 --
 
-INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `because_cancel_other`, `created_at`, `updated_at`) VALUES
-('66001', 'เยี่ยมโครงการ', '2023-04-07 08:00', '2023-04-07 11:00', 1, 193, 0, 1233, 1, 1, 3526, '(099) 999-9999', 'ทดสอบ', NULL, NULL, '2023-04-06 16:06:14', '2023-04-06 16:06:14'),
-('66002', 'เยี่ยมโครงการ', '2023-04-09 10:00', '2023-04-09 13:00', 0, 136, 0, 3510, 2, 2, 3526, '(054) 545-4545', 'ทดสอบ', NULL, NULL, '2023-04-06 16:17:00', '2023-04-06 16:17:00');
+INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `because_cancel_other`, `job_detailsubmission`, `job_img`, `job_score`, `created_at`, `updated_at`) VALUES
+('66001', 'เยี่ยมโครงการ', '2023-04-20 15:00', '2023-04-20 18:00', NULL, 166, 0, 1233, 4, 11, 3526, '(022) 222-2222', NULL, NULL, NULL, NULL, NULL, NULL, '2023-04-09 15:16:03', '2023-04-09 18:26:33');
 
 -- --------------------------------------------------------
 
@@ -100,14 +101,6 @@ CREATE TABLE `holiday_users` (
   `remark` text DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `holiday_users`
---
-
-INSERT INTO `holiday_users` (`id`, `user_id`, `start_date`, `end_date`, `remark`, `status`) VALUES
-(11, 3510, '2023-04-20', '2023-04-21', 'หยุดงาน', 0),
-(17, 1233, '2023-04-13', '2023-04-13', 'หยุดงาน', 0);
 
 -- --------------------------------------------------------
 
@@ -154,7 +147,8 @@ INSERT INTO `role_users` (`id`, `user_id`, `role_type`) VALUES
 (3, 1233, 'Staff'),
 (4, 3526, 'Sale'),
 (5, 3510, 'Staff'),
-(6, 1603, 'Admin');
+(6, 1603, 'Admin'),
+(7, 3511, 'Sale');
 
 -- --------------------------------------------------------
 
@@ -176,8 +170,19 @@ CREATE TABLE `subteams` (
 
 INSERT INTO `subteams` (`id`, `subteam_name`, `team_id`, `created_at`, `updated_at`) VALUES
 (1, 'สายงาน bigbull', 1, '2023-03-04 19:19:12', '2023-03-04 19:19:12'),
-(2, 'สายงาน BKK', 2, '2023-03-04 19:19:12', '2023-03-04 19:19:12'),
-(5, 'สาย บันเทิง', 3, '2023-03-30 16:24:01', '2023-03-30 16:53:58');
+(2, 'เสืออสังหา', 1, '2023-03-04 19:19:12', '2023-04-09 14:56:33'),
+(5, 'Commando', 2, '2023-03-30 16:24:01', '2023-04-09 14:57:03'),
+(6, 'คุณต่อ', 3, '2023-04-09 05:16:11', '2023-04-09 14:58:02'),
+(7, 'คุณวิรัตน์', 3, '2023-04-09 14:58:44', '2023-04-09 14:58:44'),
+(8, 'คุณแจม', 4, '2023-04-09 14:59:31', '2023-04-09 15:00:16'),
+(9, 'TMRL', 4, '2023-04-09 15:00:28', '2023-04-09 15:00:28'),
+(10, 'ลิซ่า', 4, '2023-04-09 15:01:14', '2023-04-09 15:01:14'),
+(11, 'คุณเอ้/คุณปุ๋ย', 4, '2023-04-09 15:01:56', '2023-04-09 15:01:56'),
+(12, 'ดร.กุ้ง', 4, '2023-04-09 15:03:19', '2023-04-09 15:03:19'),
+(13, 'คุณแอ๊พ', 5, '2023-04-09 15:05:20', '2023-04-09 15:05:20'),
+(14, 'OBL', 5, '2023-04-09 15:06:10', '2023-04-09 15:06:10'),
+(15, 'BKK1', 6, '2023-04-09 15:07:20', '2023-04-09 15:07:20'),
+(16, 'BKK2', 6, '2023-04-09 15:07:42', '2023-04-09 15:07:42');
 
 -- --------------------------------------------------------
 
@@ -198,8 +203,11 @@ CREATE TABLE `teams` (
 
 INSERT INTO `teams` (`id`, `team_name`, `created_at`, `updated_at`) VALUES
 (1, 'VIP', '2023-03-04 19:16:09', '2023-03-04 19:16:09'),
-(2, 'คุณเซน', '2023-03-04 19:16:09', '2023-03-04 19:16:09'),
-(3, 'คุณบอนด์', '2023-03-30 15:55:51', '2023-03-30 15:55:51');
+(2, 'VVIP', '2023-03-04 19:16:09', '2023-04-09 14:50:51'),
+(3, 'คุณต่อ', '2023-03-30 15:55:51', '2023-04-09 14:51:19'),
+(4, 'คุณแจม', '2023-04-09 14:51:56', '2023-04-09 14:51:56'),
+(5, 'คุณแอ็พ(ศิระ)', '2023-04-09 14:52:34', '2023-04-09 15:05:44'),
+(6, 'คุณเซน', '2023-04-09 14:53:03', '2023-04-09 14:53:03');
 
 -- --------------------------------------------------------
 
@@ -225,10 +233,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `code`, `password`, `fullname`, `role`, `team_id`, `active`, `tel`, `created_at`, `updated_at`) VALUES
-(1, 'admin', '$2y$10$ZOMlS2LD8VlfjQbeO6YZa.NGrTgk4gItjBfAMstcsJkA7Y5YU2Uni', 'Admin IT', 'admin', '0', 'enable', NULL, '2023-03-04 03:42:36', '2023-03-04 03:42:36'),
-(30, 'jib', '$2y$10$iP8oApxYr89gjfs0frRdiOX/DLdxNs7/Ge8K8Os/mpJ18JmqlIAhK', 'จิ๊ป', 'staff', '0', 'enable', NULL, '2023-03-13 09:01:42', '2023-03-13 09:01:42'),
-(31, 'max', '$2y$10$LUraHvihWFIa/x7CBNe9AeictIrtljFGICs5ZFl8fFq9zMjD8oH4u', 'แม็ค', 'staff', '0', 'disable', NULL, '2023-03-13 09:02:04', '2023-03-13 09:02:04'),
-(32, 'if', '$2y$10$Ms69PXGE22C66VZGllrW9uHv0EomHPnGFVoa.U06TlFJ.YnPsayUG', 'อีฟ', 'staff', '0', 'enable', NULL, '2023-03-13 09:02:33', '2023-03-13 09:02:33');
+(1, 'admin', '$2y$10$ZOMlS2LD8VlfjQbeO6YZa.NGrTgk4gItjBfAMstcsJkA7Y5YU2Uni', 'Admin IT', 'admin', '0', 'enable', NULL, '2023-03-04 03:42:36', '2023-03-04 03:42:36');
 
 --
 -- Indexes for dumped tables
@@ -291,13 +296,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookingdetails`
 --
 ALTER TABLE `bookingdetails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `holiday_users`
 --
 ALTER TABLE `holiday_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `projects`
@@ -309,19 +314,19 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT for table `role_users`
 --
 ALTER TABLE `role_users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `subteams`
 --
 ALTER TABLE `subteams`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`

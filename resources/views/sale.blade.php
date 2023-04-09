@@ -237,7 +237,7 @@
                             <div class="modal-dialog modal-sm">
                             <form id="updateStatusForm" method="POST" name="updateStatusForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
                                     @csrf
-                                   {{-- @method('PUT') --}}
+                                   @method('PUT')
                                     <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
                               <div class="modal-content">
                                 <div class="modal-header">

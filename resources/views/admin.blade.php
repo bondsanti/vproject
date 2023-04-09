@@ -260,9 +260,7 @@
                                         <div class="form-group">
                                             <label>สถานะการจอง</label>
                                             <select class="form-control" name="booking_status" id="my-dropdown" required>
-                                                @if ($booking->booking_status <=0)
-                                                <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
-                                                @endif
+
 
                                             <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
                                             <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
