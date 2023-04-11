@@ -41,7 +41,6 @@ class BookingController extends Controller
         //    dd($subteams);
 
 
-
         if($request->ajax())
     	{
 
@@ -53,6 +52,7 @@ class BookingController extends Controller
                 //dd($bookings);
 
             foreach ($bookings as $booking) {
+
                     $start_time = Carbon::parse($booking->booking_start)->toIso8601String();
                     $end_time = Carbon::parse($booking->booking_end)->toIso8601String();
 
@@ -60,24 +60,27 @@ class BookingController extends Controller
                         $backgroundColor="#a6a6a6";
                         $borderColor="#a6a6a6";
                         $textStatus="รอรับงาน";
-                        // $backgroundColor="#00c0ef";
-                        // $borderColor="#00c0ef";
+
                     }elseif($booking->booking_status==1){
                         $backgroundColor="#f39c12";
                         $borderColor="#f39c12";
                         $textStatus="รับงานแล้ว";
+
                     }elseif($booking->booking_status==2){
                         $backgroundColor="#00c0ef";
                         $borderColor="#00c0ef";
                         $textStatus="จองสำเร็จ";
+
                     }elseif($booking->booking_status==3){
                         $backgroundColor="#00a65a";
                         $borderColor="#00a65a";
                         $textStatus="เยี่ยมชมเรียบร้อย";
+
                     }elseif($booking->booking_status==4){
                         $backgroundColor="#dd4b39";
                         $borderColor="#dd4b39";
                         $textStatus="ยกเลิก";
+
                     }else{
                         $backgroundColor="#b342f5";
                         $borderColor="#b342f5";
@@ -101,6 +104,7 @@ class BookingController extends Controller
                     ];
                     array_push($events, $event);
             }
+
     		//$bookings = Booking::get();
             return response()->json($events);
     	}
@@ -126,18 +130,14 @@ class BookingController extends Controller
         $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
         $teams = Team::get();
 
-         $bookings = Booking::with('booking_user_ref:id,code,name_th')
-         ->with('booking_emp_ref:id,code,name_th,phone')
-         ->with('booking_project_ref:id,name')
+        $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
         ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
-        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-        ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
+        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
         'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->get();
-
 
        return view("booking.list",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
 

@@ -33,7 +33,7 @@ class HolidayController extends Controller
 
             if($request->ajax())
                 {
-                    // $holidays = Holiday::with('user_ref:id,name_th')->get();
+
                     foreach ($holidays as $holiday)
                         {
                                 // $start_time = Carbon::parse($holiday->start_date)->toIso8601String();
@@ -45,11 +45,11 @@ class HolidayController extends Controller
                                 if($holiday->status==0){
                                     $backgroundColor="#a6a6a6";
                                     $borderColor="#a6a6a6";
-                                    $textStatus="หยุด / OFF";
-                                // }elseif($holiday->status==1){
-                                //     $backgroundColor="#00a65a";
-                                //     $borderColor="#00a65a";
-                                //     $textStatus="อนุมัติ";
+                                    $textStatus="หยุด";
+                                }elseif($holiday->status==1){
+                                    $backgroundColor="#00c0ef";
+                                    $borderColor="#00c0ef";
+                                    $textStatus="เข้าสำนักงานใหญ่";
                                 }else{
                                     $backgroundColor="#dd4b39";
                                     $borderColor="#dd4b39";
@@ -79,6 +79,7 @@ class HolidayController extends Controller
 
 
         }else{
+
             $holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId'))->get();
 
             if($request->ajax())
@@ -95,11 +96,11 @@ class HolidayController extends Controller
                             if($holiday->status==0){
                                 $backgroundColor="#a6a6a6";
                                 $borderColor="#a6a6a6";
-                                $textStatus="หยุด / OFF";
-                            // }elseif($holiday->status==1){
-                            //     $backgroundColor="#00a65a";
-                            //     $borderColor="#00a65a";
-                            //     $textStatus="อนุมัติ";
+                                $textStatus="หยุด";
+                            }elseif($holiday->status==1){
+                                $backgroundColor="#00c0ef";
+                                $borderColor="#00c0ef";
+                                $textStatus="เข้าสำนักงานใหญ่";
                             }else{
                                 $backgroundColor="#dd4b39";
                                 $borderColor="#dd4b39";
@@ -108,7 +109,7 @@ class HolidayController extends Controller
 
                             $event = [
                                 'id' => $holiday->id,
-                                'title' => "OFF / วันหยุด",
+                                'title' => $holidays->user_ref[0]->name_th,
                                 'remark' => ($holiday->remark)? $holiday->remark:"-",
                                 'start' => $holiday->start_date,
                                 'end' => $end_date,
@@ -136,9 +137,11 @@ class HolidayController extends Controller
         $validator = Validator::make($request->all(),[
             'start_date' => 'required',
             'end_date' => 'required',
+            'status' => 'required',
         ],[
             'start_date.required'=>'เลือกวันที่เริ่มต้น',
             'end_date.required'=>'เลือกวันที่สิ้นสุด',
+            'status.required'=>'เลือกสถานะการหยุด',
         ]);
 
 
@@ -151,8 +154,7 @@ class HolidayController extends Controller
             $holiday->start_date = $request->start_date;
             $holiday->end_date = $request->end_date;
             $holiday->remark = $request->remark;
-            //$holiday->remark = ($request->remark == NULL)? "หยุดงาน" : $request->remark;
-            $holiday->status = 0;
+            $holiday->status = $request->status;
             $holiday->save();
 
             if ($holiday) {
@@ -206,9 +208,13 @@ class HolidayController extends Controller
         $holiday = Holiday::where('id',"=",$id)->first();
 
         $validator = Validator::make($request->all(),[
+            'start_date' => 'required',
+            'end_date' => 'required',
             'status' => 'required',
         ],[
-            'status.required'=>'กรุณาเลือกสถานะ',
+            'start_date.required'=>'เลือกวันที่เริ่มต้น',
+            'end_date.required'=>'เลือกวันที่สิ้นสุด',
+            'status.required'=>'เลือกสถานะการหยุด',
         ]);
 
         if ($validator->passes()) {
@@ -226,7 +232,6 @@ class HolidayController extends Controller
                 ], 404);
             }
 
-
         }
 
         return response()->json(['error'=>$validator->errors()]);
@@ -235,17 +240,29 @@ class HolidayController extends Controller
 
     public function updateData(Request $request,$id){
 
-        $holiday = Holiday::where('id',"=",$request->id_edit)->first();
+        $validator = Validator::make($request->all(),[
+            'start_date_edit' => 'required',
+            'end_date_edit' => 'required',
+            'status_edit' => 'required',
+        ],[
+            'start_date_edit.required'=>'เลือกวันที่เริ่มต้น',
+            'end_date_edit.required'=>'เลือกวันที่สิ้นสุด',
+            'status_edit.required'=>'เลือกสถานะการหยุด',
+        ]);
+        if ($validator->passes()) {
+            $holiday = Holiday::where('id',"=",$request->id_edit)->first();
 
-
+            $holiday->user_id = $request->user_id_edit;
             $holiday->start_date = $request->start_date_edit;
             $holiday->end_date = $request->end_date_edit;
             $holiday->remark = $request->remark_edit;
+            $holiday->status = $request->status_edit;
+
             $holiday->save();
 
             if ($holiday) {
                 return response()->json([
-                    'message' => 'เพิ่มข้อมูลสำเร็จ'
+                    'message' => 'แก้ไขข้อมูลสำเร็จ'
                 ], 201);
             }else{
                 return response()->json([
@@ -253,7 +270,8 @@ class HolidayController extends Controller
                 ], 404);
 
              }
-
+        }
+        return response()->json(['error'=>$validator->errors()]);
 
 
 
