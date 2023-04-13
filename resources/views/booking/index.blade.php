@@ -73,13 +73,15 @@
                                             </div>
                                             <select class="form-control" style="width: 100%;" name="time" autocomplete="off" required>
                                                 <option value="">เลือก</option>
-                                                <option value="08:00">08.00</option>
+                                                {{-- <option value="08:00">08.00</option> --}}
                                                 <option value="09:00">09.00</option>
                                                 <option value="10:00">10.00</option>
                                                 <option value="11:00">11.00</option>
                                                 <option value="13:00">13.00</option>
                                                 <option value="14:00">14.00</option>
                                                 <option value="15:00">15.00</option>
+                                                <option value="16:00">16.00</option>
+                                                <option value="17:00">17.00</option>
                                             </select>
                                         </div>
                                     </div>
@@ -107,9 +109,46 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>เซ็นเอกสารใบคำขอกู้ธนาคาร</label>
+                                <label>ข้อมูลลูกค้าเข้าชม</label>
                                 <br>
                                 <div class="row">
+                                    <div class="col-xs-6">
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="ชมห้องตัวอย่าง">
+                                                ชมห้องตัวอย่าง
+                                              </label>
+                                        </div>
+                                        <div class="form-check-inline">
+                                            <div class="input-group">
+                                                <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
+                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="พาชมห้องราคา">
+                                                </span>
+                                                <input type="text" id="inputNumber" name="room_price" class="form-control" placeholder="พาชมห้อง ราคา" autocomplete="off">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <label>ระบุเลขห้อง</label>
+                                        <input type="text" class="form-control" name="room_no" placeholder="เช่น 99/9" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="minimal" id="showdetail_1" value="" onchange="toggleDetail()">
+                                    เก็บเอกสารลูกค้า
+                                  </label>
+                            </div>
+                            <div id="detatil1" style="display:none">
+                            <div class="form-group" >
+
+                                <label>เอกสารใบคำขอกู้ธนาคาร</label>
+
+                                <br>
+                                <div class="row">
+
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
@@ -136,6 +175,7 @@
                                               </label>
                                         </div>
                                     </div>
+
                                     <div class="col-xs-6">
                                         <div class="form-check-inline">
                                             <label class="form-check-label">
@@ -172,33 +212,7 @@
                                 </div>
 
                             </div>
-                            <div class="form-group">
-                                <label>ข้อมูลลูกค้าเข้าชม</label>
-                                <br>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <div class="form-check-inline">
-                                            <label class="form-check-label">
-                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="ชมห้องตัวอย่าง">
-                                                ชมห้องตัวอย่าง
-                                              </label>
-                                        </div>
-                                        <div class="form-check-inline">
-                                            <div class="input-group">
-                                                <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
-                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="พาชมห้องราคา">
-                                                </span>
-                                                <input type="text" id="inputNumber" name="room_price" class="form-control" placeholder="พาชมห้อง ราคา" autocomplete="off">
-                                            </div>
-                                        </div>
 
-                                    </div>
-                                    <div class="col-xs-6">
-                                        <label>ระบุเลขห้อง</label>
-                                        <input type="text" class="form-control" name="room_no" placeholder="เช่น 99/9" autocomplete="off">
-                                    </div>
-                                </div>
-                            </div>
                             <div class="form-group">
                                 <label>เอกสารจากลูกค้า</label>
                                 <br>
@@ -275,6 +289,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </div><!-- detail -->
                             <hr style=" border: 1px solid rgb(2, 116, 209);"></hr>
                             {{-- <div class="form-group">
                                 <label>เจ้าหน้าที่โครงการ</label>
@@ -308,7 +323,7 @@
                                         <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
                                     </div>
                                     <div class="col-xs-6">
-                                        <label>เบอร์ติดต่อ</label>
+                                        <label>*เบอร์ติดต่อสายงาน</label>
                                         <input type="text" class="form-control" name="user_tel" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" autocomplete="off" required>
                                     </div>
                                 </div>
@@ -379,53 +394,18 @@
 
 
 
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+<script>
+function toggleDetail() {
+    var checkbox = document.getElementById("showdetail_1");
+    var detail = document.getElementById("detatil1");
+    if (checkbox.checked == true){
+      detail.style.display = "block";
+    } else {
+      detail.style.display = "none";
+    }
+  }
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: 'cy',
-        // themeSystem: 'bootstrap',
-        timeZone: 'Asia/Thailand',
-        initialView: 'timeGridWeek',
-        headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        // left:'title',
-        // center:'prev,next today',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-
-        defaultView: 'timeGridWeek',
-       //slotDuration: '01:00:00',
-        dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true },
-        slotLabelFormat: [
-            { hour: '2-digit', minute: '2-digit' },
-            { hour: '2-digit', minute: '2-digit' }
-        ],
-
-        events: [
-            {
-                title: 'นัดเยี่ยมโครงการ',
-                start: '2023-03-07T09:00:00',
-                end: '2023-03-07T12:00:00',
-                allDay: false,
-
-            },
-
-            {
-                title: 'Booking 2',
-                start: '2023-03-08T13:00:00',
-                end: '2023-03-08T16:00:00',
-                allDay: false
-            },],
-
-    });
-
-    calendar.render();
-    });
-
-</script> --}}
+</script>
 <script>
     $(document).ready(function() {
         $('#teamSelect').change(function() {

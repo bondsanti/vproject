@@ -692,7 +692,7 @@
                         title: 'คุณ '+ event.title,
                         html: `
                         <h5>สถานะ <strong class="text-success">${event.status}</strong></h5>
-                        <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY')} <strong> - </strong> ${event.showEnd}</h5>
+                        <h5><strong>วันที่ </strong> ${event.showStart} <strong> - </strong> ${event.showEnd}</h5>
 
                         <hr>
                         <h5>หมายเหตุ <strong>${event.remark}</strong></h5>

@@ -39,6 +39,7 @@ class HolidayController extends Controller
                                 // $start_time = Carbon::parse($holiday->start_date)->toIso8601String();
                                 // $end_time = Carbon::parse($holiday->end_date)->toIso8601String();
                                 $end_date = date('Y-m-d', strtotime($holiday->end_date. ' +1 day'));
+
                                 $start_date_th = date('d/m/Y', strtotime($holiday->start_date.' +543 year'));
                                 $end_date_th = date('d/m/Y', strtotime($holiday->end_date.' +543 year'));
 
