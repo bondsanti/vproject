@@ -105,7 +105,8 @@
             timeFormat: 'H:mm [น.]',
             slotLabelFormat:"HH:mm [น.]",
             axisFormat: 'H:mm [น.]',
-
+            minTime: '08:00:00',
+            maxTime: '20:00:00',
             events:'/calendar',
 
                 eventClick: function(event, jsEvent, view) {

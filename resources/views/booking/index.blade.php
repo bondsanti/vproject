@@ -57,21 +57,22 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-6">
-                                        <label>วันที่ </label>
+                                        <label><span class="text-danger">*</span> วันที่ </label>
                                         <div class="input-group date">
                                             <div class="input-group-addon">
                                             <i class="fa fa-calendar"></i>
                                             </div>
-                                            <input type="text" class="form-control pull-right" id="datepicker" name="date" autocomplete="off" required>
+                                            <input type="text" class="form-control pull-right" id="datepicker" name="date" value="{{old('date')}}" autocomplete="off">
                                         </div>
+                                        <small class="text-danger mt-1">@error('date'){{$message}} @enderror</small>
                                     </div>
                                     <div class="col-xs-6">
-                                        <label>เวลา </label>
+                                        <label><span class="text-danger">*</span> เวลา </label>
                                         <div class="input-group date">
                                             <div class="input-group-addon">
                                             <i class="fa fa-clock-o"></i>
                                             </div>
-                                            <select class="form-control" style="width: 100%;" name="time" autocomplete="off" required>
+                                            <select class="form-control" style="width: 100%;" name="time" autocomplete="off" >
                                                 <option value="">เลือก</option>
                                                 {{-- <option value="08:00">08.00</option> --}}
                                                 <option value="09:00">09.00</option>
@@ -84,32 +85,36 @@
                                                 <option value="17:00">17.00</option>
                                             </select>
                                         </div>
+                                        <small class="text-danger mt-1">@error('time'){{$message}} @enderror</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>โครงการ</label>
-                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" required>
+                                <label><span class="text-danger">*</span> โครงการ</label>
+                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
                                 <option value="">เลือก</option>
                                 @foreach ($projects as $project)
                                 <option value="{{$project->id}}">{{$project->name}}</option>
                                 @endforeach
                                 </select>
+                                <small class="text-danger mt-1">@error('project_id'){{$message}} @enderror</small>
                             </div>
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-6">
-                                        <label>ชื่อ-นามสกุล (ลูกค้า)</label>
-                                        <input type="text" class="form-control" placeholder="" name="customer_name" autocomplete="off" required>
+                                        <label><span class="text-danger">*</span> ชื่อ-นามสกุล (ลูกค้า)</label>
+                                        <input type="text" class="form-control" placeholder="" name="customer_name" autocomplete="off" value="{{old('customer_name')}}">
+                                        <small class="text-danger mt-1">@error('customer_name'){{$message}} @enderror</small>
                                     </div>
                                     <div class="col-xs-6">
-                                        <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" name="customer_tel" autocomplete="off" required>
+                                        <label><span class="text-danger">*</span> เบอร์ติดต่อ</label>
+                                        <input type="text" class="form-control" data-inputmask='"mask": "(999) 999-9999"' data-mask value="{{old('customer_tel')}}" name="customer_tel" autocomplete="off">
+                                        <small class="text-danger mt-1">@error('customer_tel'){{$message}} @enderror</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>ข้อมูลลูกค้าเข้าชม</label>
+                                <label><span class="text-danger">*</span> ข้อมูลลูกค้าเข้าชม</label>
                                 <br>
                                 <div class="row">
                                     <div class="col-xs-6">
@@ -122,16 +127,19 @@
                                         <div class="form-check-inline">
                                             <div class="input-group">
                                                 <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
-                                                <input type="checkbox" class="minimal" name="checkbox_room[]" value="พาชมห้องราคา">
+                                                    <input type="checkbox" class="minimal" name="checkbox_room[]" value="พาชมห้องราคา">
                                                 </span>
+
                                                 <input type="text" id="inputNumber" name="room_price" class="form-control" placeholder="พาชมห้อง ราคา" autocomplete="off">
+                                                <small class="text-danger mt-1">@error('room_price'){{$message}} @enderror</small>
                                             </div>
                                         </div>
 
                                     </div>
                                     <div class="col-xs-6">
-                                        <label>ระบุเลขห้อง</label>
+                                        <label><span class="text-danger">*</span> ระบุเลขห้อง</label>
                                         <input type="text" class="form-control" name="room_no" placeholder="เช่น 99/9" autocomplete="off">
+                                        <small class="text-danger mt-1">@error('room_no'){{$message}} @enderror</small>
                                     </div>
                                 </div>
                             </div>
@@ -299,32 +307,37 @@
                                 </select>
                             </div> --}}
                             <div class="form-group">
-                                <label>ผู้ดูแลสายงาน</label>
-                                <select class="form-control select2" id="teamSelect" name="team_id" style="width: 100%;" required>
+                                <label><span class="text-danger">*</span> ผู้ดูแลสายงาน</label>
+                                <select class="form-control select2" id="teamSelect" name="team_id" style="width: 100%;">
                                 <option value="">เลือก</option>
                                 @foreach ($teams as $team)
                                     <option value="{{$team->id}}">{{ $team->team_name }}</option>
                                 @endforeach
 
                                 </select>
+                                <small class="text-danger mt-1">@error('team_id'){{$message}} @enderror</small>
                             </div>
                             <div class="form-group">
-                                <label>ชื่อสายงาน</label>
-                                <select class="form-control select2" id="subteamSelect" name="subteam_id" style="width: 100%;" disabled required>
+                                <label><span class="text-danger">*</span> ชื่อสายงาน</label>
+                                <select class="form-control select2" id="subteamSelect" name="subteam_id" style="width: 100%;" disabled>
                                 <option value="">เลือก</option>
 
                                 </select>
+                                <small class="text-danger mt-1">@error('subteam_id'){{$message}} @enderror</small>
                             </div>
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
+                                        <input type="hidden" class="form-control" name="sale_name" value="{{$dataUserLogin->name_th}}" >
                                         <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
+
                                     </div>
                                     <div class="col-xs-6">
                                         <label>*เบอร์ติดต่อสายงาน</label>
-                                        <input type="text" class="form-control" name="user_tel" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" autocomplete="off" required>
+                                        <input type="text" class="form-control" name="user_tel" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" autocomplete="off">
+                                        <small class="text-danger mt-1">@error('user_tel'){{$message}} @enderror</small>
                                     </div>
                                 </div>
                             </div>
@@ -455,135 +468,63 @@ $(document).ready(function() {
         }
     });
 
-  $('.select2').select2();
+    $('.select2').select2();
 
-  $('#calendar').fullCalendar({
-    locale: 'th',
-    defaultView: 'month',
-    eventLimit: true,
-    timeZone: 'Asia/Bangkok',
-    header    : {
-        left  : 'prev,next today',
-        center: 'title',
-        right : 'month,agendaWeek,agendaDay'
-      },
-      timeFormat: 'H:mm [น.]',
-      slotLabelFormat:"HH:mm [น.]",
-      axisFormat: 'H:mm [น.]',
-
-      events:'/booking',
-
-        eventClick: function(event, jsEvent, view) {
-        // Handle event click here
-        // Show the details of the clicked event
-        //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
-        Swal.fire({
-            title: event.title,
-            // html: `
-            // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
-            // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
-            // `,
-            html: `
-
-            <h5><strong>${event.project}</strong></h5>
-
-            <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
-            <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
-            <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
-            <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
-            <hr>
-            <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
-            <h4><strong>สถานะ ${event.status}</strong></h4>
-            `,
-            icon: 'info',
-            customClass: 'swal-wide',
-            confirmButtonText: 'OK'
-        });
+    $('#calendar').fullCalendar({
+        locale: 'th',
+        defaultView: 'month',
+        eventLimit: true,
+        timeZone: 'Asia/Bangkok',
+        header    : {
+            left  : 'prev,next today',
+            center: 'title',
+            right : 'month,agendaWeek,agendaDay'
         },
-        eventRender: function(event, element) {
-        // Handle event rendering here
-        element.addClass('my-event');
-        },
-        dayClick: function(date, jsEvent, view) {
-        // Handle day click here
-        }
+        timeFormat: 'H:mm [น.]',
+        slotLabelFormat:"HH:mm [น.]",
+        axisFormat: 'H:mm [น.]',
+        minTime: '08:00:00',
+        maxTime: '20:00:00',
+        events:'/booking',
 
-        });
+            eventClick: function(event, jsEvent, view) {
+            // Handle event click here
+            // Show the details of the clicked event
+            //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
+            Swal.fire({
+                title: event.title,
+                // html: `
+                // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
+                // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
+                // `,
+                html: `
+
+                <h5><strong>${event.project}</strong></h5>
+
+                <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
+                <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
+                <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
+                <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
+                <hr>
+                <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
+                <h4><strong>สถานะ ${event.status}</strong></h4>
+                `,
+                icon: 'info',
+                customClass: 'swal-wide',
+                confirmButtonText: 'OK'
+            });
+            },
+            eventRender: function(event, element) {
+            // Handle event rendering here
+            element.addClass('my-event');
+            },
+            dayClick: function(date, jsEvent, view) {
+            // Handle day click here
+            }
 
     });
+});
   </script>
 
-{{-- <script>
-    $(function () {
 
-      /* initialize the external events
-       -----------------------------------------------------------------*/
-      function init_events(ele) {
-        ele.each(function () {
-
-          // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-          // it doesn't need to have a start or end
-          var eventObject = {
-            title: $.trim($(this).text()) // use the element's text as the event title
-          }
-
-          // store the Event Object in the DOM element so we can get to it later
-          $(this).data('eventObject', eventObject)
-
-          // make the event draggable using jQuery UI
-          $(this).draggable({
-            zIndex        : 1070,
-            revert        : true, // will cause the event to go back to its
-            revertDuration: 0  //  original position after the drag
-          })
-
-        })
-      }
-
-      init_events($('#external-events div.external-event'))
-
-      /* initialize the calendar
-       -----------------------------------------------------------------*/
-      //Date for the calendar events (dummy data)
-    //   var date = new Date()
-    //   var d    = date.getDate(),
-    //       m    = date.getMonth(),
-    //       y    = date.getFullYear()
-      $('#calendar').fullCalendar({
-        header    : {
-          left  : 'prev,next today',
-          center: 'title',
-          right : 'month,agendaWeek,agendaDay'
-        },
-        buttonText: {
-          today: 'today',
-          month: 'month',
-          week : 'week',
-          day  : 'day'
-        },
-        //Random default events
-        events:'/booking_project',
-        // events    : [
-
-        //   {
-        //     title          : 'Meeting',
-        //     start          : new Date(y, m, d, 10, 30),
-        //     allDay         : false,
-        //     backgroundColor: '#0073b7', //Blue
-        //     borderColor    : '#0073b7' //Blue
-        //   },
-        //   {
-        //     title          : 'Lunch',
-        //     start          : new Date(y, m, d, 12, 0),
-        //     end            : new Date(y, m, d, 14, 0),
-        //     allDay         : false,
-        //     backgroundColor: '#00c0ef', //Info (aqua)
-        //     borderColor    : '#00c0ef' //Info (aqua)
-        //   },
-
-        // ],
-
-    })
-    })
-</script> --}}
 @endpush

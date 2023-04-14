@@ -341,6 +341,7 @@
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
+                                        <input type="hidden" class="form-control" name="sale_name" value="{{$dataUserLogin->name_th}}" >
                                         <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
                                     </div>
                                     <div class="col-xs-6">
@@ -410,59 +411,18 @@
 @endsection
 @push('script')
 
-
-
-
-
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: 'cy',
-        // themeSystem: 'bootstrap',
-        timeZone: 'Asia/Thailand',
-        initialView: 'timeGridWeek',
-        headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        // left:'title',
-        // center:'prev,next today',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-
-        defaultView: 'timeGridWeek',
-       //slotDuration: '01:00:00',
-        dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true },
-        slotLabelFormat: [
-            { hour: '2-digit', minute: '2-digit' },
-            { hour: '2-digit', minute: '2-digit' }
-        ],
-
-        events: [
-            {
-                title: 'นัดเยี่ยมโครงการ',
-                start: '2023-03-07T09:00:00',
-                end: '2023-03-07T12:00:00',
-                allDay: false,
-
-            },
-
-            {
-                title: 'Booking 2',
-                start: '2023-03-08T13:00:00',
-                end: '2023-03-08T16:00:00',
-                allDay: false
-            },],
-
-    });
-
-    calendar.render();
-    });
-
-</script> --}}
 <script>
+
     $(document).ready(function() {
+        $("#inputNumber").keyup(function() {
+                if (!isNaN(parseFloat($(this).val().replace(/,/g, "")))) {
+                    $(this).val(comma(parseFloat($(this).val().replace(/,/g, ""))));
+                }
+            });
+
+            function comma(number) {
+                return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+         }
         $('#teamSelect').change(function() {
             var teamId = $(this).val();
             if (teamId) {
