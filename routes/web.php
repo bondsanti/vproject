@@ -30,9 +30,22 @@ Route::post('/login/auth',[CustomAuthController::class,'loginUser'])->name('logi
 Route::get('/logout/auth',[CustomAuthController::class,'logoutUser'])->name('logoutUser')->middleware('isLogin');
 
 
+/*
+|--------------------------------------------------------------------------
+| Main Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/',[MainController::class,'index'])->name('main')->middleware('isLogin');
-Route::get('/user/test',[UserController::class,'testteam']);
+Route::post('/search',[MainController::class,'search'])->name('main.search')->middleware('isLogin');
+
+
+/*
+|--------------------------------------------------------------------------
+| Calendar Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/calendar',[CalendarController::class,'index'])->name('calendar')->middleware('isLogin');
 
 
@@ -46,6 +59,8 @@ Route::post('/user',[UserController::class,'insert'])->name('user.insert')->midd
 Route::delete('/user/{id}',[UserController::class,'destroy'])->name('user.destroy')->middleware('isLogin');
 Route::get('/user/edit/{id}',[UserController::class,'edit'])->name('user.edit')->middleware('isLogin');
 Route::post('/user/update/{id}',[UserController::class,'update'])->name('user.update')->middleware('isLogin');
+
+Route::get('/user/test',[UserController::class,'testteam']);
 
 /*
 |--------------------------------------------------------------------------

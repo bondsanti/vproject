@@ -78,6 +78,7 @@
         </div>
         <!-- ./col -->
     </div>
+
         <div class="row">
             <div class="col-md-12">
             <div class="box box-danger">
@@ -102,17 +103,16 @@
                                 <label>ประเภท</label>
                                 <select class="form-control select2" style="width: 100%;" name="booking_title" autocomplete="off" >
                                     <option value="">เลือก</option>
-                                    <option value="เยี่ยมโครงการ">เยี่ยมโครงการ</option>
 
                                 </select>
                             </div>
                             <div class="col-xs-3">
                                 <label>วันที่เริ่ม</label>
-                                <input type="text" class="form-control pull-right" id="datepicker" name="start_date" value="{{old('start_date')}}" autocomplete="off">
+                            <input type="text" class="form-control" placeholder="">
                             </div>
                             <div class="col-xs-3">
                                 <label>วันที่สิ้นสุด</label>
-                                <input type="text" class="form-control pull-right"  id="datepicker2" name="end_date" value="{{old('end_date')}}" autocomplete="off">
+                                <input type="text" class="form-control" placeholder="">
                                 </div>
 
                         </div>
@@ -121,39 +121,29 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <label>สถานะ</label>
-                                <select class="form-control" name="status" autocomplete="off" >
+                                <select class="form-control" name="project_id" autocomplete="off" >
                                     <option value="">เลือก</option>
                                     <option value="0">รอรับงาน</option>
                                     <option value="1">รับงานแล้ว</option>
                                     <option value="2">จองสำเร็จ / รอเข้าเยี่ยม</option>
                                     <option value="3">เยี่ยมชมเรียบร้อย</option>
                                     <option value="4">ยกเลิก</option>
-                                    <option value="5">ยกเลิกอัตโนมัติ</option>
+                                    <option value="4">ยกเลิกอัตโนมัติ</option>
 
 
                                 </select>
                             </div>
                             <div class="col-xs-3">
                                 <label>ชื่อลูกค้า</label>
-                                <input type="text" class="form-control" name="customer_name" value="{{old('customer_name')}}" autocomplete="off">
+                                <input type="text" class="form-control" placeholder="">
                             </div>
                             <div class="col-xs-3">
-                                <label>Sale</label>
-                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
-                                    <option value="">เลือก</option>
-                                    @foreach ($projects as $project)
-                                    <option value="{{$project->id}}">{{$project->name}}</option>
-                                    @endforeach
-                                </select>
+                                <label>ชื่อ Sale</label>
+                            <input type="text" class="form-control" placeholder="">
                             </div>
                             <div class="col-xs-3">
-                                <label>เจ้าหน้าทีโครงการ</label>
-                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
-                                    <option value="">เลือก</option>
-                                    @foreach ($dataEmps as $dataEmp)
-                                    <option value="{{$dataEmp->id}}">{{$dataEmp->id_user}}</option>
-                                    @endforeach
-                                </select>
+                                <label>ชื่อเจ้าหน้าทีโครงการ</label>
+                                <input type="text" class="form-control" placeholder="">
                                 </div>
 
                         </div>
@@ -163,13 +153,14 @@
                 <div class="box-footer text-center">
                     <button type="submit" class="btn btn-primary ">ค้นหา</button>
                     <button type="reset" class="btn btn-danger">เคลียร์</button>
-                </div>
-                </form>
+                  </div>
               </div>
-
+            </form>
               <!-- /.box -->
             </div>
         </div>
+
+
     <div class="row">
         <!-- /.col -->
 

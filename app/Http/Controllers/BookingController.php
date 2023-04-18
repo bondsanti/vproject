@@ -260,20 +260,17 @@ class BookingController extends Controller
             ->with('booking_emp_ref:id,code,name_th,phone')
             ->with('booking_project_ref:id,name')
            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-           ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-           ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-           ->select('bookings.*', 'bookingdetails.*', 'sales.fullname as sale_name',
-           'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')->latest()->first();
+           ->select('bookings.*', 'bookingdetails.*','teams.id', 'teams.team_name', 'subteams.subteam_name', 'bookings.id as bkID')->latest()->first();
             //$projects = Project::where('id', $request->project_id)->first();
             $projects = DB::connection('mysql_project')->table('projects')->where('id', $request->project_id)->first();
 
-
+             //dd($id_booking);
 
             //insert detail customer
             $bookingdetail = New Bookingdetail();
-            $bookingdetail->booking_id = $id_booking->id; //ref booking_id
+            $bookingdetail->booking_id = $id_booking->bkID; //ref booking_id
             $bookingdetail->customer_name = $request->customer_name;
             $bookingdetail->customer_tel = $request->customer_tel;
 
@@ -318,7 +315,7 @@ class BookingController extends Controller
                 $line->send(
                 '📌 *มีนัด '.$request->booking_title."* \n".
                 '----------------------------'." \n".
-                'หมายเลขการจอง : *'.$id_booking->id."* \n".
+                'หมายเลขการจอง : *'.$id_booking->bkID."* \n".
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
@@ -337,7 +334,7 @@ class BookingController extends Controller
                 $line->send(
                 '📌 *คุณได้จองนัด '.$request->booking_title."* \n".
                 '----------------------------'." \n".
-                'หมายเลขการจอง : *'.$id_booking->id."* \n".
+                'หมายเลขการจอง : *'.$id_booking->bkID."* \n".
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".

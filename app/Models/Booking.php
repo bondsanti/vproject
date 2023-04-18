@@ -18,11 +18,11 @@ class Booking extends Model
     {
         return $this->hasMany(User::class,'id','user_id');
     }
-    public function booking_emp_ref()
+    public function booking_emp_ref()//เจ้าหน้าที่โครงการ
     {
         return $this->hasMany(User::class,'id','teampro_id');
     }
-    public function booking_project_ref()
+    public function booking_project_ref()//ชื่อโครงการ
     {
         return $this->hasMany(Project::class,'id','project_id');
     }
