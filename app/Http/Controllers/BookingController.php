@@ -376,6 +376,8 @@ class BookingController extends Controller
 
         $bookingdetail = Bookingdetail::where('booking_id',$id);
 
+
+
         if (!$booking || !$bookingdetail) {
             return response()->json([
                 'error' => 'Error!'
@@ -383,6 +385,19 @@ class BookingController extends Controller
         }else{
             $booking->delete();
             $bookingdetail->delete();
+
+            $token_line1 = config('line-notify.access_token_project');
+            $line = new Line($token_line1);
+            $line->send(
+                'หมายเลขการจอง : *'.$id."* \n".
+                'ถูกลบเรียบร้อยแล้ว❗️'." \n");
+
+
+            $token_line2 = config('line-notify.access_token_sale');
+            $line = new Line($token_line2);
+            $line->send(
+                    'หมายเลขการจอง : *'.$id."* \n".
+                    'ถูกลบเรียบร้อยแล้ว❗️'." \n");
 
             return response()->json([
                 'success' => 'successfully!'

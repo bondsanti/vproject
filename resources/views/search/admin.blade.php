@@ -164,7 +164,7 @@
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
                     <button type="submit" class="btn btn-primary ">ค้นหา</button>
-                    <button type="reset" class="btn btn-danger">เคลียร์</button>
+                    <a href="{{route('main')}}" type="button" class="btn btn-danger">เคลียร์</a>
                 </div>
                 </form>
               </div>
@@ -532,10 +532,11 @@
                 'paging'      : true,
                 'lengthChange': true,
                 'searching'   : true,
-                'ordering'    : false,
+                'ordering'    : true, // enable column sorting
                 'info'        : false,
-                'autoWidth'   : true
-            })
+                'autoWidth'   : true,
+                'scrollX'     : true,
+            });
 
         });
         $("#my-dropdown").change(function () {

@@ -164,7 +164,7 @@
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
                     <button type="submit" class="btn btn-primary ">ค้นหา</button>
-                    <button type="reset" class="btn btn-danger">เคลียร์</button>
+                    <a href="{{route('main')}}" type="button" class="btn btn-danger">เคลียร์</a>
                 </div>
                 </form>
               </div>
@@ -184,7 +184,7 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <table id="table" style="width:100%" class="table table-bordered table-striped">
+                    <table id="table" style="" class="table table-bordered table-striped table-responsive">
                         <thead>
                             <tr>
                                 {{-- <th class="text-center"><button id="print-button" onclick="printChecked()">Print</button></th> --}}
@@ -239,7 +239,7 @@
                                 <td>
                                     <a>{{$booking->booking_project_ref[0]->name}}</a>
                                     <br />
-                                    <small>
+                                    <small class="text-red">
                                         เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
                                         {{date('H:i',strtotime($booking->booking_start))}}
                                         -
@@ -500,24 +500,24 @@
                                         @csrf
                                         @method('PUT')
                                         <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
-                                  <div class="modal-content">
-                                    <div class="modal-header">
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span></button>
-                                      <h4 class="modal-title">เปลี่ยนเจ้าหน้าที่โครงการ</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label>เลือกเจ้าหน้าที่โครงการ</label>
-                                            <select class="form-control" name="teampro_id" id="my-dropdown" required>
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">เปลี่ยนเจ้าหน้าที่โครงการ</h4>
+                                            </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>เลือกเจ้าหน้าที่โครงการ</label>
+                                                <select class="form-control" name="teampro_id" id="my-dropdown" required>
 
-                                                @foreach ($dataEmps as $dataEmp)
-                                                    <option value="{{$dataEmp->user_ref[0]->id}}" {{ $booking->booking_emp_ref[0]->id == $dataEmp->user_ref[0]->id ? 'selected' : '' }}>{{$dataEmp->user_ref[0]->name_emp}}</option>
-                                                @endforeach
-                                            </select>
+                                                    @foreach ($dataEmps as $dataEmp)
+                                                        <option value="{{$dataEmp->user_ref[0]->id}}" {{ $booking->booking_emp_ref[0]->id == $dataEmp->user_ref[0]->id ? 'selected' : '' }}>{{$dataEmp->user_ref[0]->name_emp}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
                                         </div>
-
-                                    </div>
                                     <div class="modal-footer">
 
                                         <button type="submit" class="btn btn-success" id="">ตกลง</button>
@@ -635,7 +635,7 @@
                             '_token': '{{ csrf_token() }}'
                         },
                         success: function(response) {
-                            window.location.href = '{{ route("listBooking") }}';
+                            window.location.href = '{{ route("main") }}';
                             Swal.fire({
                                 title: 'สำเร็จ!',
                                 text: 'ลบข้อมูลเรียบร้อย..',
@@ -645,7 +645,7 @@
 
                         },
                         error: function() {
-                            window.location.href = '{{ route("listBooking") }}';
+                            window.location.href = '{{ route("main") }}';
                             Swal.fire({
                                 title: 'Oops...',
                                 text: 'มีบางอย่างผิดพลาด!',
