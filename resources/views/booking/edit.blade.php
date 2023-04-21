@@ -340,12 +340,12 @@
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
-                                        <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
-                                        <input type="hidden" class="form-control" name="sale_name" value="{{$dataUserLogin->name_th}}" >
-                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
+                                        <input type="hidden" class="form-control" name="user_id" value="{{$bookings->booking_user_ref[0]->id}}" >
+                                        <input type="hidden" class="form-control" name="sale_name" value="{{$bookings->booking_user_ref[0]->name_th}}" >
+                                        <input type="text" class="form-control" name="" value="{{$bookings->booking_user_ref[0]->name_th}}" disabled>
                                     </div>
                                     <div class="col-xs-6">
-                                        <label>เบอร์ติดต่อ</label>
+                                        <label>เบอร์ติดต่อสายงาน</label>
                                         <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" value="{{ $bookings->user_tel }}" autocomplete="off" required>
                                     </div>
                                 </div>

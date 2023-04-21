@@ -108,7 +108,7 @@
                             </div>
                             <div class="col-xs-3">
                                 <label>วันที่เริ่ม</label>
-                                <input type="text" class="form-control pull-right" id="datepicker" name="start_date" value="{{old('start_date')}}" autocomplete="off">
+                                <input type="text" class="form-control pull-right" id="datepicker1" name="start_date" value="{{old('start_date')}}" autocomplete="off">
                             </div>
                             <div class="col-xs-3">
                                 <label>วันที่สิ้นสุด</label>
@@ -139,20 +139,22 @@
                             </div>
                             <div class="col-xs-3">
                                 <label>Sale</label>
-                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
+                                <select class="form-control select2" style="width: 100%;" name="sale_id" autocomplete="off" >
                                     <option value="">เลือก</option>
-                                    @foreach ($projects as $project)
-                                    <option value="{{$project->id}}">{{$project->name}}</option>
-                                    @endforeach
+                                    @foreach ($dataSales as $dataSale)
+                                    <option value="{{$dataSale->user_ref[0]->id}}">{{$dataSale->user_ref[0]->name_sale}}</option>
+                                   @endforeach
                                 </select>
                             </div>
                             <div class="col-xs-3">
                                 <label>เจ้าหน้าทีโครงการ</label>
-                                <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
+                                <select class="form-control select2" style="width: 100%;" name="emp_id" autocomplete="off" >
                                     <option value="">เลือก</option>
+
                                     @foreach ($dataEmps as $dataEmp)
-                                    <option value="{{$dataEmp->id}}">{{$dataEmp->id_user}}</option>
+                                     <option value="{{$dataEmp->user_ref[0]->id}}">{{$dataEmp->user_ref[0]->name_emp}}</option>
                                     @endforeach
+
                                 </select>
                                 </div>
 
@@ -190,9 +192,10 @@
                                 <th class="text-center">ประเภท</th>
                                 <th class="text-center">โครงการ</th>
                                 <th class="text-center">ลูกค้า</th>
-                                {{-- <th class="text-center">ทีม</th> --}}
-                                {{-- <th class="text-center">เจ้าหน้าที่โครงการ </th> --}}
-                                {{-- <th class="text-center">ผู้จอง </th> --}}
+                                <th class="text-center">ทีม/สายงาน</th>
+                                <th class="text-center">Sale </th>
+                                <th class="text-center">เจ้าหน้าที่โครงการ </th>
+
                                 <th class="text-center">สถานะ</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -252,6 +255,9 @@
                                     </small>
 
                                 </td>
+                                <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td>
+                                <td>{{$booking->booking_user_ref[0]->name_th}}</td>
+                                <td>{{$booking->booking_emp_ref[0]->name_th}}</td>
 
                                 <td class="project-state">
                                     @php
@@ -272,6 +278,7 @@
                                     @endphp
 
                                 </td>
+
                                 <td class="project-actions text-center">
                                     <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                         <i class="fa fa-print">
@@ -290,41 +297,37 @@
                                         สถานะ
                                       </button>
                                       @if ($booking->booking_title=="เยี่ยมโครงการ")
+
                                         @if ($booking->booking_status > 0)
                                             <button class="btn btn-info btn-sm" disabled>
                                                 <i class="fa fa-pencil">
                                                 </i>
-                                                แก้ไข
+                                                เปลี่ยนเจ้าหน้าที่
                                             </button>
                                         @else
-                                        <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
+
+                                        {{-- <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
                                             <i class="fa fa-pencil">
                                             </i>
-                                            แก้ไข
-                                        </a>
+                                            เปลี่ยนเจ้าหน้าที่
+                                        </a> --}}
+
+                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-user-{{$booking->bkid}}">
+                                            <i class="fa fa-pencil">
+                                            </i>
+                                            เปลี่ยนเจ้าหน้าที่
+                                          </button>
+
                                         @endif
 
                                       @endif
-                                      @if ($booking->booking_title=="ประเมินห้องชุด")
-                                      <a class="btn btn-info btn-sm" href="">
-                                        <i class="fa fa-pencil">
-                                        </i>
-                                        แก้ไข
-                                     </a>
-                                      @endif
-                                      @if ($booking->booking_title=="ตรวจDF/รับมอบห้อง")
-                                      <a class="btn btn-info btn-sm" href="">
-                                        <i class="fa fa-pencil">
-                                        </i>
-                                        แก้ไข
-                                     </a>
-                                      @endif
-                                      @if ($booking->booking_status > 0)
-                                    <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
-                                        <i class="fa fa-trash">
-                                        </i>
-                                        ลบ
-                                    </button>
+
+                                    @if ($booking->booking_status > 0)
+                                        <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
+                                            <i class="fa fa-trash">
+                                            </i>
+                                            ลบ
+                                        </button>
                                     @else
                                     <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                         <i class="fa fa-trash">
@@ -335,7 +338,7 @@
 
                                 </td>
                             </tr>
-
+                            <!-- /.modal status -->
                             <div class="modal fade" id="modal-status-{{$booking->bkid}}">
                                 <div class="modal-dialog modal-sm">
                                 <form id="updateStatusForm" method="POST" name="updateStatusForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
@@ -392,7 +395,8 @@
                                 </div>
                                 <!-- /.modal-dialog -->
                             </div>
-                            <!-- /.modal -->
+
+                            <!-- /.modal del -->
                             <div class="modal fade" id="modal-{{$booking->bkid}}">
                                 <div class="modal-dialog">
                                   <div class="modal-content">
@@ -488,7 +492,45 @@
                                 </div>
                                 <!-- /.modal-dialog -->
                             </div>
-                              <!-- /.modal -->
+
+                            <!-- /.modal user -->
+                            <div class="modal fade" id="modal-user-{{$booking->bkid}}">
+                                <div class="modal-dialog modal-sm">
+                                <form id="updateUserForm" method="POST" name="updateUserForm" class="form-horizontal" action="{{ route('booking.update.user') }}">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span></button>
+                                      <h4 class="modal-title">เปลี่ยนเจ้าหน้าที่โครงการ</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label>เลือกเจ้าหน้าที่โครงการ</label>
+                                            <select class="form-control" name="teampro_id" id="my-dropdown" required>
+
+                                                @foreach ($dataEmps as $dataEmp)
+                                                    <option value="{{$dataEmp->user_ref[0]->id}}" {{ $booking->booking_emp_ref[0]->id == $dataEmp->user_ref[0]->id ? 'selected' : '' }}>{{$dataEmp->user_ref[0]->name_emp}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="modal-footer">
+
+                                        <button type="submit" class="btn btn-success" id="">ตกลง</button>
+                                        <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ยกเลิก</button>
+                                        {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
+                                    </div>
+                                    </form>
+                                  </div>
+                                  <!-- /.modal-content -->
+                                </div>
+                                <!-- /.modal-dialog -->
+                            </div>
+
                             @endforeach
 
                         </tbody>
@@ -514,7 +556,21 @@
 @push('script')
     <script>
         $(document).ready(function() {
-
+            $('#datepicker1').datepicker({
+        format:'yyyy-mm-dd',
+        autoclose: true,
+        //startDate: new Date(), // sets the minimum date to today
+        //datesDisabled: [new Date()], // disables today's date in the datepicker
+        todayHighlight: true, // highlights today's date in the datepicker
+        });
+                //Date picker
+        $('#datepicker2').datepicker({
+        format:'yyyy-mm-dd',
+        autoclose: true,
+        //startDate: new Date(), // sets the minimum date to today
+        //datesDisabled: [new Date()], // disables today's date in the datepicker
+        todayHighlight: true, // highlights today's date in the datepicker
+        });
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -78,7 +78,6 @@
         </div>
         <!-- ./col -->
     </div>
-
         <div class="row">
             <div class="col-md-12">
             <div class="box box-danger">
@@ -103,16 +102,17 @@
                                 <label>ประเภท</label>
                                 <select class="form-control select2" style="width: 100%;" name="booking_title" autocomplete="off" >
                                     <option value="">เลือก</option>
+                                    <option value="เยี่ยมโครงการ">เยี่ยมโครงการ</option>
 
                                 </select>
                             </div>
                             <div class="col-xs-3">
                                 <label>วันที่เริ่ม</label>
-                            <input type="text" class="form-control" placeholder="">
+                                <input type="text" class="form-control pull-right" id="datepicker1" name="start_date" value="{{old('start_date')}}" autocomplete="off">
                             </div>
                             <div class="col-xs-3">
                                 <label>วันที่สิ้นสุด</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="text" class="form-control pull-right"  id="datepicker2" name="end_date" value="{{old('end_date')}}" autocomplete="off">
                                 </div>
 
                         </div>
@@ -121,29 +121,41 @@
                         <div class="row">
                             <div class="col-xs-3">
                                 <label>สถานะ</label>
-                                <select class="form-control" name="project_id" autocomplete="off" >
+                                <select class="form-control" name="status" autocomplete="off" >
                                     <option value="">เลือก</option>
                                     <option value="0">รอรับงาน</option>
                                     <option value="1">รับงานแล้ว</option>
                                     <option value="2">จองสำเร็จ / รอเข้าเยี่ยม</option>
                                     <option value="3">เยี่ยมชมเรียบร้อย</option>
                                     <option value="4">ยกเลิก</option>
-                                    <option value="4">ยกเลิกอัตโนมัติ</option>
+                                    <option value="5">ยกเลิกอัตโนมัติ</option>
 
 
                                 </select>
                             </div>
                             <div class="col-xs-3">
                                 <label>ชื่อลูกค้า</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="text" class="form-control" name="customer_name" value="{{old('customer_name')}}" autocomplete="off">
                             </div>
                             <div class="col-xs-3">
-                                <label>ชื่อ Sale</label>
-                            <input type="text" class="form-control" placeholder="">
+                                <label>Sale</label>
+                                <select class="form-control select2" style="width: 100%;" name="sale_id" autocomplete="off" >
+                                    <option value="">เลือก</option>
+                                    @foreach ($dataSales as $dataSale)
+                                    <option value="{{$dataSale->user_ref[0]->id}}">{{$dataSale->user_ref[0]->name_sale}}</option>
+                                   @endforeach
+                                </select>
                             </div>
                             <div class="col-xs-3">
-                                <label>ชื่อเจ้าหน้าทีโครงการ</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <label>เจ้าหน้าทีโครงการ</label>
+                                <select class="form-control select2" style="width: 100%;" name="emp_id" autocomplete="off" >
+                                    <option value="">เลือก</option>
+
+                                    @foreach ($dataEmps as $dataEmp)
+                                     <option value="{{$dataEmp->user_ref[0]->id}}">{{$dataEmp->user_ref[0]->name_emp}}</option>
+                                    @endforeach
+
+                                </select>
                                 </div>
 
                         </div>
@@ -153,14 +165,13 @@
                 <div class="box-footer text-center">
                     <button type="submit" class="btn btn-primary ">ค้นหา</button>
                     <button type="reset" class="btn btn-danger">เคลียร์</button>
-                  </div>
+                </div>
+                </form>
               </div>
-            </form>
+
               <!-- /.box -->
             </div>
         </div>
-
-
     <div class="row">
         <!-- /.col -->
 
@@ -176,14 +187,14 @@
                     <table id="table" style="width:100%" class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                {{-- <th class="text-center"><button id="print-button" onclick="printChecked()">Print</button></th> --}}
+
                                 <th class="text-center">#</th>
                                 <th class="text-center">ประเภท</th>
                                 <th class="text-center">โครงการ</th>
                                 <th class="text-center">ลูกค้า</th>
-                                {{-- <th class="text-center">ทีม</th> --}}
-                                {{-- <th class="text-center">เจ้าหน้าที่โครงการ </th> --}}
-                                {{-- <th class="text-center">ผู้จอง </th> --}}
+                                <th class="text-center">ทีม/สายงาน</th>
+                                <th class="text-center">Sale </th>
+                                <th class="text-center">เจ้าหน้าที่โครงการ </th>
                                 <th class="text-center">สถานะ</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -243,6 +254,9 @@
                                     </small>
 
                                 </td>
+                                <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td>
+                                <td>{{$booking->booking_user_ref[0]->name_th}}</td>
+                                <td>{{$booking->booking_emp_ref[0]->name_th}}</td>
 
                                 <td class="project-state">
                                     @php
@@ -263,6 +277,7 @@
                                     @endphp
 
                                 </td>
+
                                 <td class="project-actions text-center">
                                     <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                         <i class="fa fa-print">
@@ -296,26 +311,13 @@
                                         @endif
 
                                       @endif
-                                      @if ($booking->booking_title=="ประเมินห้องชุด")
-                                      <a class="btn btn-info btn-sm" href="">
-                                        <i class="fa fa-pencil">
-                                        </i>
-                                        แก้ไข
-                                     </a>
-                                      @endif
-                                      @if ($booking->booking_title=="ตรวจDF/รับมอบห้อง")
-                                      <a class="btn btn-info btn-sm" href="">
-                                        <i class="fa fa-pencil">
-                                        </i>
-                                        แก้ไข
-                                     </a>
-                                      @endif
-                                      @if ($booking->booking_status > 0)
-                                    <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
-                                        <i class="fa fa-trash">
-                                        </i>
-                                        ลบ
-                                    </button>
+
+                                    @if ($booking->booking_status > 0)
+                                        <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
+                                            <i class="fa fa-trash">
+                                            </i>
+                                            ลบ
+                                        </button>
                                     @else
                                     <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                         <i class="fa fa-trash">
@@ -505,7 +507,22 @@
 @push('script')
     <script>
         $(document).ready(function() {
-
+        //Date picker
+        $('#datepicker1').datepicker({
+        format:'yyyy-mm-dd',
+        autoclose: true,
+        //startDate: new Date(), // sets the minimum date to today
+        //datesDisabled: [new Date()], // disables today's date in the datepicker
+        todayHighlight: true, // highlights today's date in the datepicker
+        });
+                //Date picker
+        $('#datepicker2').datepicker({
+        format:'yyyy-mm-dd',
+        autoclose: true,
+        //startDate: new Date(), // sets the minimum date to today
+        //datesDisabled: [new Date()], // disables today's date in the datepicker
+        todayHighlight: true, // highlights today's date in the datepicker
+        });
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -318,16 +318,16 @@ class BookingController extends Controller
                 'หมายเลขการจอง : *'.$id_booking->bkID."* \n".
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
-                'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
-                'เบอร์ติดต่อ : *'.$request->customer_tel."* \n".
-                'ข้อมูลเข้าชม : *'.$customer_req."* $request->room_price \n".
+                // 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
+                // 'เบอร์ติดต่อ : *'.$request->customer_tel."* \n".
+                'ข้อมูลเข้าชม : *'.$customer_req.' '.$request->room_price.' ห้อง'.$request->room_no."* \n".
                 '----------------------------'." \n".
                 'ชื่อ Sale : *'.$request->sale_name ."* \n".
                 'ทีม/สายงาน : *'.$id_booking->team_name ."* - $id_booking->subteam_name \n".
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
-                'เจ้าหน้าที่โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
+                'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
                 '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                ." \n กดรับจอง => ".'https://www.google.co.th');
+                ." \n ✅กดรับจอง => ".'https://www.google.co.th');
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
@@ -338,12 +338,12 @@ class BookingController extends Controller
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
-                'ข้อมูลเข้าชม : *'.$customer_req."* $request->room_price \n".
+                'ข้อมูลเข้าชม : *'.$customer_req.' '.$request->room_price.' ห้อง'.$request->room_no."* \n".
                 '---------------------------'." \n".
                 'ชื่อ Sale : *'.$request->sale_name ."* \n".
                 'ทีม/สายงาน : *'.$id_booking->team_name ."* - $id_booking->subteam_name \n".
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
-                'เจ้าหน้าที่โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
+                'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
                 '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
 
                 // return response()->json([
@@ -589,35 +589,81 @@ class BookingController extends Controller
 
     }
 
-    public function editBooking(Request $request,$id)
+    //update พนักงานหน้าโครงการ
+    public function updateUser(Request $request)
     {
-
-        $dataUserLogin = array();
-
-
-        $dataUserLogin = DB::connection('mysql_user')->table('users')
-        ->where('id', '=', Session::get('loginId'))
-        ->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
-
-
-        $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
-        $teams = Team::get();
+        $booking = Booking::where('bookings.id',$request->booking_id)->first();
+        $booking->teampro_id = $request->teampro_id;
+        $booking->save();
 
         $bookings = Booking::with('booking_user_ref:id,code,name_th')
         ->with('booking_emp_ref:id,code,name_th,phone')
         ->with('booking_project_ref:id,name')
        ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-       ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-       ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
        ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-       ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
-       'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
-        ->where('bookings.id',"=",$id)->first();
-        // dd($bookings);
+       ->select('bookings.*', 'bookingdetails.*','teams.id', 'teams.team_name', 'subteams.subteam_name')
+       ->where('bookings.id',"=",$request->booking_id)->first();
 
-       return view("booking.edit",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
+        $projects = DB::connection('mysql_project')->table('projects')->where('id', $bookings->project_id)->first();
+
+
+
+       //dd($request);
+
+        if (!$booking) {
+            Alert::error('Error', 'Not found ID');
+            return redirect()->back();
+        }else{
+
+                $Strdate_start = date('d/m/Y', strtotime($bookings->booking_start.' +543 year'));
+                $Strtime_start = date('H:i', strtotime($bookings->booking_start));
+                $Strtime_end = date('H:i', strtotime($bookings->booking_end));
+
+                $token_line1 = config('line-notify.access_token_project');
+                $line = new Line($token_line1);
+                $line->send(
+                    '*อัพเดท❗️ เจ้าหน้าที่โครงการใหม่'."* \n".
+                    '📌 *หัวข้อ: นัด'.$bookings->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$request->booking_id."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    // 'ลูกค้าชื่อ : *'.$bookings->customer_name."* \n".
+                    // 'เบอร์ติดต่อ : *'.$bookings->customer_tel."* \n".
+                    'ข้อมูลเข้าชม : *'.$bookings->customer_req.' '.$bookings->room_price.' ห้อง'.$bookings->room_no."* \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$bookings->booking_user_ref[0]->name_th ."* \n".
+                    'ทีม/สายงาน : *'.$bookings->team_name ."* - $bookings->subteam_name \n".
+                    'เบอร์สายงาน : *'.$bookings->user_tel ."* \n".
+                    'จน. โครงการ : * ['.$bookings->booking_emp_ref[0]->name_th ."] * \n\n".
+                    '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
+                    ." \n ✅กดรับจอง => ".'https://www.google.co.th');
+
+
+                $token_line2 = config('line-notify.access_token_sale');
+                $line = new Line($token_line2);
+                $line->send(
+                    ' *อัพเดท❗️เจ้าหน้าที่โครงการใหม่'."* \n".
+                    '📌 *หัวข้อ: นัด'.$bookings->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$request->booking_id."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    // 'ลูกค้าชื่อ : *'.$bookings->customer_name."* \n".
+                    // 'เบอร์ติดต่อ : *'.$bookings->customer_tel."* \n".
+                    'ข้อมูลเข้าชม : *'.$bookings->customer_req.' '.$bookings->room_price.' ห้อง'.$bookings->room_no."* \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$bookings->booking_user_ref[0]->name_th ."* \n".
+                    'ทีม/สายงาน : *'.$bookings->team_name ."* - $bookings->subteam_name \n".
+                    'เบอร์สายงาน : *'.$bookings->user_tel ."* \n".
+                    'จน. โครงการ : * ['.$bookings->booking_emp_ref[0]->name_th ."] * \n\n".
+                    '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
+
+                Alert::success('Success', 'อัปเดตข้อมูลสำเร็จแล้ว!');
+                return redirect()->back();
+
+        }
 
     }
 

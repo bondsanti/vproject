@@ -26,8 +26,9 @@ class MainController extends Controller
         ->first();
 
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
-        $dataEmps = Role_user::with('user_ref:id as id_user,code,name_th as name_emp')->where('role_type','Staff')->get();
-       dd($dataEmps);
+
+        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
+       // dd($dataEmps);
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
         //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
         //dd($CountBooking);
@@ -137,6 +138,8 @@ class MainController extends Controller
         ->first();
 
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
+        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
 
         if ($dataRoleUser->role_type== "SuperAdmin"){
 
@@ -154,11 +157,11 @@ class MainController extends Controller
 
         }elseif ($dataRoleUser->role_type=="Admin") {
 
-
+           // dd($request->start_date);
             $bookings = Booking::query()
             ->with('booking_user_ref:id,code,name_th')
             ->with('booking_emp_ref:id,code,name_th')
-            ->with('booking_project_ref:id,name as project_name')
+            ->with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
@@ -174,10 +177,12 @@ class MainController extends Controller
                 $bookings->where('booking_title', $request->booking_title);
             }
             if ($request->start_date) {
-                $bookings->where('booking_start', $request->start_date);
+                $bookings->where('booking_start', 'like', '%' . $request->start_date . '%');
+                //$bookings->where('booking_start', $request->start_date);
             }
             if ($request->end_date) {
-                $bookings->where('booking_end', $request->end_date);
+                //$bookings->where('booking_stop', $request->end_date);
+                $bookings->orwhere('booking_start', 'like', '%' . $request->end_date . '%');
             }
             if ($request->status) {
                 $bookings->where('booking_status', $request->status);
@@ -185,21 +190,16 @@ class MainController extends Controller
             if ($request->customer_name) {
                 $bookings->where('customer_name', 'like', '%' . $request->customer_name . '%');
             }
-            // if ($request->sale_name) {
-            //     $bookings->whereHas('booking_user_ref', function ($query) use ($request) {
-            //         $query->where('name_th', 'like', '%' . $request->sale_name . '%');
-            //     });
+            if ($request->sale_id) {
+                $bookings->where('user_id', $request->sale_id);
+            }
+            if ($request->emp_id) {
+                $bookings->where('teampro_id', $request->emp_id);
+            }
 
-            // }
-            // if ($request->emp_name) {
-            //     $bookings->whereHas('booking_emp_ref', function ($query) use ($request) {
-            //         $query->where('name_th', 'like', '%' . $request->emp_name . '%');
-            //     });
-
-            // }
 
             $bookings = $bookings->get();
-              dd($bookings);
+              //dd($bookings);
 
 
             $projects = Project::where('active',1)->get();
@@ -209,14 +209,17 @@ class MainController extends Controller
             $countCancelBooking = Booking::where('booking_status',4)->count();
             $countExitBooking = Booking::where('booking_status',5)->count();
 
-            //  return view('search',compact('dataUserLogin',
-            //  'dataRoleUser',
-            //  'bookings',
-            //  'projects',
-            //  'countAllBooking',
-            //  'countSucessBooking',
-            //  'countCancelBooking',
-            //  'countExitBooking'));
+             return view('search.admin',compact('dataUserLogin',
+             'dataRoleUser',
+             'bookings',
+             'projects',
+             'countAllBooking',
+             'countSucessBooking',
+             'countCancelBooking',
+             'countExitBooking',
+             'dataEmps',
+             'dataSales'));
+
         }elseif ($dataRoleUser->role_type=="Staff") {
 
             $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')

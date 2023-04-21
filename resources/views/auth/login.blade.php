@@ -32,7 +32,7 @@
     <br><br><br><br>
     <div class="login-box">
         <div class="login-logo">
-            <img src="{{url('uploads/logovb1.png')}}" width="300px">
+            <img src="{{url('uploads/logovb2.png')}}" width="300px">
         </div>
         @include('sweetalert::alert')
 
