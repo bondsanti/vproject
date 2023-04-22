@@ -22,7 +22,12 @@
     <!-- bootstrap datepicker -->
     <link rel="stylesheet" href="{{ asset('vendors/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
       <!-- DataTables -->
-    <link rel="stylesheet" href="{{ asset('vendors/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
+    {{-- <link rel="stylesheet" href="{{ asset('vendors/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}"> --}}
+
+    <link rel="stylesheet" href="{{ asset('vendors/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('vendors/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('vendors/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
+
       <!-- Pace style -->
     <link rel="stylesheet" href="{{ asset('vendors/plugins/pace/pace.min.css')}}">
     <!-- Theme style -->
@@ -65,6 +70,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+
 <style>
     body{
         font-family: 'Sarabun', sans-serif;
@@ -116,8 +124,24 @@
     <script src="{{ asset('vendors/plugins/input-mask/jquery.inputmask.date.extensions.js') }}"></script>
     <script src="{{ asset('vendors/plugins/input-mask/jquery.inputmask.extensions.js') }}"></script>
     <!-- DataTables -->
-    <script src="{{ asset('vendors/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('vendors/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    {{-- <script src="{{ asset('vendors/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendors/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script> --}}
+
+    <!-- DataTables  & Plugins -->
+    <script src="{{ asset('vendors/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('vendors/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+
+
     <!-- PACE -->
     <script src="{{ asset('vendors/bower_components/PACE/pace.min.js') }}"></script>
     <!-- bootstrap datepicker -->

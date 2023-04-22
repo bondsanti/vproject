@@ -32,20 +32,30 @@
     @include('sweetalert::alert')
     <!-- Main content -->
     <section class="content">
-        <!-- Info boxes -->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
             <div class="alert alert-warning alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-warning"></i> Alert!</h4>
-                จองล่วงหน้าได้เท่านั้น !!!
-              </div>
+                สามารถจองล่วงหน้าได้เท่านั้น !!!
+             </div>
+        </div>
+        <div class="col-md-6">
+            <div class="alert alert-info alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h4><i class="icon fa fa-info"></i> Information!</h4>
+                    ปฎิทินจะแสดงเฉพาะงานของคุณเอง<br>
             </div>
+        </div>
+        </div>
+
+        <div class="row">
+
             <div class="col-md-4 col-xs-12">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
                       <li class="active"><a href="#tab_1" data-toggle="tab">เยี่ยมโครงการ</a></li>
-                      <li><a href="#tab_2" data-toggle="tab">   ประเมินห้องชุด</a></li>
+                      <li><a href="#tab_2" data-toggle="tab">ประเมินห้องชุด</a></li>
                       <li><a href="#tab_3" data-toggle="tab">ตรวจ DF/ รับมอบห้อง</a></li>
                     </ul>
                     <div class="tab-content">
@@ -404,6 +414,17 @@
 @push('script')
 
 
+@if($errors->any())
+    <script>
+        Swal.fire({
+            title: 'เกิดข้อผิดพลาด!',
+            text: 'กรุณาตรวจเช็คข้อมูล',
+            icon: 'error',
+            showCancelButton: false,
+            confirmButtonText: 'OK',
+        });
+    </script>
+@endif
 
 
 
@@ -492,27 +513,23 @@ $(document).ready(function() {
             // Show the details of the clicked event
             //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
             Swal.fire({
-                title: event.title,
-                // html: `
-                // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
-                // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
-                // `,
-                html: `
-
-                <h5><strong>${event.project}</strong></h5>
-
-                <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
-                <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
-                <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
-                <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
-                <hr>
-                <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
-                <h4><strong>สถานะ ${event.status}</strong></h4>
-                `,
-                icon: 'info',
-                customClass: 'swal-wide',
-                confirmButtonText: 'OK'
-            });
+                    title: event.title,
+                    html: `
+                    <h5>โครงการ :   <strong>${event.project}</strong></h5>
+                    <h5>วันที่ : <strong>${event.start.format('DD/MM/YYYY H:mm')} -  ${event.end.format('H:mm [น.]')}</strong></h5>
+                    <h5>ลูกค้า :<strong>${event.customer} </strong>
+                    <h5>ข้อมูลเข้าชม : <strong>  ${event.cus_req} ${event.room_price}.-</strong></h5>
+                    <h5> เลขห้อง :  <strong> ${event.room_no}</strong>  </h5>
+                    <hr>
+                    <h5>ชื่อ Sale : <strong><span style="color:red">${event.sale}</span></strong></h5>
+                    <h5>ทีม/สายงาน : <strong><span style="">${event.team_name}</span></strong></h5>
+                    <h5>เบอร์สายงาน : <strong><span style="">${event.tel}</span></strong></h5>
+                    <h5>เจ้าหน้าที่โครงการ : <strong><span style="">${event.employee}</span></strong></h5>
+                    <h4><strong>สถานะ <span style="color:${event.backgroundColor}">${event.status}</span></strong></h4>
+                    `,
+                    icon: 'info',
+                    customClass: 'swal-wide'
+                });
             },
             eventRender: function(event, element) {
             // Handle event rendering here

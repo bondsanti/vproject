@@ -87,6 +87,8 @@
                                                 <option value="13:00" {{ $time_start == "13:00" ? 'selected' : '' }}>13.00</option>
                                                 <option value="14:00" {{ $time_start == "14:00" ? 'selected' : '' }}>14.00</option>
                                                 <option value="15:00" {{ $time_start == "15:00" ? 'selected' : '' }}>15.00</option>
+                                                <option value="16:00" {{ $time_start == "16:00" ? 'selected' : '' }}>16.00</option>
+                                                <option value="17:00" {{ $time_start == "17:00" ? 'selected' : '' }}>17.00</option>
                                             </select>
                                         </div>
                                     </div>
@@ -470,129 +472,62 @@ $(document).ready(function() {
         }
     });
 
-  $('#calendar').fullCalendar({
-    locale: 'th',
-    defaultView: 'month',
-    eventLimit: false,
-    timeZone: 'Asia/Bangkok',
-    header    : {
-        left  : 'prev,next today',
-        center: 'title',
-        right : 'month,agendaWeek,agendaDay'
-      },
-      timeFormat: 'H:mm [น.]',
-      slotLabelFormat:"HH:mm [น.]",
-      axisFormat: 'H:mm [น.]',
-
-      events:'/booking',
-
-        eventClick: function(event, jsEvent, view) {
-        // Handle event click here
-        // Show the details of the clicked event
-        //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
-        Swal.fire({
-            title: event.title,
-            // html: `
-            // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
-            // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
-            // `,
-            html: `
-            <h5><strong>${event.project}</strong></h5>
-            <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
-            <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
-            <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
-            <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
-            <hr>
-            <h5><strong>สถานะ ${event.status}</strong></h5>
-            `,
-            // icon: 'info',
-            confirmButtonText: 'OK'
-        });
+    $('#calendar').fullCalendar({
+        locale: 'th',
+        defaultView: 'month',
+        eventLimit: true,
+        timeZone: 'Asia/Bangkok',
+        header    : {
+            left  : 'prev,next today',
+            center: 'title',
+            right : 'month,agendaWeek,agendaDay'
         },
-        eventRender: function(event, element) {
-        // Handle event rendering here
-        element.addClass('my-event');
-        },
-        dayClick: function(date, jsEvent, view) {
-        // Handle day click here
-        }
+        timeFormat: 'H:mm [น.]',
+        slotLabelFormat:"HH:mm [น.]",
+        axisFormat: 'H:mm [น.]',
+        minTime: '08:00:00',
+        maxTime: '20:00:00',
+        events:'/booking',
 
-        });
+            eventClick: function(event, jsEvent, view) {
+            // Handle event click here
+            // Show the details of the clicked event
+            //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
+            Swal.fire({
+                title: event.title,
+                // html: `
+                // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
+                // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
+                // `,
+                html: `
+
+                <h5><strong>${event.project}</strong></h5>
+
+                <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
+                <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
+                <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
+                <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
+                <hr>
+                <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
+                <h4><strong>สถานะ ${event.status}</strong></h4>
+                `,
+                icon: 'info',
+                customClass: 'swal-wide',
+                confirmButtonText: 'OK'
+            });
+            },
+            eventRender: function(event, element) {
+            // Handle event rendering here
+            element.addClass('my-event');
+            },
+            dayClick: function(date, jsEvent, view) {
+            // Handle day click here
+            }
 
     });
+
+
+});
   </script>
 
-{{-- <script>
-    $(function () {
-
-      /* initialize the external events
-       -----------------------------------------------------------------*/
-      function init_events(ele) {
-        ele.each(function () {
-
-          // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-          // it doesn't need to have a start or end
-          var eventObject = {
-            title: $.trim($(this).text()) // use the element's text as the event title
-          }
-
-          // store the Event Object in the DOM element so we can get to it later
-          $(this).data('eventObject', eventObject)
-
-          // make the event draggable using jQuery UI
-          $(this).draggable({
-            zIndex        : 1070,
-            revert        : true, // will cause the event to go back to its
-            revertDuration: 0  //  original position after the drag
-          })
-
-        })
-      }
-
-      init_events($('#external-events div.external-event'))
-
-      /* initialize the calendar
-       -----------------------------------------------------------------*/
-      //Date for the calendar events (dummy data)
-    //   var date = new Date()
-    //   var d    = date.getDate(),
-    //       m    = date.getMonth(),
-    //       y    = date.getFullYear()
-      $('#calendar').fullCalendar({
-        header    : {
-          left  : 'prev,next today',
-          center: 'title',
-          right : 'month,agendaWeek,agendaDay'
-        },
-        buttonText: {
-          today: 'today',
-          month: 'month',
-          week : 'week',
-          day  : 'day'
-        },
-        //Random default events
-        events:'/booking_project',
-        // events    : [
-
-        //   {
-        //     title          : 'Meeting',
-        //     start          : new Date(y, m, d, 10, 30),
-        //     allDay         : false,
-        //     backgroundColor: '#0073b7', //Blue
-        //     borderColor    : '#0073b7' //Blue
-        //   },
-        //   {
-        //     title          : 'Lunch',
-        //     start          : new Date(y, m, d, 12, 0),
-        //     end            : new Date(y, m, d, 14, 0),
-        //     allDay         : false,
-        //     backgroundColor: '#00c0ef', //Info (aqua)
-        //     borderColor    : '#00c0ef' //Info (aqua)
-        //   },
-
-        // ],
-
-    })
-    })
-</script> --}}
 @endpush

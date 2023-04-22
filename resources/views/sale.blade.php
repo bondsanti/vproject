@@ -78,7 +78,6 @@
         </div>
         <!-- ./col -->
     </div>
-
     <div class="row">
         <div class="col-md-12">
 
@@ -86,12 +85,108 @@
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-warning"></i> Alert!</h4>
                     - ถ้าสถานะการจอง <b><u>รับงานแล้ว</u></b> จะไม่สามารถ แก้ไข รายละเอียดการจองได้<br>
-                    - จะคอนเฟริ์มนัดได้ สถานะการจองต้องเป็น <b><u>รับงานแล้ว</u></b>
-
+                    - จะคอนเฟริ์มนัดได้ สถานะการจองต้องเป็น <b><u>รับงานแล้ว</u></b><br>
+                    - หากต้องการลบข้อมูลการจอง โปรดติดต่อ <b><u>แอดมิน</u></b> เจ้าหน้าที่โครงการ
             </div>
+
+        <div class="box box-danger">
+            <div class="box-header with-border">
+              <h3 class="box-title">ค้นหาข้อมูล</h3>
+            </div>
+            <form action="{{route('main.search')}}" method="post">
+                @csrf
+            <div class="box-body">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <label>โครงการ</label>
+                            <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" >
+                                <option value="">เลือก</option>
+                                @foreach ($projects as $project)
+                                <option value="{{$project->id}}">{{$project->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>ประเภท</label>
+                            <select class="form-control select2" style="width: 100%;" name="booking_title" autocomplete="off" >
+                                <option value="">เลือก</option>
+                                <option value="เยี่ยมโครงการ">เยี่ยมโครงการ</option>
+
+                            </select>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>วันที่เริ่ม</label>
+                            <input type="text" class="form-control pull-right" id="datepicker1" name="start_date" value="{{old('start_date')}}" autocomplete="off">
+                        </div>
+                        <div class="col-xs-3">
+                            <label>วันที่สิ้นสุด</label>
+                            <input type="text" class="form-control pull-right"  id="datepicker2" name="end_date" value="{{old('end_date')}}" autocomplete="off">
+                            </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <label>สถานะ</label>
+                            <select class="form-control" name="status" autocomplete="off" >
+                                <option value="">เลือก</option>
+                                <option value="0">รอรับงาน</option>
+                                <option value="1">รับงานแล้ว</option>
+                                <option value="2">จองสำเร็จ / รอเข้าเยี่ยม</option>
+                                <option value="3">เยี่ยมชมเรียบร้อย</option>
+                                <option value="4">ยกเลิก</option>
+                                <option value="5">ยกเลิกอัตโนมัติ</option>
+
+
+                            </select>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>ชื่อลูกค้า</label>
+                            <input type="text" class="form-control" name="customer_name" value="{{old('customer_name')}}" autocomplete="off">
+                        </div>
+                        <div class="col-xs-3">
+                            <label>สายงาน</label>
+                            <select class="form-control select2" style="width: 100%;" name="subteam_id" autocomplete="off" >
+                                <option value="">เลือก</option>
+                                @foreach ($subTeams as $subTeam)
+                                <option value="{{$subTeam->id}}">{{$subTeam->subteam_name}}</option>
+                               @endforeach
+                            </select>
+                        </div>
+                        <div class="col-xs-3">
+                            <label>เจ้าหน้าทีโครงการ</label>
+                            <select class="form-control select2" style="width: 100%;" name="emp_id" autocomplete="off" >
+                                <option value="">เลือก</option>
+
+                                @foreach ($dataEmps as $dataEmp)
+                                 <option value="{{$dataEmp->user_ref[0]->id}}">{{$dataEmp->user_ref[0]->name_emp}}</option>
+                                @endforeach
+
+                            </select>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer text-center">
+                <button type="submit" class="btn btn-primary ">ค้นหา</button>
+                <a href="{{route('main')}}" type="button" class="btn btn-danger">เคลียร์</a>
+            </div>
+            </form>
+          </div>
+
+          <!-- /.box -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
         <div class="box box-info box-solid">
             <div class="box-header">
-                <h3 class="box-title">ตารางข้อมูลของคุณ</h3>
+                <h3 class="box-title">ตารางข้อมูลของคุณ <button id="exportBtn" class="btn btn-primary btn-sm">Export to Excel</button></h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                     </button>
@@ -99,7 +194,7 @@
                 </div>
             </div>
 
-            <div class="box-body table-responsive">
+            <div class="box-body">
                 <table id="table" class="table table-hover">
                     <thead>
                         <tr>
@@ -108,6 +203,7 @@
                             <th class="text-center">ประเภท</th>
                             <th class="text-center">โครงการ</th>
                             <th class="text-center">ลูกค้า</th>
+                            <th class="text-center">ทีม/สายงาน</th>
                             <th class="text-center">เจ้าหน้าที่โครงการ</th>
 
                             <th class="text-center">สถานะ</th>
@@ -146,7 +242,7 @@
                                 </small>
 
                             </td>
-
+                            <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td>
                             <td class="project-state">
                                 <a>{{$booking->booking_emp_ref[0]->name_th}}</a>
                                 <br />
@@ -214,19 +310,6 @@
                                     สถานะ
                                   </button>
                                   @endif
-                                  {{-- @if ($booking->booking_status > 0)
-                                  <button class="btn btn- btn-sm delete-item" data-id="" disabled>
-                                      <i class="fa fa-trash">
-                                      </i>
-                                      ลบ
-                                  </button>
-                                  @else
-                                  <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
-                                      <i class="fa fa-trash">
-                                      </i>
-                                      ลบ
-                                  </button>
-                                  @endif --}}
 
 
 
@@ -416,11 +499,23 @@
         });
 
         $('#table').DataTable({
-        'paging'      : true,
-        'searching'   : true,
-        'ordering'    : false
-        });
-
+                'paging'      : true,
+                'lengthChange': true,
+                'searching'   : true,
+                'ordering'    : false,
+                'info'        : false,
+                'autoWidth'   : false,
+                "responsive": true,
+                "buttons": ["excel"],
+                'language': {
+                    'buttons': {
+                        'excel': 'Export to Excel'
+                    }
+                }
+            });
+            $('#exportBtn').on('click', function() {
+                $('#table').DataTable().button('.buttons-excel').trigger();
+            });
         $("#my-dropdown").change(function () {
         const result = $("#my-dropdown").val();
         //console.log(v);

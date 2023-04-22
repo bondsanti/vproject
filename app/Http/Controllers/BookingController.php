@@ -19,27 +19,21 @@ use Illuminate\Http\Request;
 class BookingController extends Controller
 {
 
+    //นัดเยี่ยมโครงการ
     public function bookingProject(Request $request)
     {
 
-        $dataUserLogin = array();
+
         $events = [];
 
-        $dataUserLogin = DB::connection('mysql_user')->table('users')
-        ->where('id', '=', Session::get('loginId'))
-        ->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('id', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
 
+        //โครงการ
+        $projects = Project::where('active',1)->get();
 
-        $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
-        //dd($projects);
-        //$projects = Project::where('is_active', 'enable')->get();
+        //ทีมสายงาน
         $teams = Team::get();
-
-        //    $subteams = Subteam::leftJoin('teams', 'teams.id', '=', 'subteams.team_id')
-        //    ->select('subteams.*', 'teams.team_name')
-        //    ->get();
-        //    dd($subteams);
 
 
         if($request->ajax())
@@ -48,8 +42,15 @@ class BookingController extends Controller
                 // $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
                 // ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
 
-                $bookings = Booking::with('booking_project_ref:id,name')->with('booking_emp_ref:id,code,name_th,phone')
-                ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
+                $bookings = Booking::with('booking_project_ref:id,name')
+                ->with('booking_emp_ref:id,code,name_th,phone')//จน. โครงการ
+                ->with('booking_user_ref:id,code,name_th')//ชื่อ Sale
+                ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')
+                ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+                ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+                ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
+                ->where('user_id',Session::get('loginId'))
+                ->get();
                 //dd($bookings);
 
             foreach ($bookings as $booking) {
@@ -88,12 +89,32 @@ class BookingController extends Controller
                         $textStatus="ยกเลิกอัตโนมัติ";
                     }
 
+                    // $event = [
+                    //     'title' => $booking->booking_title,
+                    //     'project' => $booking->booking_project_ref[0]->name,
+                    //     'status' => $textStatus,
+                    //     'customer' => $booking->customer_name." ".$booking->customer_tel,
+                    //     'employee'=> $booking->booking_emp_ref[0]->name_th." ".$booking->booking_emp_ref[0]->phone,
+                    //     'room_no'=>$booking->room_no,
+                    //     'room_price'=> number_format($booking->room_price),
+                    //     'cus_req'=>$booking->customer_req,
+                    //     'start' => $start_time,
+                    //     'end' => $end_time,
+                    //     'allDay' => false,
+                    //     'backgroundColor' => $backgroundColor,
+                    //     'borderColor' => $borderColor,
+                    // ];
                     $event = [
+                        'id' => $booking->id,
                         'title' => $booking->booking_title,
                         'project' => $booking->booking_project_ref[0]->name,
                         'status' => $textStatus,
+                        'booking_status' => $booking->booking_status,
                         'customer' => $booking->customer_name." ".$booking->customer_tel,
+                        'sale'=> $booking->booking_user_ref[0]->name_th,
                         'employee'=> $booking->booking_emp_ref[0]->name_th." ".$booking->booking_emp_ref[0]->phone,
+                        'team_name'=> $booking->team_name."/".$booking->subteam_name,
+                        'tel'=> $booking->user_tel,
                         'room_no'=>$booking->room_no,
                         'room_price'=> number_format($booking->room_price),
                         'cus_req'=>$booking->customer_req,
@@ -103,12 +124,12 @@ class BookingController extends Controller
                         'backgroundColor' => $backgroundColor,
                         'borderColor' => $borderColor,
                     ];
+
                     array_push($events, $event);
             }
 
-    		//$bookings = Booking::get();
             return response()->json($events);
-    	}
+    	} // call ajax
 
 
 
@@ -117,6 +138,32 @@ class BookingController extends Controller
 
     }
 
+    public function editBooking(Request $request,$id)
+    {
+
+        $dataUserLogin = User::where('id', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+
+        //โครงการ
+        $projects = Project::where('active',1)->get();
+
+        //ทีมสายงาน
+        $teams = Team::get();
+
+        $bookings = Booking::with('booking_user_ref:id,code,name_th')
+        ->with('booking_emp_ref:id,code,name_th,phone')
+        ->with('booking_project_ref:id,name')
+       ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+       ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+       ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+       ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
+        ->where('bookings.id',"=",$id)->first();
+        // dd($bookings);
+
+       return view("booking.edit",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
+
+    }
+    //รายการจอง เฉพาะ Superadmin
     public function listBooking(Request $request)
     {
 
@@ -131,18 +178,19 @@ class BookingController extends Controller
         $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
         $teams = Team::get();
 
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
+        $bookings = Booking::with('booking_user_ref:id,code,name_th')
+        ->with('booking_emp_ref:id,code,name_th,phone')
+        ->with('booking_project_ref:id,name')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-        ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-        ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
-        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
-        'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->get();
 
        return view("booking.list",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
 
     }
+
 
     public function getByTeam(Request $request)
     {
@@ -155,11 +203,11 @@ class BookingController extends Controller
     {
 
             //dd($request);
-            $dataUserLogin = array();
+            // $dataUserLogin = array();
 
-            $dataUserLogin = DB::connection('mysql_user')->table('users')
-            ->where('id', '=', Session::get('loginId'))
-            ->first();
+            // $dataUserLogin = DB::connection('mysql_user')->table('users')
+            // ->where('id', '=', Session::get('loginId'))
+            // ->first();
 
              $request->validate([
                 'date' => 'required',
@@ -185,13 +233,12 @@ class BookingController extends Controller
                 'user_tel.required'=>'กรอกเบอร์ติดต่อสายงาน',
             ]);
 
-
+            //slot time 3 hr.
             $end_time = date('H:i', strtotime($request->time . ' +3 hours'));
             $booking_date = $request->date;
             $booking_start = $request->date." ".$request->time;
             $booking_end = $request->date." ".$end_time;
 
-             //$booking_date = '2023-04-18';
 
              $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th')
              ->leftJoin('holiday_users', function ($join) use ($booking_date) {
@@ -337,7 +384,7 @@ class BookingController extends Controller
                 'หมายเลขการจอง : *'.$id_booking->bkID."* \n".
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$request->time.'-'.$end_time."` \n".
-                'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
+                // 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 'ข้อมูลเข้าชม : *'.$customer_req.' '.$request->room_price.' ห้อง'.$request->room_no."* \n".
                 '---------------------------'." \n".
                 'ชื่อ Sale : *'.$request->sale_name ."* \n".
@@ -368,7 +415,7 @@ class BookingController extends Controller
 
     }
 
-
+    //ลำข้อมูลการจอง
     public function destroyBooking(Request $request,$id)
     {
 
@@ -406,7 +453,7 @@ class BookingController extends Controller
 
     }
 
-    //update status
+    //update status ต่าง ๆ
     public function updateStatus(Request $request)
     {
         $bookings = Booking::where('bookings.id',$request->booking_id)->first();
@@ -682,6 +729,7 @@ class BookingController extends Controller
 
     }
 
+    //update ข้อมูลการนัดเยี่ยมโครงการ
     public function updateBookingProject(Request $request)
     {
 
@@ -885,6 +933,7 @@ class BookingController extends Controller
 
     }
 
+
     public function printBooking(Request $request,$id)
     {
         $bookings = Booking::with('booking_user_ref:id,code,name_th')
@@ -910,7 +959,8 @@ class BookingController extends Controller
         return response()->json($bookings, 200);
     }
 
-    public function updateshowJob(Request $request,$id){
+    public function updateshowJob(Request $request,$id)
+    {
 
     //dd($request);
         $bookings = Booking::where('id', '=', $request->id)->first();

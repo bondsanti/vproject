@@ -291,15 +291,23 @@
                                         </i>
                                         รายละเอียด
                                       </button>
-                                      <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
-                                        <i class="fa fa-refresh">
-                                        </i>
-                                        สถานะ
-                                      </button>
+                                      @if ($booking->booking_status >= 4)
+                                        <button type="button" class="btn btn-defult btn-sm" disabled>
+                                            <i class="fa fa-refresh">
+                                            </i>
+                                            สถานะ
+                                        </button>
+                                      @else
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                            <i class="fa fa-refresh">
+                                            </i>
+                                            สถานะ
+                                        </button>
+                                      @endif
                                       @if ($booking->booking_title=="เยี่ยมโครงการ")
 
                                         @if ($booking->booking_status > 0)
-                                            <button class="btn btn-info btn-sm" disabled>
+                                            <button class="btn btn-default btn-sm" disabled>
                                                 <i class="fa fa-pencil">
                                                 </i>
                                                 เปลี่ยนเจ้าหน้าที่
@@ -323,7 +331,7 @@
                                       @endif
 
                                     @if ($booking->booking_status > 0)
-                                        <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
+                                        <button class="btn btn-default btn-sm delete-item" data-id="" disabled>
                                             <i class="fa fa-trash">
                                             </i>
                                             ลบ
