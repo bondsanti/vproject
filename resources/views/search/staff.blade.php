@@ -1,6 +1,27 @@
 @extends('layouts.app')
 
 @section('content')
+
+<style>
+    .rating {
+  font-size: 40px;
+}
+
+.star {
+  color: #b7b59c;
+  cursor: pointer;
+}
+
+.star:hover,
+.star:hover ~ .star {
+  color: #f8e825;
+}
+
+.star.active {
+  color: #f8e825;
+}
+
+    </style>
 <section class="content-header">
     <h1>
         แดชบอร์ด
@@ -78,21 +99,11 @@
         </div>
         <!-- ./col -->
     </div>
-    <div class="row">
+
+
+<div class="row">
         <div class="col-md-12">
 
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h4><i class="icon fa fa-warning"></i> Alert!</h4>
-                    - ถ้าสถานะการจอง <b><u>รับงานแล้ว</u></b> จะไม่สามารถ แก้ไข รายละเอียดการจองได้<br>
-                    - จะคอนเฟริ์มนัดได้ สถานะการจองต้องเป็น <b><u>รับงานแล้ว</u></b> แบ่งเป็น 2 กรณี
-                    <br>
-                    &nbsp;&nbsp;1.<b>กรณีที่จองล่วงหน้า 1 วัน</b> ระบบจะเปิดให้คอนเฟริ์มทันที แต่ระยะเวลาต้องไม่เกิน 17.30 น. *หากไม่คอนเฟริ์มระบบจะยกเลิกการจองอัตโนมัติ
-                     <br>
-                     &nbsp;&nbsp;2.<b>กรณีที่จองล่วงหน้า 2 วันขึ้นไป</b> ระบบจะเปิดให้กดคอนเฟริ์มก่อนวันที่นัดหมาย 1 วัน ระยะเวลา 16.00-17.30 เท่านั้น *หากไม่คอนเฟริ์มระบบจะยกเลิกการจองอัตโนมัติ
-                        <br>
-                     - หากต้องการลบข้อมูลการจอง โปรดติดต่อ <b><u>แอดมิน</u></b> เจ้าหน้าที่โครงการ
-            </div>
 
         <div class="box box-danger">
             <div class="box-header with-border">
@@ -152,11 +163,11 @@
                             <input type="text" class="form-control" name="customer_name" value="{{old('customer_name')}}" autocomplete="off">
                         </div>
                         <div class="col-xs-3">
-                            <label>สายงาน</label>
-                            <select class="form-control select2" style="width: 100%;" name="subteam_id" autocomplete="off" >
+                            <label>Sale</label>
+                            <select class="form-control select2" style="width: 100%;" name="sale_id" autocomplete="off" >
                                 <option value="">เลือก</option>
-                                @foreach ($subTeams as $subTeam)
-                                <option value="{{$subTeam->id}}">{{$subTeam->subteam_name}}</option>
+                                @foreach ($dataSales as $dataSale)
+                                <option value="{{$dataSale->user_ref[0]->id}}">{{$dataSale->user_ref[0]->name_sale}}</option>
                                @endforeach
                             </select>
                         </div>
@@ -187,6 +198,7 @@
         </div>
     </div>
 
+
     <div class="row">
         <div class="col-md-12">
         <div class="box box-info box-solid">
@@ -208,8 +220,7 @@
                             <th class="text-center">ประเภท</th>
                             <th class="text-center">โครงการ</th>
                             <th class="text-center">ลูกค้า</th>
-                            <th class="text-center">ทีม/สายงาน</th>
-                            <th class="text-center">เจ้าหน้าที่โครงการ</th>
+                            <th class="text-center">ชื่อ Sale</th>
 
                             <th class="text-center">สถานะ</th>
                             <th class="text-center">Action</th>
@@ -217,22 +228,7 @@
                     </thead>
                     <tbody class="text-center">
 
-
                         @foreach ( $bookings as  $booking)
-                        @php
-                        // ดึงเวลาปัจจุบัน
-                        $currentDate = date('Y-m-d');
-                        $currentTime = date('H:i:s');
-                        $startTime = '16:00:00';
-                        $endTime = '17:30:00';
-                        $oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
-
-                        //ถ้าจองพรุ่งนี้
-                        $oneDaytomorrowBookingDate = date('Y-m-d', strtotime($currentDate . ' +1 day'));
-                        $dateBookingTomorrow = date('Y-m-d', strtotime($booking->booking_start));
-
-                        $confirmBtn = date('d/m/Y', strtotime($oneDayBeforeBookingDate.' +543 year'));
-                        @endphp
 
                         <tr>
                             <td>
@@ -262,9 +258,9 @@
                                 </small>
 
                             </td>
-                            <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td>
+
                             <td class="project-state">
-                                <a>{{$booking->booking_emp_ref[0]->name_th}}</a>
+                                <a>{{$booking->booking_user_ref[0]->name_th}}</a>
                                 <br />
                                 <small>
                                     {{$booking->user_tel}}
@@ -288,69 +284,52 @@
                                  }
 
                                  @endphp
+                                   @if ($booking->job_detailsubmission!=null)
+                                   <span class="badge" style="background-color:#00a65a">ส่งงานเรียบร้อย</span>
+                                   @endif
+                                </td>
 
-                            </td>
                             <td class="project-actions text-center">
-                                <a class="btn btn-warning btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
+                                @if ($booking->booking_status < 2)
+                                <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                     <i class="fa fa-print">
                                     </i>
                                     พิมพ์
                                 </a>
-
+                                @endif
                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                     <i class="fa fa-folder">
                                     </i>
                                     รายละเอียด
                                   </button>
-                                  @if ($booking->booking_title=="เยี่ยมโครงการ")
-                                  @if ($booking->booking_status == 0)
-                                  <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
-                                      <i class="fa fa-pencil">
-                                      </i>
-                                      แก้ไข
-                                  </a>
+                                  @if ($booking->booking_status <= 2)
+
+                                  <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                    <i class="fa fa-refresh">
+                                    </i>
+                                    สถานะ
+                                  </button>
+
+                                  @endif
+                                  @if ($booking->booking_status == 3)
+
+                                  <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-update-{{$booking->bkid}}">
+                                    <i class="fa fa-picture-o">
+                                    </i>
+                                    ส่งงาน
+                                  </button>
+                                  {{-- <button  data-id="{{$booking->bkid}}" data-original-title="Edit" class="btn btn-success btn-sm closejob"><i class="fa fa-picture-o"></i> ส่งงาน</button> --}}
+                                  @if ($booking->job_score==null)
+                                  <button type="button" class="btn bg-maroon btn-sm" data-toggle="modal" data-target="#modal-score-{{$booking->bkid}}">
+                                    <i class="fa fa-star-o">
+                                    </i>
+                                    คะแนนความพึงพอใจ
+                                  </button>
+                                  @endif
                                   @endif
 
-                                @endif
 
 
-                                @if ($booking->booking_status == 1)
-
-                                    <!-- ถ้าจองวันพรุ่งนี้ ให้คอนเฟริ์มนัดได้เลย -->
-                                  @if ($oneDaytomorrowBookingDate==$dateBookingTomorrow)
-                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
-                                        <i class="fa fa-check">
-                                        </i>
-                                        คอนเฟริ์มนัด
-                                    </button>
-                                    <!-- แต่ถ้าล่วงหน้าตั้งแต่ 2 วันขึ้นไป จะกด confirm ได้ก่อน 1 วันที่นัดหมาย-->
-                                  @elseif ($currentDate == $oneDayBeforeBookingDate && $currentTime >= $startTime && $currentTime <= $endTime)
-                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
-                                        <i class="fa fa-check">
-                                        </i>
-                                        คอนเฟริ์มนัด
-                                    </button>
-                                  @else
-                                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="ขณะนี้ยังไม่เปิดให้คอนเฟริ์ม จะเปิดให้คอนเฟริ์มในวันที่ {{$confirmBtn}} 16:00-17:00">
-                                        <i class="fa fa-check">
-                                        </i>
-                                        คอนเฟริ์มนัด
-                                    </button>
-                                  @endif
-
-                                        {{-- @if ($currentDate == $oneDayBeforeBookingDate && $currentTime >= $startTime && $currentTime <= $endTime)
-                                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
-                                            <i class="fa fa-check">
-                                            </i>
-                                            คอนเฟริ์มนัด
-                                        </button>
-                                        @endif
-                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="ขณะนี้ยังไม่เปิดให้คอนเฟริ์ม จะเปิดให้คอนเฟริ์มในวันที่ {{$confirmBtn}} 16:00-17:00">
-                                            <i class="fa fa-check">
-                                            </i>
-                                            คอนเฟริ์มนัด
-                                        </button> --}}
-                                @endif
 
 
 
@@ -361,7 +340,7 @@
                             <div class="modal-dialog modal-sm">
                             <form id="updateStatusForm" method="POST" name="updateStatusForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
                                     @csrf
-                                   @method('PUT')
+                                    @method('PUT')
                                     <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
                               <div class="modal-content">
                                 <div class="modal-header">
@@ -374,10 +353,13 @@
                                         <label>สถานะการจอง</label>
                                         <select class="form-control" name="booking_status" id="my-dropdown" required>
                                             <option value="">เลือก</option>
-                                        @if ($booking->booking_status == 1)
-                                        <option value="2">คอนเฟิร์ม</option>
+                                        @if ($booking->booking_status == 0)
+                                        <option value="1">รับงาน</option>
                                         @endif
-                                        {{-- <option value="4">ยกเลิก</option> --}}
+                                        @if ($booking->booking_status == 2)
+                                        <option value="3">เยี่ยมชมเรียบร้อย</option>
+                                        @endif
+                                        <option value="4">ยกเลิก</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -514,6 +496,84 @@
                             <!-- /.modal-dialog -->
                         </div>
                           <!-- /.modal -->
+                        <!-- Aj -->
+                        <div class="modal fade" id="modal-update-{{$booking->bkid}}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="">ส่งงาน</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- form start -->
+                                        <form id="FormEdit" name="FormEdit" action="{{ route('booking.update.job') }}" class="form-horizontal" enctype="multipart/form-data">
+                                            @csrf
+                                            <input type="hidden" name="id" id="id" value="{{$booking->bkid}}">
+                                            <div class="box-body">
+
+                                                <div class="form-group">
+                                                    <label>รายละเอียดรับลูกค้า</label>
+                                                    <textarea class="form-control" rows="3" id="job_detailsubmission" name="job_detailsubmission" placeholder="" autocomplete="off" required></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="image">เลือกรูป</label>
+                                                    <input type="file" class="form-control" name="job_img" id="job_img" onchange="previewImage(this);" accept="image/*" required>
+
+                                                    <img id="preview" src="#" alt="Image preview" style="display:none;" width="150px">
+
+                                                </div>
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success btn-block" id="update" >ตกลง</button>
+                                    </div>
+                                    </form>
+                                </div>
+                                <!-- /.modal-content -->
+                                </div>
+                                <!-- /.modal-dialog -->
+
+                        </div>
+
+                        <div class="modal fade" id="modal-score-{{$booking->bkid}}">
+                            <div class="modal-dialog modal-sm">
+                            <form id="updateScoreForm" method="POST" name="updateScoreForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                  <h4 class="modal-title">คะแนนความพึงพอใจ</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label>เลือก ระดับความพึ่งพอใจ</label>
+                                        <div class="rating text-center">
+                                          <span class="star" data-value="1">&#9733;</span>
+                                          <span class="star" data-value="2">&#9733;</span>
+                                          <span class="star" data-value="3">&#9733;</span>
+                                          <span class="star" data-value="4">&#9733;</span>
+                                          <span class="star" data-value="5">&#9733;</span>
+                                        </div>
+                                      </div>
+
+                                </div>
+                                <div class="modal-footer">
+
+                                    <button type="submit" class="btn btn-success btn-block" id="">ตกลง</button>
+
+                                </div>
+                                </form>
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                        </div>
+
                         @endforeach
 
                     </tbody>
@@ -525,6 +585,7 @@
     </div>
 
 
+
 </section>
 <!-- /.content -->
 @endsection
@@ -532,12 +593,63 @@
 @push('script')
 <script>
     $(document).ready(function() {
+        // รอการกดปุ่ม "ตกลง" ใน modal
+        $('#updateScoreForm').submit(function(e) {
+            e.preventDefault(); // หยุดการ submit แบบปกติ
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            var formData = $(this).serialize(); // ดึงข้อมูลฟอร์มทั้งหมดเป็น object
+            formData += '&rating=' + $('.rating .star.active').data('value'); // เพิ่มค่า rating เข้าไปใน object formData
+
+            // ส่งข้อมูลผ่าน AJAX
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: formData,
+                success: function(response) {
+                    console.log(response); // แสดงข้อมูลตอบกลับจากเซิร์ฟเวอร์ (สามารถใช้ response ทำอะไรต่อได้ตามต้องการ)
+                    $('#modal-score-' + response.booking_id).modal('hide'); // ปิด modal
+                },
+                error: function(error) {
+                    console.log(error); // แสดง error (สามารถ debug ได้)
+                }
+            });
         });
+
+        // เมื่อผู้ใช้กดคะแนนใน modal
+        $('.rating .star').click(function() {
+            $(this).addClass('active').prevAll('.star').addClass('active'); // เพิ่ม class active ให้กับคะแนนที่ถูกคลิกและคะแนนก่อนหน้านั้น
+            $(this).nextAll('.star').removeClass('active'); // ลบ class active ออกจากคะแนนถัดไป
+        });
+    });
+    </script>
+
+<script>
+    $(document).ready(function() {
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+// // เมื่อผู้ใช้คลิกดาวใดดาวหนึ่ง
+//     const stars = document.querySelectorAll('.rating .star');
+//     stars.forEach(star => {
+//     star.addEventListener('click', () => {
+//         // เก็บค่า data-value ของดาวที่ผู้ใช้คลิก
+//         const ratingValue = star.getAttribute('data-value');
+
+//         // ส่งค่า ratingValue ไปยังเว็บเซอร์วิสด้วย AJAX
+//         const xhr = new XMLHttpRequest();
+//         xhr.open('POST', '/api/ratings', true);
+//         xhr.setRequestHeader('Content-type', 'application/json');
+//         xhr.onreadystatechange = () => {
+//         if (xhr.readyState === 4 && xhr.status === 200) {
+//             console.log('คะแนนถูกบันทึกแล้ว');
+//         }
+//         };
+//         xhr.send(JSON.stringify({ rating: ratingValue }));
+//     });
+//     });
 
         $('#table').DataTable({
                 'paging'      : true,
@@ -557,7 +669,8 @@
             $('#exportBtn').on('click', function() {
                 $('#table').DataTable().button('.buttons-excel').trigger();
             });
-        $("#my-dropdown").change(function () {
+
+    $("#my-dropdown").change(function () {
         const result = $("#my-dropdown").val();
         //console.log(v);
         if (result == '4') {
@@ -567,6 +680,7 @@
         }
 
         });
+
         $("#my-dropdown2").change(function () {
         const result2 = $("#my-dropdown2").val();
             //console.log(result2);
@@ -578,6 +692,96 @@
                 $("#my-element-text").hide();
             }
         });
+
     });
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#preview').attr('src', e.target.result);
+                $('#preview').show();
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $('#image').change(function(){
+        previewImage(this);
+    });
+
+    // $('body').on('click', '.closejob', function () {
+
+    // const id = $(this).data('id');
+    //     //console.log(id);
+    //     $('#modal-update').modal('show');
+
+    //     $.get("/booking/showJob" +'/' + id , function (data) {
+    //         //console.log(data);
+    //     $('#id').val(data.id);
+    //     $('#job_detailsubmission').val(data.job_detailsubmission);
+    //     $('#job_img').val(data.job_img);
+    //     });
+    // });
+
+    // $('#update').click(function(e) {
+    //             e.preventDefault();
+    //             $(this).html('รอสักครู่..');
+    //             const _token = $("input[name='_token']").val();
+    //             const id = $("#id").val();
+    //             const job_detailsubmission= $("#job_detailsubmission").val();
+    //             const job_img= $("#job_img").val();
+    //             console.log(id);
+
+    //             $.ajax({
+    //                 data: $('#FormEdit').serialize(),
+    //                 url: "/booking/showJob/update/"+id,
+    //                 type: "POST",
+    //                 dataType: 'json',
+
+    //                 success: function(data) {
+    //                     //console.log(data);
+    //                     if (data.success = true) {
+
+    //                         if ($.isEmptyObject(data.error)) {
+    //                             Swal.fire({
+
+    //                                 icon: 'success',
+    //                                 title: 'แก้ไขข้อมูลสำเร็จ!',
+    //                                 showConfirmButton: true,
+    //                                 timer: 2500
+    //                             });
+    //                             $('#FormEdit').trigger("reset");
+    //                             $('#modal-update').modal('hide');
+    //                             //tableUser.draw();
+    //                             window.location.href = '{{ route("main") }}';
+    //                         } else {
+
+    //                             $('#update').html('ลองอีกครั้ง');
+
+    //                             //$('#userFormEdit').trigger("reset");
+    //                             Swal.fire({
+    //                                 position: 'top-center',
+    //                                 icon: 'error',
+    //                                 title: 'เกิดข้อผิดพลาด',
+    //                                 showConfirmButton: true,
+    //                                 timer: 2500
+    //                             });
+    //                         }
+
+    //                     } else {
+    //                         Swal.fire({
+    //                             position: 'top-center',
+    //                             icon: 'error',
+    //                             title: 'เพิ่มข้อมูลสำเร็จ!',
+    //                             showConfirmButton: true,
+    //                             timer: 2500
+    //                         });
+    //                         $('#FormEdit').trigger("reset");
+    //                     }
+
+
+    //                 },
+
+    //             });
+    // });
   </script>
   @endpush

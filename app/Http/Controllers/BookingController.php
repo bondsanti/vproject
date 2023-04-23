@@ -167,27 +167,39 @@ class BookingController extends Controller
     public function listBooking(Request $request)
     {
 
-        $dataUserLogin = array();
 
-        $dataUserLogin = DB::connection('mysql_user')->table('users')
-        ->where('id', '=', Session::get('loginId'))
-        ->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
 
-        //$projects = Project::where('is_active', 'enable')->get();
-        $projects = DB::connection('mysql_project')->table('projects')->where('active',1)->get();
+        $projects = Project::where('active',1)->get();
+
         $teams = Team::get();
+        $subTeams = Subteam::get();
 
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')
-        ->with('booking_emp_ref:id,code,name_th,phone')
-        ->with('booking_project_ref:id,name')
+        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
+        // dd($dataEmps);
+        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+         //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
+         //dd($CountBooking);
+
+
+         $bookings = Booking::with('booking_user_ref:id,code,name_th')
+         ->with('booking_emp_ref:id,code,name_th,phone')
+         ->with('booking_project_ref:id,name')
         ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
         ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
         ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->get();
 
-       return view("booking.list",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
+       return view("booking.list",compact('dataUserLogin',
+       'dataRoleUser',
+       'bookings',
+       'projects',
+       'teams',
+       'subTeams',
+        'dataEmps',
+        'dataSales'));
 
     }
 
@@ -488,32 +500,42 @@ class BookingController extends Controller
             }elseif($request->booking_status==1){
                 $textStatus="รับงานแล้ว";
 
+                $oneDayBeforeBookingDate = date('d/m/Y', strtotime($booking->booking_start . ' -1 day'));
+
                 $Strdate_start = date('d/m/Y', strtotime($booking->booking_start.' +543 year'));
                 $Strtime_start = date('H:i', strtotime($booking->booking_start));
                 $Strtime_end = date('H:i', strtotime($booking->booking_end));
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                'สถานะจอง : *'.$textStatus."* \n");
+                $line->send(
+                    '🔔 *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :✅ *'.$textStatus."* \n".
+                '⏰ โปรดรอ Sale คอนเฟริ์มการนัดหมาย หาก Sale ไม่ *คอนเฟิร์ม*'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️');
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                'สถานะจอง : *'.$textStatus."* \n".
-                'กรุณา *คอนเฟริ์ม* ก่อนหนัดหมาย ภายใน 1 ชม. '." \n".'หากไม่ *คอนเฟิร์ม* ระบบจะยกเลิกการจองอัตโนมัติ!');
+                $line->send(
+                    '🔔 *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                'สถานะจอง :✅ *'.$textStatus."* \n".
+                '⚠️ ผู้รับผิดชอบ กรุณากดคอนเฟริ์มนัด ในวันที่ `'.$oneDayBeforeBookingDate.'` ภายในเวลา 16.00-17.30 น.'." \n".
+                '🚫 หากไม่ *คอนเฟิร์ม* ระบบจะยกเลิกการจองอัตโนมัติ'
+                ." \n กดคอนเฟริ์ม => ".'https://www.google.co.th');
+
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
 
@@ -526,25 +548,29 @@ class BookingController extends Controller
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                'สถานะจอง : *'.$textStatus."* \n");
+                $line->send(
+                    '🔔 *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :✅ *'.$textStatus."* \n");
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                'สถานะจอง : *'.$textStatus."* \n");
+                $line->send(
+                    '🔔 *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :✅ *'.$textStatus."* \n");
 
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
@@ -557,26 +583,30 @@ class BookingController extends Controller
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                '-------------------'." \n".
-                'สถานะ : *'.$textStatus."* \n"
+                $line->send(
+                    '✨ *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะ :✅ *'.$textStatus."* \n"
                 );
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                '-------------------'." \n".
-                'สถานะ : *'.$textStatus."* \n"
+                $line->send(
+                    '✨ *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะ :✅ *'.$textStatus."* \n"
                 );
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
@@ -589,27 +619,31 @@ class BookingController extends Controller
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                '-------------------'." \n".
-                'สถานะจอง : *'.$textStatus."* \n".
+                $line->send(
+                    '🔔 *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :❌ *'.$textStatus."* \n".
                 'เหตุผล : '.$becaseText
                 );
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
-                $line->send('นัด '.$booking->booking_title." \n".
-                'หมายเลขการจอง : *'.$booking->bkid."* \n".
-                'โครงการ : *'.$projects->name."* \n".
-                'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                '-------------------'." \n".
-                'สถานะจอง : *'.$textStatus."* \n".
+                $line->send(
+                    '🔔 *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
+                    '----------------------------'." \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :❌ *'.$textStatus."* \n".
                 'เหตุผล : '.$becaseText
                 );
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
@@ -622,28 +656,31 @@ class BookingController extends Controller
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
-                $line->send('นัด '.$booking->booking_title." \n".
+                $line->send(
+                '🔔 *นัด '.$booking->booking_title."* \n".
+                '----------------------------'." \n".
                 'หมายเลขการจอง : *'.$booking->bkid."* \n".
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                'สถานะจอง : *'.$textStatus.' '.$becaseText."* \n");
+                '----------------------------'." \n".
+                'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :❌ *'.$textStatus."* \n");
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
-                $line->send('นัด '.$booking->booking_title." \n".
+                $line->send(
+                '🔔 *นัด '.$booking->booking_title."* \n".
+                '----------------------------'." \n".
                 'หมายเลขการจอง : *'.$booking->bkid."* \n".
                 'โครงการ : *'.$projects->name."* \n".
                 'วัน/เวลา : `'.$Strdate_start.' '.$Strtime_start.'-'.$Strtime_end."` \n".
-                'ลูกค้าชื่อ : *'.$booking->customer_name."* \n".
-                '-------------------'." \n".
-                'เจ้าหน้าที่โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
-                'สถานะจอง : *'.$textStatus.' '.$becaseText."* \n".
-                'กรุณา *คอนเฟริ์ม* ก่อนหนัดหมาย ภายใน 1 ชม. '." \n".'หากไม่ *คอนเฟิร์ม* นัดหมายจะยกเลิกทันที ระบบจะยกเลิกการจองอัตโนมัติ!');
-                Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
-                return redirect()->back();
+                '----------------------------'." \n".
+                'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                'สถานะจอง :❌ *'.$textStatus."* \n");
+
+                // Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
+                // return redirect()->back();
             }
 
 
@@ -1049,6 +1086,85 @@ class BookingController extends Controller
 
 
             return response()->json($employees_not_on_holiday, 200);
+
+    }
+
+    public function search(Request $request)
+    {
+
+
+        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+
+        $projects = Project::where('active',1)->get();
+
+        $teams = Team::get();
+        $subTeams = Subteam::get();
+
+        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
+        // dd($dataEmps);
+        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+
+        if ($dataRoleUser->role_type== "SuperAdmin"){
+
+
+            $bookings = Booking::query()
+            ->with('booking_user_ref:id,code,name_th')
+            ->with('booking_emp_ref:id,code,name_th')
+            ->with('booking_project_ref:id,name')
+            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid',
+            'teams.id', 'teams.team_name', 'subteams.subteam_name')
+            ->orderBy('bookings.id');
+
+            if ($request->project_id) {
+
+                $bookings->where('project_id', $request->project_id);
+            }
+            if ($request->booking_title) {
+                $bookings->where('booking_title', $request->booking_title);
+            }
+            if ($request->start_date) {
+                $bookings->where('booking_start', 'like', '%' . $request->start_date . '%');
+                //$bookings->where('booking_start', $request->start_date);
+            }
+            if ($request->end_date) {
+                //$bookings->where('booking_stop', $request->end_date);
+                $bookings->orwhere('booking_start', 'like', '%' . $request->end_date . '%');
+            }
+            if ($request->status) {
+                $bookings->where('booking_status', $request->status);
+            }
+            if ($request->customer_name) {
+                $bookings->where('customer_name', 'like', '%' . $request->customer_name . '%');
+            }
+            if ($request->sale_id) {
+                $bookings->where('user_id', $request->sale_id);
+            }
+            if ($request->emp_id) {
+                $bookings->where('teampro_id', $request->emp_id);
+            }
+            if ($request->subteam_id) {
+                $bookings->where('subteam_id', $request->subteam_id);
+            }
+
+            $bookings = $bookings->get();
+              //dd($bookings);
+
+              return view("booking.search",compact('dataUserLogin',
+              'dataRoleUser',
+              'bookings',
+              'projects',
+              'teams',
+              'subTeams',
+               'dataEmps',
+               'dataSales'));
+
+
+
+        }
 
     }
 }

@@ -85,8 +85,13 @@
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                 <h4><i class="icon fa fa-warning"></i> Alert!</h4>
                     - ถ้าสถานะการจอง <b><u>รับงานแล้ว</u></b> จะไม่สามารถ แก้ไข รายละเอียดการจองได้<br>
-                    - จะคอนเฟริ์มนัดได้ สถานะการจองต้องเป็น <b><u>รับงานแล้ว</u></b><br>
-                    - หากต้องการลบข้อมูลการจอง โปรดติดต่อ <b><u>แอดมิน</u></b> เจ้าหน้าที่โครงการ
+                    - จะคอนเฟริ์มนัดได้ สถานะการจองต้องเป็น <b><u>รับงานแล้ว</u></b> แบ่งเป็น 2 กรณี
+                    <br>
+                    &nbsp;&nbsp;1.<b>กรณีที่จองล่วงหน้า 1 วัน</b> ระบบจะเปิดให้คอนเฟริ์มทันที แต่ระยะเวลาต้องไม่เกิน 17.30 น. *หากไม่คอนเฟริ์มระบบจะยกเลิกการจองอัตโนมัติ
+                     <br>
+                     &nbsp;&nbsp;2.<b>กรณีที่จองล่วงหน้า 2 วันขึ้นไป</b> ระบบจะเปิดให้กดคอนเฟริ์มก่อนวันที่นัดหมาย 1 วัน ระยะเวลา 16.00-17.30 เท่านั้น *หากไม่คอนเฟริ์มระบบจะยกเลิกการจองอัตโนมัติ
+                        <br>
+                     - หากต้องการลบข้อมูลการจอง โปรดติดต่อ <b><u>แอดมิน</u></b> เจ้าหน้าที่โครงการ
             </div>
 
         <div class="box box-danger">
@@ -212,7 +217,22 @@
                     </thead>
                     <tbody class="text-center">
 
+
                         @foreach ( $bookings as  $booking)
+                        @php
+                        // ดึงเวลาปัจจุบัน
+                        $currentDate = date('Y-m-d');
+                        $currentTime = date('H:i:s');
+                        $startTime = '16:00:00';
+                        $endTime = '17:30:00';
+                        $oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
+
+                        //ถ้าจองพรุ่งนี้
+                        $oneDaytomorrowBookingDate = date('Y-m-d', strtotime($currentDate . ' +1 day'));
+                        $dateBookingTomorrow = date('Y-m-d', strtotime($booking->booking_start));
+
+                        $confirmBtn = date('d/m/Y', strtotime($oneDayBeforeBookingDate.' +543 year'));
+                        @endphp
 
                         <tr>
                             <td>
@@ -267,9 +287,11 @@
                                      echo $textStatus="<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
                                  }
 
-                                 @endphp</td>
+                                 @endphp
+
+                            </td>
                             <td class="project-actions text-center">
-                                <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
+                                <a class="btn btn-warning btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                     <i class="fa fa-print">
                                     </i>
                                     พิมพ์
@@ -281,13 +303,7 @@
                                     รายละเอียด
                                   </button>
                                   @if ($booking->booking_title=="เยี่ยมโครงการ")
-                                  @if ($booking->booking_status > 0)
-                                      <button class="btn btn-default btn-sm" disabled>
-                                          <i class="fa fa-pencil">
-                                          </i>
-                                          แก้ไข
-                                      </button>
-                                  @else
+                                  @if ($booking->booking_status == 0)
                                   <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
                                       <i class="fa fa-pencil">
                                       </i>
@@ -296,20 +312,45 @@
                                   @endif
 
                                 @endif
-                                @if ($booking->booking_status > 1)
 
-                                <button type="button" class="btn btn-default btn-sm" disabled>
-                                    <i class="fa fa-refresh">
-                                    </i>
-                                    สถานะ
-                                  </button>
+
+                                @if ($booking->booking_status == 1)
+
+                                    <!-- ถ้าจองวันพรุ่งนี้ ให้คอนเฟริ์มนัดได้เลย -->
+                                  @if ($oneDaytomorrowBookingDate==$dateBookingTomorrow)
+                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                        <i class="fa fa-check">
+                                        </i>
+                                        คอนเฟริ์มนัด
+                                    </button>
+                                    <!-- แต่ถ้าล่วงหน้าตั้งแต่ 2 วันขึ้นไป จะกด confirm ได้ก่อน 1 วันที่นัดหมาย-->
+                                  @elseif ($currentDate == $oneDayBeforeBookingDate && $currentTime >= $startTime && $currentTime <= $endTime)
+                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                        <i class="fa fa-check">
+                                        </i>
+                                        คอนเฟริ์มนัด
+                                    </button>
                                   @else
-                                  <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
-                                    <i class="fa fa-refresh">
-                                    </i>
-                                    สถานะ
-                                  </button>
+                                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="ขณะนี้ยังไม่เปิดให้คอนเฟริ์ม จะเปิดให้คอนเฟริ์มในวันที่ {{$confirmBtn}} 16:00-17:00">
+                                        <i class="fa fa-check">
+                                        </i>
+                                        คอนเฟริ์มนัด
+                                    </button>
                                   @endif
+
+                                        {{-- @if ($currentDate == $oneDayBeforeBookingDate && $currentTime >= $startTime && $currentTime <= $endTime)
+                                        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                            <i class="fa fa-check">
+                                            </i>
+                                            คอนเฟริ์มนัด
+                                        </button>
+                                        @endif
+                                        <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="ขณะนี้ยังไม่เปิดให้คอนเฟริ์ม จะเปิดให้คอนเฟริ์มในวันที่ {{$confirmBtn}} 16:00-17:00">
+                                            <i class="fa fa-check">
+                                            </i>
+                                            คอนเฟริ์มนัด
+                                        </button> --}}
+                                @endif
 
 
 
@@ -336,7 +377,7 @@
                                         @if ($booking->booking_status == 1)
                                         <option value="2">คอนเฟิร์ม</option>
                                         @endif
-                                        <option value="4">ยกเลิก</option>
+                                        {{-- <option value="4">ยกเลิก</option> --}}
                                         </select>
                                     </div>
                                     <div class="form-group">

@@ -20,7 +20,7 @@ class MainController extends Controller
      */
     public function index()
     {
-        $dataUserLogin = array();
+
 
         $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
 
@@ -76,14 +76,13 @@ class MainController extends Controller
         }elseif ($dataRoleUser->role_type=="Staff") {
 
 
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
+            $bookings = Booking::with('booking_user_ref:id,code,name_th')
+            ->with('booking_emp_ref:id,code,name_th,phone')
+            ->with('booking_project_ref:id,name')
            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-           ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-           ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-           ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
-           'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+           ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
            ->where('teampro_id',Session::get('loginId'))->get();
 
 
@@ -95,10 +94,14 @@ class MainController extends Controller
             return view('staff',compact('dataUserLogin',
             'dataRoleUser',
             'bookings',
+            'projects',
+            'subTeams',
             'countAllBooking',
             'countSucessBooking',
             'countCancelBooking',
-            'countExitBooking'));
+            'countExitBooking',
+            'dataEmps',
+            'dataSales'));
 
         }else{
 
@@ -230,28 +233,67 @@ class MainController extends Controller
 
         }elseif ($dataRoleUser->role_type=="Staff") {
 
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
-           ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-           ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-           ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
-           ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
-           ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-           ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
-           'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
-           ->where('teampro_id',Session::get('loginId'))->get();
+            $bookings = Booking::query()
+            ->with('booking_user_ref:id,code,name_th')
+            ->with('booking_emp_ref:id,code,name_th')
+            ->with('booking_project_ref:id,name')
+            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid',
+            'teams.id', 'teams.team_name', 'subteams.subteam_name')
+            ->orderBy('bookings.id');
+
+            if ($request->project_id) {
+
+                $bookings->where('project_id', $request->project_id);
+            }
+            if ($request->booking_title) {
+                $bookings->where('booking_title', $request->booking_title);
+            }
+            if ($request->start_date) {
+                $bookings->where('booking_start', 'like', '%' . $request->start_date . '%');
+                //$bookings->where('booking_start', $request->start_date);
+            }
+            if ($request->end_date) {
+                //$bookings->where('booking_stop', $request->end_date);
+                $bookings->orwhere('booking_start', 'like', '%' . $request->end_date . '%');
+            }
+            if ($request->status) {
+                $bookings->where('booking_status', $request->status);
+            }
+            if ($request->customer_name) {
+                $bookings->where('customer_name', 'like', '%' . $request->customer_name . '%');
+            }
+            if ($request->sale_id) {
+                $bookings->where('user_id', $request->sale_id);
+            }
+            if ($request->emp_id) {
+                $bookings->where('teampro_id', $request->emp_id);
+            }
+            if ($request->subteam_id) {
+                $bookings->where('subteam_id', $request->subteam_id);
+            }
+
+            $bookings = $bookings->where('teampro_id',Session::get('loginId'))->get();
+              //dd($bookings);
 
            $countAllBooking = Booking::where('teampro_id', Session::get('loginId'))->count();
            $countSucessBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',3)->count();
            $countCancelBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',4)->count();
            $countExitBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',5)->count();
 
-            return view('staff',compact('dataUserLogin',
+            return view('search.staff',compact('dataUserLogin',
             'dataRoleUser',
             'bookings',
+            'projects',
+            'subTeams',
             'countAllBooking',
             'countSucessBooking',
             'countCancelBooking',
-            'countExitBooking'));
+            'countExitBooking',
+            'dataEmps',
+            'dataSales'));
 
         }else{
 
