@@ -82,7 +82,7 @@ class HolidayController extends Controller
         }else{
 
             $holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId'))->get();
-
+            //dd($holidays);
             if($request->ajax())
             {
                 // $holidays = Holiday::with('user_ref:id,name_th')->get();
@@ -110,7 +110,7 @@ class HolidayController extends Controller
 
                             $event = [
                                 'id' => $holiday->id,
-                                'title' => $holidays->user_ref[0]->name_th,
+                                'title' => $holiday->user_ref->name_th,
                                 'remark' => ($holiday->remark)? $holiday->remark:"-",
                                 'start' => $holiday->start_date,
                                 'end' => $end_date,

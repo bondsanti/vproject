@@ -206,7 +206,7 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <div class="modal fade" id="updateData">
+    {{-- <div class="modal fade" id="updateData">
         <div class="modal-dialog modal-md">
           <div class="modal-content">
             <div class="modal-header">
@@ -264,7 +264,7 @@
           <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
-    </div>
+    </div> --}}
 
 @endsection
 @push('script')

@@ -14,6 +14,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -996,10 +997,10 @@ class BookingController extends Controller
         return response()->json($bookings, 200);
     }
 
-    public function updateshowJob(Request $request,$id)
+    public function updateshowJob(Request $request)
     {
 
-    //dd($request);
+        //dd($request);
         $bookings = Booking::where('id', '=', $request->id)->first();
 
 
@@ -1013,42 +1014,59 @@ class BookingController extends Controller
             ],400);
         }
            // Get image file
-        $imageFile = $request->file('job_img');
+        // ตรวจสอบว่ามีการอัพโหลดไฟล์รูปภาพหรือไม่
+        if ($request->hasFile('job_img')) {
+            // รับไฟล์รูปภาพ
+            $image = $request->file('job_img');
 
-        // Generate unique file name
-        $fileName = time().'.'.$imageFile->getClientOriginalExtension();
+            // กำหนดชื่อไฟล์รูปภาพใหม่
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-        // Upload image to storage
-        $path = $imageFile->storeAs('public/images', $fileName);
+            // บันทึกไฟล์รูปภาพในโฟลเดอร์ public/images
+            $image->move(public_path('images/jobs'), $imageName);
 
+            // อ่านขนาดของรูปภาพ
+            list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName));
+
+            // กำหนดขนาดใหม่ของรูปภาพเมื่อย่อขนาดให้เหลือ 250x250
+            $newWidth = 300;
+            $newHeight = 450;
+
+            // สร้างรูปภาพใหม่โดยใช้ฟังก์ชัน imagecreatefromjpeg() หรือ imagecreatefrompng() ขึ้นอยู่กับประเภทของไฟล์รูปภาพ
+            $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+            $source = imagecreatefromjpeg(public_path('images/jobs/' . $imageName));
+
+            // ย่อขนาดรูปภาพ
+            imagecopyresized($thumbnail, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+
+            // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
+            $thumbnailPath = public_path('images/jobs/' . $imageName);
+            imagejpeg($thumbnail, $thumbnailPath);
+
+            // ลบไฟล์รูปภาพเดิม
+            //unlink(public_path('images/jobs/' . $imageName));
+
+            // สามารถเก็บชื่อไฟล์รูปภาพที่ย่อขนาดแล้วไว้ในฐานข้อมูลหรือทำอื่นๆ ตามที่ต้องการ
+
+            // ส่งกลับไปยังหน้าแสดงผลหรือทำการ redirect
+            $bookings->booking_status = $request->booking_status;
             $bookings->job_detailsubmission = $request->job_detailsubmission;
-            $bookings->job_img = $path;
+            $bookings->job_img = $thumbnailPath;
             $bookings->save();
 
-            return response()->json([
-                'message' => 'อัพเดทข้อมูลสำเร็จ'
-            ], 201);
+            Alert::success('Success', 'ส่งงานสำเร็จ!');
+            return redirect()->back();
+        }
 
 
+        // Alert::error('Error', 'ไม่พบรูปภาพที่จะอัพโหลด');
+        // return redirect()->back();
     }
+
+
 
     public function testUser(){
 
-        // $date = '2023-04-20';
-
-        // $employees_not_on_holiday = DB::table('role_users')
-        //     ->leftJoin('holiday_users', function ($join) use ($date) {
-        //         $join->on('role_users.id', '=', 'holiday_users.user_id')
-        //              ->where(function($query) use ($date) {
-        //                  $query->where('start_date', '<=', $date)
-        //                        ->where('end_date', '>=', $date);
-        //              });
-        //             //  ->whereNotIn('status', [1]); // เช็คว่า status ไม่ใช่ 1
-        //     })
-        //     ->whereNull('holiday_users.user_id')
-        //     ->whereIn('role_type', ['HeadStaff', 'Staff'])
-        //     ->select('role_users.*')
-        //     ->get();
 
 
         $date = '2023-04-20';

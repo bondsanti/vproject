@@ -364,8 +364,8 @@
                                             <label>สถานะการจอง</label>
                                             <select class="form-control" name="booking_status" id="my-dropdown" required>
 
-
-                                            <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
+                                            <option value="">เลือก</option>
+                                            <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงาน</option>
                                             <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
                                             </select>
                                         </div>
