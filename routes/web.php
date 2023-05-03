@@ -99,7 +99,7 @@ Route::get('/booking/list',[BookingController::class,'listBooking'])->name('list
 Route::delete('/booking/list/{id}',[BookingController::class,'destroyBooking'])->name('booking.del')->middleware('isLogin');
 Route::put('/booking/list/update-status',[BookingController::class,'updateStatus'])->name('booking.update.status')->middleware('isLogin');
 Route::put('/booking/list/update-user',[BookingController::class,'updateUser'])->name('booking.update.user')->middleware('isLogin');
-Route::put('/booking/list/update-star',[BookingController::class,'updateStar'])->name('booking.update.star')->middleware('isLogin');
+Route::post('/booking/list/update-score',[BookingController::class,'updateScore'])->name('booking.update.score')->middleware('isLogin');
 Route::post('/booking/list/update',[BookingController::class,'updateBookingProject'])->name('updateBookingProject')->middleware('isLogin');
 Route::get('/booking/edit/{id}',[BookingController::class,'editBooking'])->name('booking.edit')->middleware('isLogin');
 Route::get('/booking/print/{id}',[BookingController::class,'printBooking'])->middleware('isLogin');

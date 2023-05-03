@@ -997,6 +997,34 @@ class BookingController extends Controller
         return response()->json($bookings, 200);
     }
 
+    public function updateScore(Request $request)
+    {
+
+        $bookings = Booking::where('bookings.id',$request->booking_id)->first();
+
+        if ($bookings) {
+            $bookings->job_score = $request->rating;
+            $bookings->save();
+
+            return response()->json([
+                'message' => 'ให้คะแนนความพึ่งพอใจเรียบร้อย',
+                'data_id' => $bookings->id
+            ], 201);
+
+
+        }else{
+            return response()->json([
+                'message' => 'Error',
+                'data_id' => $bookings->id
+            ], 404);
+
+        }
+
+
+
+
+    }
+
     public function updateshowJob(Request $request)
     {
 

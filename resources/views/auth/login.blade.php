@@ -27,17 +27,25 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+        <style>
+            .login-logo img {
+                max-width: 100%;
+                height: auto;
+            }
+        </style>
 <body class="hold-transition login-page">
 
-    <br><br><br><br>
+
     <div class="login-box">
         <div class="login-logo">
-            <img src="{{url('uploads/logovb2.png')}}" width="300px">
+            <img src="{{url('uploads/logovb2_small.png')}}">
         </div>
         @include('sweetalert::alert')
 
         <div class="login-box-body">
+
             <p class="login-box-msg login-logo"><b>vBis</b>Project</p>
+
             <form action="{{route('loginUser')}}" method="post">
                 @csrf
                 <div class="form-group has-feedback">
