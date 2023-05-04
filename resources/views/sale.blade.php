@@ -328,7 +328,7 @@
                                     <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
                                         <i class="fa fa-check">
                                         </i>
-                                        คอนเฟริ์มนัด
+                                        คอนเฟริ์มนัด 1
                                     </button>
                                   @else
                                     <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" data-placement="top" title="ขณะนี้ยังไม่เปิดให้คอนเฟริ์ม จะเปิดให้คอนเฟริ์มในวันที่ {{$confirmBtn}} 16:00-17:00">

@@ -13,7 +13,7 @@ class Role_user extends Model
     protected $connection = 'mysql';
     protected $table = 'role_users';
 
-    public $timestamps = false;
+    //public $timestamps = false;
 
     public function user_ref()
     {

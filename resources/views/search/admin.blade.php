@@ -1,6 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .rating {
+        font-size: 40px;
+    }
+
+    .star {
+        color: #b7b59c;
+        cursor: pointer;
+    }
+    .starshow {
+        color: #f8e825;
+        /* cursor: pointer; */
+    }
+
+    .star:hover,
+    .star:hover~.star {
+        color: #f8e825;
+    }
+
+    .star.active {
+        color: #f8e825;
+    }
+    .bgshow{
+
+        border: 3px dotted #06a013; /* เส้นขอบเป็นจุด ๆ สีเหลือง */
+    }
+</style>
 <section class="content-header">
     <h1>
         Dashboard
@@ -184,10 +211,10 @@
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body">
-                    <table id="table" style="width:100%" class="table table-bordered table-striped">
+                    <table id="table" style="" class="table table-bordered table-striped table-responsive">
                         <thead>
                             <tr>
-
+                                {{-- <th class="text-center"><button id="print-button" onclick="printChecked()">Print</button></th> --}}
                                 <th class="text-center">#</th>
                                 <th class="text-center">ประเภท</th>
                                 <th class="text-center">โครงการ</th>
@@ -195,6 +222,7 @@
                                 <th class="text-center">ทีม/สายงาน</th>
                                 <th class="text-center">Sale </th>
                                 <th class="text-center">เจ้าหน้าที่โครงการ </th>
+
                                 <th class="text-center">สถานะ</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -228,7 +256,7 @@
                                     <input type="checkbox" name="select[]" value="{{ $loop->index+1 }}">
                                 </td> --}}
                                 <td>
-                                    {{$booking->id}}
+                                    {{$booking->bkid}}
                                 </td>
                                 <td>
                                     <p>
@@ -238,7 +266,7 @@
                                 <td>
                                     <a>{{$booking->booking_project_ref[0]->name}}</a>
                                     <br />
-                                    <small>
+                                    <small class="text-red">
                                         เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
                                         {{date('H:i',strtotime($booking->booking_start))}}
                                         -
@@ -290,34 +318,45 @@
                                         </i>
                                         รายละเอียด
                                       </button>
-                                      <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
-                                        <i class="fa fa-refresh">
-                                        </i>
-                                        สถานะ
-                                      </button>
+                                      @if ($booking->booking_status >= 3)
+                                        {{-- <button type="button" class="btn btn-defult btn-sm" disabled>
+                                            <i class="fa fa-refresh">
+                                            </i>
+                                            สถานะ
+                                        </button> --}}
+                                      @else
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
+                                            <i class="fa fa-refresh">
+                                            </i>
+                                            สถานะ
+                                        </button>
+                                      @endif
                                       @if ($booking->booking_title=="เยี่ยมโครงการ")
+
                                         @if ($booking->booking_status > 0)
-                                            <button class="btn btn-info btn-sm" disabled>
+                                            {{-- <button class="btn btn-default btn-sm" disabled>
                                                 <i class="fa fa-pencil">
                                                 </i>
-                                                แก้ไข
-                                            </button>
+                                                เปลี่ยนเจ้าหน้าที่
+                                            </button> --}}
                                         @else
-                                        <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
+
+                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal-user-{{$booking->bkid}}">
                                             <i class="fa fa-pencil">
                                             </i>
-                                            แก้ไข
-                                        </a>
+                                            เปลี่ยนเจ้าหน้าที่
+                                          </button>
+
                                         @endif
 
                                       @endif
 
                                     @if ($booking->booking_status > 0)
-                                        <button class="btn btn-danger btn-sm delete-item" data-id="" disabled>
+                                        {{-- <button class="btn btn-default btn-sm delete-item" data-id="" disabled>
                                             <i class="fa fa-trash">
                                             </i>
                                             ลบ
-                                        </button>
+                                        </button> --}}
                                     @else
                                     <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                         <i class="fa fa-trash">
@@ -328,7 +367,7 @@
 
                                 </td>
                             </tr>
-
+                            <!-- /.modal status -->
                             <div class="modal fade" id="modal-status-{{$booking->bkid}}">
                                 <div class="modal-dialog modal-sm">
                                 <form id="updateStatusForm" method="POST" name="updateStatusForm" class="form-horizontal" action="{{ route('booking.update.status') }}">
@@ -346,8 +385,8 @@
                                             <label>สถานะการจอง</label>
                                             <select class="form-control" name="booking_status" id="my-dropdown" required>
 
-
-                                            <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
+                                            <option value="">เลือก</option>
+                                            <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงาน</option>
                                             <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
                                             </select>
                                         </div>
@@ -385,103 +424,186 @@
                                 </div>
                                 <!-- /.modal-dialog -->
                             </div>
-                            <!-- /.modal -->
-                            <div class="modal fade" id="modal-{{$booking->bkid}}">
+
+                            <div class="modal fade" id="modal-{{ $booking->bkid }}">
                                 <div class="modal-dialog">
-                                  <div class="modal-content">
-                                    <div class="modal-header">
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span></button>
-                                      <h4 class="modal-title">{{$booking->booking_title}}</h4>
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">{{ $booking->booking_title }}</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <dl class="dl-horizontal">
+                                                <dt>โครงการ</dt>
+                                                <dd><span
+                                                        class="badge bg-blue">{{ $booking->booking_project_ref[0]->name }}</span>
+                                                </dd>
+                                                <dt>วัน / เวลา</dt>
+                                                <dd><span
+                                                        class="badge bg-yellow">{{ date('d/m/Y', strtotime($booking->booking_start)) }}</span>
+                                                    <span
+                                                        class="badge bg-yellow">{{ date('H:i', strtotime($booking->booking_start)) }}
+                                                        -
+                                                        {{ date('H:i', strtotime($booking->booking_end)) }}
+                                                        น.</span>
+                                                </dd>
+
+                                                <dt>ลูกค้า</dt>
+                                                <dd><strong>{{ $booking->customer_name }} {{ $booking->customer_tel }}</strong>
+                                                </dd>
+                                                <dt>ข้อมูลเข้าชม</dt>
+                                                <dd>
+                                                    {{ $booking->customer_req }}
+                                                    @php
+                                                        if ($booking->room_price > 0) {
+                                                            echo number_format($booking->room_price) . '.-';
+                                                        }
+                                                    @endphp
+                                                </dd>
+                                                <dt>เลขห้อง</dt>
+                                                <dd>
+
+                                                    @php
+                                                        if ($booking->room_price != null) {
+                                                            echo $booking->room_no;
+                                                        }
+                                                    @endphp
+                                                </dd>
+                                                <dt>เอกสารขอกู้ธนาคาร</dt>
+                                                <dd>
+                                                    {{ $booking->customer_req_bank }}
+                                                </dd>
+                                                <dt>ฝากรับเอกสารลูกค้า</dt>
+                                                <dd>
+                                                    @php
+                                                        if ($booking->num_home > 0) {
+                                                            echo 'สำเนาทะเบียนบาน <strong>' . $booking->num_home . '</strong>ชุด';
+                                                        }
+                                                    @endphp
+                                                </dd>
+                                                <dd>
+                                                    @php
+                                                        if ($booking->num_idcard > 0) {
+                                                            echo 'สำเนาบัตรประชาชน <strong>' . $booking->num_idcard . '</strong>ชุด';
+                                                        }
+                                                    @endphp
+                                                </dd>
+                                                <dd>
+                                                    @php
+                                                        if ($booking->num_app_statement > 0) {
+                                                            echo 'หนังสือรับรองเงินเดือน <strong>' . $booking->num_app_statement . '</strong>ชุด';
+                                                        }
+                                                    @endphp
+                                                </dd>
+                                                <dd>
+                                                    @php
+                                                        if ($booking->num_statement > 0) {
+                                                            echo 'เอกสาร Statement <strong>' . $booking->num_statement . '</strong>ชุด';
+                                                        }
+                                                    @endphp
+                                                </dd>
+                                                <dt>หมายเหตุ</dt>
+                                                <dd>{{ $booking->remark }}</dd>
+                                            </dl>
+                                            <dl class="dl-horizontal">
+                                                <hr>
+                                            </dl>
+                                            <dl class="dl-horizontal">
+                                                <dt>ทีม/สายงาน</dt>
+                                                <dd><strong class="text-primary">{{ $booking->team_name }}</strong> -
+                                                    {{ $booking->subteam_name }}</dd>
+                                                <dt>ชื่อ Sale</dt>
+                                                <dd>{{ $booking->booking_user_ref[0]->name_th }}, {{ $booking->user_tel }} </dd>
+
+                                                <dt>ทีม หน้าโครงการ</dt>
+                                                <dd>{{ $booking->booking_emp_ref[0]->name_th }},
+                                                    {{ $booking->booking_emp_ref[0]->phone }}</dd>
+
+                                            </dl>
+                                            @if ($booking->job_detailsubmission != null && $booking->job_img != null)
+
+                                            <h4><u>รายละเอียดส่งงาน</u></h4>
+                                            <dl class="dl-horizontal bgshow">
+                                                <dt>ความเห็นลูกค้า</dt>
+                                                <dd>{{$booking->job_detailsubmission}}</dd>
+                                                <dt>คะแนนพึงพอใจ</dt>
+                                                <dd>
+                                                    @if ($booking->job_score<=1)
+                                                    <span class="starshow">&#9733;</span>
+                                                    @elseif ($booking->job_score<=2)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    @elseif ($booking->job_score<=3)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    @elseif ($booking->job_score<=4)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    @else
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    @endif
+                                                    {{$booking->job_score}} ดาว
+                                               </dd>
+
+                                                <dt>รูปภาพประกอบ</dt>
+                                                <dd><img class="img-responsive" src="{{$booking->job_img}}" width="150px"></dd>
+
+                                            </dl>
+                                            @endif
+                                        </div>
+
                                     </div>
-                                    <div class="modal-body">
-                                        <dl class="dl-horizontal">
-                                            <dt>โครงการ</dt>
-                                            <dd><span class="badge bg-blue">{{$booking->booking_project_ref[0]->name}}</span></dd>
-                                            <dt>วัน / เวลา</dt>
-                                            <dd><span class="badge bg-yellow">{{date('d/m/Y',strtotime($booking->booking_start))}}</span>
-                                                <span class="badge bg-yellow">{{date('H:i',strtotime($booking->booking_start))}}
-                                                -
-                                                {{date('H:i',strtotime($booking->booking_end))}}
-                                                น.</span></dd>
+                                    <!-- /.modal-content -->
+                                </div>
+                                <!-- /.modal-dialog -->
+                            </div>
 
-                                            <dt>ลูกค้า</dt>
-                                            <dd><strong>{{$booking->customer_name}} {{$booking->customer_tel}}</strong></dd>
-                                            <dt>ข้อมูลเข้าชม</dt>
-                                            <dd>
-                                                {{$booking->customer_req}}
-                                                @php
-                                                if($booking->room_price > 0){
-                                                    echo number_format($booking->room_price).".-";
-                                                }
-                                                @endphp
-                                            </dd>
-                                            <dt>เลขห้อง</dt>
-                                            <dd>
+                            <!-- /.modal user -->
+                            <div class="modal fade" id="modal-user-{{$booking->bkid}}">
+                                <div class="modal-dialog modal-sm">
+                                <form id="updateUserForm" method="POST" name="updateUserForm" class="form-horizontal" action="{{ route('booking.update.user') }}">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="booking_id" id="booking_id" value="{{$booking->bkid}}">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">เปลี่ยนเจ้าหน้าที่โครงการ</h4>
+                                            </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>เลือกเจ้าหน้าที่โครงการ</label>
+                                                <select class="form-control" name="teampro_id" id="my-dropdown" required>
 
-                                                @php
-                                                if($booking->room_price!=null){
-                                                    echo $booking->room_no;
-                                                }
-                                                @endphp
-                                            </dd>
-                                            <dt>เอกสารขอกู้ธนาคาร</dt>
-                                            <dd>
-                                                {{$booking->customer_req_bank}}
-                                            </dd>
-                                            <dt>ฝากรับเอกสารลูกค้า</dt>
-                                            <dd>
-                                                @php
-                                                    if($booking->num_home > 0){
-                                                        echo "สำเนาทะเบียนบาน <strong>".$booking->num_home."</strong>ชุด";
-                                                    }
-                                                @endphp
-                                            </dd>
-                                            <dd>
-                                                @php
-                                                    if($booking->num_idcard > 0){
-                                                        echo "สำเนาบัตรประชาชน <strong>".$booking->num_idcard."</strong>ชุด";
-                                                    }
-                                                @endphp
-                                            </dd>
-                                            <dd>
-                                                @php
-                                                    if($booking->num_app_statement > 0){
-                                                        echo "หนังสือรับรองเงินเดือน <strong>".$booking->num_app_statement."</strong>ชุด";
-                                                    }
-                                                @endphp
-                                            </dd>
-                                            <dd>
-                                                @php
-                                                    if($booking->num_statement > 0){
-                                                        echo "เอกสาร Statement <strong>".$booking->num_statement."</strong>ชุด";
-                                                    }
-                                                @endphp
-                                            </dd>
-                                            <dt>หมายเหตุ</dt>
-                                            <dd>{{$booking->remark}}</dd>
-                                        </dl>
-                                        <dl  class="dl-horizontal">
-                                            <hr>
-                                        </dl>
-                                        <dl  class="dl-horizontal">
-                                            <dt>ทีม/สายงาน</dt>
-                                            <dd><strong class="text-primary">{{$booking->team_name}}</strong> - {{$booking->subteam_name}}</dd>
-                                            <dt>ชื่อ Sale</dt>
-                                            <dd>{{$booking->booking_user_ref[0]->name_th}}, {{$booking->user_tel}} </dd>
+                                                    @foreach ($dataEmps as $dataEmp)
+                                                        <option value="{{$dataEmp->user_ref[0]->id}}" {{ $booking->booking_emp_ref[0]->id == $dataEmp->user_ref[0]->id ? 'selected' : '' }}>{{$dataEmp->user_ref[0]->name_emp}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                            <dt>ทีม หน้าโครงการ</dt>
-                                            <dd>{{$booking->booking_emp_ref[0]->name_th}}, {{$booking->booking_emp_ref[0]->phone}}</dd>
+                                        </div>
+                                    <div class="modal-footer">
 
-                                        </dl>
+                                        <button type="submit" class="btn btn-success" id="">ตกลง</button>
+                                        <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ยกเลิก</button>
+                                        {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
                                     </div>
-
+                                    </form>
                                   </div>
                                   <!-- /.modal-content -->
                                 </div>
                                 <!-- /.modal-dialog -->
                             </div>
-                              <!-- /.modal -->
+
                             @endforeach
 
                         </tbody>
@@ -507,8 +629,7 @@
 @push('script')
     <script>
         $(document).ready(function() {
-        //Date picker
-        $('#datepicker1').datepicker({
+            $('#datepicker1').datepicker({
         format:'yyyy-mm-dd',
         autoclose: true,
         //startDate: new Date(), // sets the minimum date to today
@@ -532,11 +653,10 @@
                 'paging'      : true,
                 'lengthChange': true,
                 'searching'   : true,
-                'ordering'    : true, // enable column sorting
+                'ordering'    : false,
                 'info'        : false,
-                'autoWidth'   : true,
-                'scrollX'     : true,
-            });
+                'autoWidth'   : true
+            })
 
         });
         $("#my-dropdown").change(function () {
@@ -588,7 +708,7 @@
                             '_token': '{{ csrf_token() }}'
                         },
                         success: function(response) {
-                            window.location.href = '{{ route("listBooking") }}';
+                            window.location.href = '{{ route("main") }}';
                             Swal.fire({
                                 title: 'สำเร็จ!',
                                 text: 'ลบข้อมูลเรียบร้อย..',
@@ -598,7 +718,7 @@
 
                         },
                         error: function() {
-                            window.location.href = '{{ route("listBooking") }}';
+                            window.location.href = '{{ route("main") }}';
                             Swal.fire({
                                 title: 'Oops...',
                                 text: 'มีบางอย่างผิดพลาด!',

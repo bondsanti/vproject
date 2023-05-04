@@ -31,7 +31,7 @@
         <!-- Info boxes -->
         <div class="row">
               <!-- /.col -->
-              <div class="col-md-4 col-xs-12">
+              <div class="col-md-4">
                 <div class="box box-primary">
                         <div class="box-header with-border">
                         <h3 class="box-title">ลงวันหยุด</h3>
@@ -110,7 +110,7 @@
                         </div>
                 </div>
 
-                <div class="box box-primary">
+                {{-- <div class="box box-primary">
 
                     <div class="box-body">
 
@@ -148,15 +148,19 @@
 
                             <td>
 
-                                {{-- <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
+                                <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
                                     <i class="fa fa-refresh">
                                     </i>
                                     สถานะ
-                                  </button> --}}
+                                  </button>
 
                                 <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
+
+                                @if ($dataRoleUser->role_type=="SuperAdmin")
                                 <button class="btn btn-danger btn-xs delete-item" data-id="{{$holiday->id}}">
-                                <i class="fa fa-trash"></i> ลบ</button>
+                                    <i class="fa fa-trash"></i> ลบ</button>
+                                @endif
+
 
                             </td>
                             </tr>
@@ -164,10 +168,10 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div> --}}
 
               </div>
-              <div class="col-md-8 col-xs-12">
+              <div class="col-md-8">
                 <div class="box box-primary">
                   <div class="box-body no-padding">
                     <h5>
@@ -179,10 +183,78 @@
                   </div>
                   <!-- /.box-body -->
                 </div>
-                <!-- /. box -->
+
               </div>
               <!-- /.col -->
+              <div class="col-md-12">
+                <div class="box box-primary">
 
+                    <div class="box-body">
+
+                        <table id="table" class="table table-condensed">
+                            <thead>
+                            <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center">วันที่</th>
+                            <th class="text-center">ชื่อ-สกุล</th>
+
+                            <th class="text-center">สถานะ</th>
+                            <th class="text-center">หมายเหตุ</th>
+                            <th class="text-center">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach ( $holidays as $holiday)
+
+                                @php
+                                if($holiday->status==0){
+                                        // $backgroundColor="#a6a6a6";
+                                        // $borderColor="#a6a6a6";
+                                        $textStatus="หยุด";
+                                    }elseif($holiday->status==1){
+                                        // $backgroundColor="#00c0ef";
+                                        // $borderColor="#00c0ef";
+                                        $textStatus="เข้าสำนักงานใหญ่";
+                                    }else{
+                                        // $backgroundColor="#dd4b39";
+                                        // $borderColor="#dd4b39";
+                                        $textStatus="ยกเลิก";
+                                    }
+                                    $start_date = date('d/m/Y',strtotime($holiday->start_date.' +543 year'));
+                                    $end_date = date('d/m/Y',strtotime($holiday->end_date.' +543 year'));
+                                @endphp
+                            <tr class="text-center">
+                            <td>{{ $loop->index+1 }}</td>
+                            <td>{{ $start_date." - ".$end_date }}</td>
+                            <td>{{$holiday->user_ref->name_th}}</td>
+                            <td>{{$textStatus}}</td>
+                            <td>{{$holiday->remark}}</td>
+
+
+                            <td>
+
+                                <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
+                                    <i class="fa fa-refresh">
+                                    </i>
+                                    สถานะ
+                                  </button>
+
+                                <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
+
+                                @if ($dataRoleUser->role_type=="SuperAdmin")
+                                <button class="btn btn-danger btn-xs delete-item" data-id="{{$holiday->id}}">
+                                    <i class="fa fa-trash"></i> ลบ</button>
+                                @endif
+
+
+                            </td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+              </div>
         </div>
         <!-- /.row -->
     </section>
@@ -206,9 +278,9 @@
                         <select class="form-control"  id="status" name="status" autocomplete="off">
                         <option value="">เลือก</option>
 
-                        {{-- <option value="0">รออนุมัติ</option> --}}
-                        {{-- <option value="1">อนุมัติ</option> --}}
-                        <option value="1">ยกเลิก</option>
+                        <option value="0">หยุด</option>
+                        <option value="1">เข้าสำนักงานใหญ่</option>
+                        <option value="2">ยกเลิก</option>
                         </select>
                         <small class="text-danger mt-1 status_err"></small>
                         </div>
@@ -318,7 +390,7 @@
     $('#table').DataTable({
         'paging'      : true,
         'lengthChange': true,
-        'searching'   : false,
+        'searching'   : true,
         'ordering'    : false,
          'info'        : false,
          'autoWidth'   : true

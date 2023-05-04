@@ -1,25 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-    <style>
-        .rating {
-            font-size: 40px;
-        }
+<style>
+    .rating {
+        font-size: 40px;
+    }
 
-        .star {
-            color: #b7b59c;
-            cursor: pointer;
-        }
+    .star {
+        color: #b7b59c;
+        cursor: pointer;
+    }
+    .starshow {
+        color: #f8e825;
+        /* cursor: pointer; */
+    }
 
-        .star:hover,
-        .star:hover~.star {
-            color: #f8e825;
-        }
+    .star:hover,
+    .star:hover~.star {
+        color: #f8e825;
+    }
 
-        .star.active {
-            color: #f8e825;
-        }
-    </style>
+    .star.active {
+        color: #f8e825;
+    }
+    .bgshow{
+
+        border: 3px dotted #06a013; /* เส้นขอบเป็นจุด ๆ สีเหลือง */
+    }
+</style>
     <section class="content-header">
         <h1>
             แดชบอร์ด
@@ -530,6 +538,43 @@
                                             {{ $booking->booking_emp_ref[0]->phone }}</dd>
 
                                     </dl>
+                                    @if ($booking->job_detailsubmission != null && $booking->job_img != null)
+
+                                    <h4><u>รายละเอียดส่งงาน</u></h4>
+                                    <dl class="dl-horizontal bgshow">
+                                        <dt>ความเห็นลูกค้า</dt>
+                                        <dd>{{$booking->job_detailsubmission}}</dd>
+                                        <dt>คะแนนพึงพอใจ</dt>
+                                        <dd>
+                                            @if ($booking->job_score<=1)
+                                            <span class="starshow">&#9733;</span>
+                                            @elseif ($booking->job_score<=2)
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            @elseif ($booking->job_score<=3)
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            @elseif ($booking->job_score<=4)
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            @else
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            <span class="starshow">&#9733;</span>
+                                            @endif
+                                            {{$booking->job_score}} ดาว
+                                       </dd>
+
+                                        <dt>รูปภาพประกอบ</dt>
+                                        <dd><img class="img-responsive" src="{{$booking->job_img}}" width="150px"></dd>
+
+                                    </dl>
+                                    @endif
                                 </div>
 
                             </div>

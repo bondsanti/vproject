@@ -38,7 +38,7 @@
 
     <div class="login-box">
         <div class="login-logo">
-            <img src="{{url('uploads/logovb2_small.png')}}">
+            <img src="{{url('uploads/logovb2.png')}}">
         </div>
         @include('sweetalert::alert')
 
@@ -49,7 +49,8 @@
             <form action="{{route('loginUser')}}" method="post">
                 @csrf
                 <div class="form-group has-feedback">
-                    <input type="text" class="form-control" name="code" placeholder="Code"  autocomplete="off" value="{{old('code')}}">
+                    {{-- <input type="text" class="form-control" name="code" placeholder="Code"  autocomplete="off" value="{{old('code')}}"> --}}
+                    <input type="text" class="form-control" name="code" placeholder="Code"  autocomplete="off">
                     <span class="glyphicon glyphicon-barcode form-control-feedback"></span>
                     <small class="text-danger mt-1">@error('code'){{$message}} @enderror</small>
                   </div>
@@ -63,14 +64,13 @@
                         <button type="submit" class="btn btn-primary btn-block btn-flat"><i class="fa fa-sign-in"></i>
                             เข้าสู่ระบบ</button>
                     </div>
-
                 </div>
             </form>
             {{-- <div class="social-auth-links text-center">
-<p>- OR -</p>
-<a href="#" class="btn btn-success btn-block btn-flat"><i class="fa fa-user-plus"></i> สมัครเข้าใช้งานระบบ</a>
+            <p>- OR -</p>
+            <a href="#" class="btn btn-success btn-block btn-flat"><i class="fa fa-user-plus"></i> สมัครเข้าใช้งานระบบ</a>
 
-</div> --}}
+            </div> --}}
         </div>
 
     </div>

@@ -272,7 +272,7 @@ class BookingController extends Controller
              ->orderBy('role_users.id') // เรียงลำดับตาม ID พนักงาน
              ->get();
 
-             //dd($employees_not_on_holiday);
+             dd($employees_not_on_holiday);
              foreach ($employees_not_on_holiday as $employee) {
                 //dd($employee);
                 $booking_count = Booking::where('booking_start', $booking_start)

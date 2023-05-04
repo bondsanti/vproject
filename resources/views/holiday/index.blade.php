@@ -149,8 +149,9 @@
                     <div class="box-body">
 
                         <div id="external-events">
-                            <div class="external-event bg-gray">OFF / วันหยุด</div>
-                            <div class="external-event bg-red"> Cancel OFF / ยกเลิก วันหยุด</div>
+                            <div class="external-event bg-gray">วันหยุด</div>
+                            <div class="external-event bg-info">เข้าสำนักงานใหญ่</div>
+                            <div class="external-event bg-red">ยกเลิก</div>
                         </div>
 
                     </div>
@@ -169,7 +170,7 @@
     </section>
     <!-- /.content -->
 
-    <div class="modal fade" id="updateStatus">
+    {{-- <div class="modal fade" id="updateStatus">
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
@@ -204,7 +205,7 @@
           <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
-    </div>
+    </div> --}}
 
     {{-- <div class="modal fade" id="updateData">
         <div class="modal-dialog modal-md">

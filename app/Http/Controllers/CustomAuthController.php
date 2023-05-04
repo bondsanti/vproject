@@ -8,6 +8,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
 use App\Models\User;
 use App\Models\Role_user;
+use App\Models\Log;
 use Illuminate\Support\Facades\DB;
 
 class CustomAuthController extends Controller
@@ -79,17 +80,24 @@ class CustomAuthController extends Controller
         ]);
 
 
-        $user_hr = DB::connection('mysql_user')->table('users')
-        ->where('code', '=', $request->code)
+        //$user_hr = DB::connection('mysql_user')->table('users')
+        $user_hr = User::where('code', '=', $request->code)
         ->orWhere('old_code', '=', $request->code)->first();
 
-        //dd($user_hr);
+    //dd($user_hr);
+    if (!$user_hr) {
+            Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+            return back();
+    }else{
+
         if($user_hr->active_vproject!=0){
+
             if($user_hr->active !=0 or $user_hr->resign_date==null){
 
                 $role_user = Role_user::where('user_id',"=",$user_hr->id)->first();
 
                 if(!$role_user){
+
                     Alert::warning('คุณไม่มีสิทธิ์เข้าระบบ', 'กรุณาติดต่อ Admin!!');
                     return back();
 
@@ -105,6 +113,8 @@ class CustomAuthController extends Controller
                             'timeStm' => date('Y-m-d H:i:s'),
                             'page' => 'vProject'
                         ]);
+
+                        Log::addLog($request->session()->get('loginId'), 'Login', 'By LoginPage');
 
                         Alert::success('เข้าสู่ระบบสำเร็จ');
                         return redirect('/');
@@ -130,14 +140,21 @@ class CustomAuthController extends Controller
             Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
             return back();
         }
+    }
 
    }
 
    public function logoutUser(Request $request){
 
         if($request->session()->has('loginId')){
-            Alert::success('ออกจากระบบเรียบร้อย');
+
+            //$user = User::where('id', $request->session()->get('loginId'))->first();
+            //dd($user);
+            Log::addLog($request->session()->get('loginId'), 'Logout');
+
             $request->session()->pull('loginId');
+
+            Alert::success('ออกจากระบบเรียบร้อย');
             return redirect('login');
         }
 
@@ -161,6 +178,8 @@ class CustomAuthController extends Controller
                 'timeStm' => date('Y-m-d H:i:s'),
                 'page' => 'vProject'
             ]);
+
+            Log::addLog($request->session()->get('loginId'), 'Login', 'AllowLoginConnect By vBisConnect');
             return redirect('/');
         }else{
             $request->session()->pull('loginId');

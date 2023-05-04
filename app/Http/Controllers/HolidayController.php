@@ -29,7 +29,7 @@ class HolidayController extends Controller
 
         if (in_array($dataRoleUser->role_type, ["Admin", "SuperAdmin"])){
 
-            $holidays = Holiday::with('user_ref:id,name_th')->get();
+            $holidays = Holiday::with('user_ref:id,name_th')->orderBy('id','desc')->get();
 
             if($request->ajax())
                 {

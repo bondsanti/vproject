@@ -27,6 +27,11 @@ class CreateBookingsTable extends Migration
             $table->string('user_id');
             $table->string('user_tel');
             $table->string('remark');
+            $table->string('because_cancel_remark');
+            $table->string('because_cancel_other');
+            $table->string('job_detailsubmission');
+            $table->string('job_img');
+            $table->integer('job_score');
             $table->timestamps();
         });
     }

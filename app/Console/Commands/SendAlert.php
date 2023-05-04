@@ -51,12 +51,9 @@ class SendAlert extends Command
 
             $expiredBookings = Booking::leftJoin('projects', 'projects.id', '=', 'bookings.project_id')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-            ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-            ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
             ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-            ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
-            'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+            ->select('bookings.*', 'projects.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
             ->where('bookings.booking_status', '=', '0')
             ->get();
 
