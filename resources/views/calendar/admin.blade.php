@@ -98,26 +98,21 @@
                 //alert('Event: ' + event.title + '\nStart: ' + event.start.format('DD/MM/YYYY H:mm [น.]') + '\nEnd: ' + event.end.format('DD/MM/YYYY H:mm [น.]'));
                 Swal.fire({
                     title: event.title,
-                    // html: `
-                    // <p><strong>Start:</strong> ${event.start.format('DD/MM/YYYY H:mm [น.]')}</p>
-                    // <p><strong>End:</strong> ${event.end.format('DD/MM/YYYY H:mm [น.]')}</p>
-                    // `,
                     html: `
+                    <h5>โครงการ :   <strong>${event.project}</strong></h5>
+                    <h5>วันที่ : <strong>${event.start.format('DD/MM/YYYY H:mm')} -  ${event.end.format('H:mm [น.]')}</strong></h5>
 
-                    <h5><strong>${event.project}</strong></h5>
-
-                    <h5><strong>วันที่ </strong> ${event.start.format('DD/MM/YYYY H:mm')} <strong> - </strong> ${event.end.format('H:mm [น.]')}</h5>
-                    <h5><strong>ลูกค้า </strong> <span style="color:red">${event.customer}</span></h5>
-                    <h5><strong>ข้อมูลเข้าชม </strong> ${event.cus_req}</h5>
-                    <h5><strong>เลขห้อง </strong> ${event.room_no} <strong>ราคา </strong> ${event.room_price}.-</h5>
+                    <h5>ข้อมูลเข้าชม : <strong>  ${event.cus_req} ${event.room_price}.-</strong></h5>
+                    <h5> เลขห้อง :  <strong> ${event.room_no}</strong>  </h5>
                     <hr>
-                    <h5><strong>เจ้าหน้าที่โครงการ </strong> <span style="color:red">${event.employee}</span></h5>
-                    <h4><strong>สถานะ ${event.status}</strong></h4>
-
+                    <h5>ชื่อ Sale : <strong><span style="color:red">${event.sale}</span></strong></h5>
+                    <h5>ทีม/สายงาน : <strong><span style="">${event.team_name}</span></strong></h5>
+                    <h5>เบอร์สายงาน : <strong><span style="">${event.tel}</span></strong></h5>
+                    <h5>เจ้าหน้าที่โครงการ : <strong><span style="">${event.employee}</span></strong></h5>
+                    <h4><strong>สถานะ <span style="color:${event.backgroundColor}">${event.status}</span></strong></h4>
                     `,
                     icon: 'info',
-                    customClass: 'swal-wide',
-                    confirmButtonText: 'OK'
+                    customClass: 'swal-wide'
                 });
                 },
                 eventRender: function(event, element) {

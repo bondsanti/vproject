@@ -71,9 +71,16 @@
         </li>
         @endif
         <li class="header">คู่มือ</li>
-        {{-- <li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>
-        <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li> --}}
-        <li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>คู่มือใช้งานระบบ</span></a></li>
+
+        @if ($dataRoleUser->role_type=="Sale")
+        <li><a href="{{ url('uploads/manual/คู่มือใช้งานระบบ_Sale.pdf') }}" target="_blank" style="background-color: rgba(23, 166, 255, 0.3)"><i class="fa fa-book text-aqua"></i> <span>คู่มือใช้งานระบบ</span></a></li>
+        @elseif ($dataRoleUser->role_type=="Staff")
+        <li><a href="{{ url('uploads/manual/คู่มือใช้งานระบบ_Staff.pdf') }}" target="_blank" style="background-color: rgba(23, 166, 255, 0.3)"><i class="fa fa-book text-aqua"></i> <span>คู่มือใช้งานระบบ</span></a></li>
+        @else
+        <li><a href="{{ url('uploads/manual/คู่มือใช้งานระบบ_Sale.pdf') }}" target="_blank"><i class="fa fa-book text-aqua"></i> <span>คู่มือใช้งานระบบ Sale</span></a></li>
+        <li><a href="{{ url('uploads/manual/คู่มือใช้งานระบบ_Staff.pdf') }}" target="_blank"><i class="fa fa-book text-aqua"></i> <span>คู่มือใช้งานระบบ Project</span></a></li>
+        <li><a href="{{ url('uploads/manual/คู่มือใช้งานระบบ__Admin.pdf') }}" target="_blank"><i class="fa fa-book text-aqua"></i> <span>คู่มือใช้งานระบบ Admin</span></a></li>
+        @endif
       </ul>
     </section>
     <!-- /.sidebar -->

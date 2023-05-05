@@ -35,6 +35,9 @@ class MainController extends Controller
         //dd($CountBooking);
         $subTeams = Subteam::get();
 
+        //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
+        $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
+
         if ($dataRoleUser->role_type== "SuperAdmin"){
 
             $countAllBooking = Booking::count();
@@ -58,6 +61,7 @@ class MainController extends Controller
 
 
 
+
             $countAllBooking = Booking::count();
             $countSucessBooking = Booking::where('booking_status',3)->count();
             $countCancelBooking = Booking::where('booking_status',4)->count();
@@ -72,7 +76,8 @@ class MainController extends Controller
              'countCancelBooking',
              'countExitBooking',
              'dataEmps',
-             'dataSales'));
+             'dataSales',
+            'ItemStatusHowCancel'));
         }elseif ($dataRoleUser->role_type=="Staff") {
 
 
@@ -101,7 +106,8 @@ class MainController extends Controller
             'countCancelBooking',
             'countExitBooking',
             'dataEmps',
-            'dataSales'));
+            'dataSales',
+            'ItemStatusHowCancel'));
 
         }else{
 
@@ -151,6 +157,7 @@ class MainController extends Controller
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
         $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+        $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
 
         if ($dataRoleUser->role_type== "SuperAdmin"){
 
@@ -229,7 +236,8 @@ class MainController extends Controller
              'countCancelBooking',
              'countExitBooking',
              'dataEmps',
-             'dataSales'));
+             'dataSales',
+            'ItemStatusHowCancel'));
 
         }elseif ($dataRoleUser->role_type=="Staff") {
 
@@ -293,7 +301,8 @@ class MainController extends Controller
             'countCancelBooking',
             'countExitBooking',
             'dataEmps',
-            'dataSales'));
+            'dataSales',
+            'ItemStatusHowCancel'));
 
         }else{
 

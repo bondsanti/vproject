@@ -1,33 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    .rating {
-        font-size: 40px;
-    }
+    <style>
+        .rating {
+            font-size: 40px;
+        }
 
-    .star {
-        color: #b7b59c;
-        cursor: pointer;
-    }
-    .starshow {
-        color: #f8e825;
-        /* cursor: pointer; */
-    }
+        .star {
+            color: #b7b59c;
+            cursor: pointer;
+        }
 
-    .star:hover,
-    .star:hover~.star {
-        color: #f8e825;
-    }
+        .starshow {
+            color: #f8e825;
+            /* cursor: pointer; */
+        }
 
-    .star.active {
-        color: #f8e825;
-    }
-    .bgshow{
+        .star:hover,
+        .star:hover~.star {
+            color: #f8e825;
+        }
 
-        border: 3px dotted #06a013; /* เส้นขอบเป็นจุด ๆ สีเหลือง */
-    }
-</style>
+        .star.active {
+            color: #f8e825;
+        }
+
+        .bgshow {
+
+            border: 3px dotted #06a013;
+            /* เส้นขอบเป็นจุด ๆ สีเหลือง */
+        }
+    </style>
     <section class="content-header">
         <h1>
             แดชบอร์ด
@@ -337,14 +340,14 @@
                                             @endif
 
 
-                                            @if ($booking->booking_status == 3)
+                                            {{-- @if ($booking->booking_status == 3)
                                                 <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                                                    data-target="#modal-update-{{ $booking->bkid }}">
+                                                    data-target="#modal-successjobs-{{ $booking->bkid }}">
                                                     <i class="fa fa-picture-o">
                                                     </i>
                                                     รายละเอียดส่งงาน
                                                 </button>
-                                            @endif
+                                            @endif --}}
                                             {{-- <button  data-id="{{$booking->bkid}}" data-original-title="Edit" class="btn btn-success btn-sm closejob"><i class="fa fa-picture-o"></i> ส่งงาน</button> --}}
                                             @if ($booking->booking_status == 3 && $booking->job_score == null)
                                                 <button type="button" class="btn bg-maroon btn-sm" data-toggle="modal"
@@ -363,82 +366,85 @@
 
                                         </td>
                                     </tr>
-
-                                    <div class="modal fade" id="modal-status-{{ $booking->bkid }}">
-                                        <div class="modal-dialog modal-sm">
-                                            <form id="updateStatusForm" method="POST" name="updateStatusForm"
-                                                class="form-horizontal" action="{{ route('booking.update.status') }}">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="hidden" name="booking_id" id="booking_id"
-                                                    value="{{ $booking->bkid }}">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span></button>
-                                                        <h4 class="modal-title">อัพเดทสถานะ</h4>
-                                                    </div>
-                                                    <div class="modal-body">
-
-                                                        <div class="form-group">
-                                                            <label>สถานะการจอง</label>
-                                                            <select class="form-control" name="booking_status"
-                                                                id="my-dropdown" required>
-                                                                <option value="">เลือก</option>
-                                                                @if ($booking->booking_status == 0)
-                                                                    <option value="1">รับงาน</option>
-                                                                @endif
-                                                                @if ($booking->booking_status == 2)
-                                                                    <option value="3">เยี่ยมชมเรียบร้อย</option>
-                                                                @endif
-                                                                <option value="4">ยกเลิก</option>
-                                                            </select>
+                                    @if ($booking->booking_status < 2)
+                                        <!-- /.modal-status -->
+                                        <div class="modal fade" id="modal-status-{{ $booking->bkid }}">
+                                            <div class="modal-dialog modal-sm">
+                                                <form id="updateStatusForm" method="POST" name="updateStatusForm"
+                                                    class="form-horizontal"
+                                                    action="{{ route('booking.update.status') }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="booking_id" id="booking_id"
+                                                        value="{{ $booking->bkid }}">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span></button>
+                                                            <h4 class="modal-title">อัพเดทสถานะ</h4>
                                                         </div>
+                                                        <div class="modal-body">
 
-                                                        <div class="form-group">
-                                                            <div id="my-element" style="display:none">
-                                                                <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                                <select class="form-control" id="my-dropdown2"
-                                                                    name="because_cancel_remark">
+                                                            <div class="form-group">
+                                                                <label>สถานะการจอง</label>
+                                                                <select class="form-control" name="booking_status"
+                                                                    id="my-dropdown" required>
                                                                     <option value="">เลือก</option>
-                                                                    {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
-                                                                    <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">
-                                                                        ลูกค้าเลื่อนเข้าชมวันอื่น</option>
-                                                                    <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">
-                                                                        ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
-                                                                    <option value="อื่นๆ">อื่น ๆ</option>
+                                                                    @if ($booking->booking_status == 0)
+                                                                        <option value="1">รับงาน</option>
+                                                                    @endif
+                                                                    @if ($booking->booking_status == 2)
+                                                                        <option value="3">เยี่ยมชมเรียบร้อย</option>
+                                                                    @endif
+                                                                    <option value="4">ยกเลิก</option>
                                                                 </select>
                                                             </div>
 
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <div id="my-element-text" style="display:none">
+                                                            <div class="form-group">
+                                                                <div id="my-element" style="display:none">
+                                                                    <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
+                                                                    <select class="form-control" id="my-dropdown2"
+                                                                        name="because_cancel_remark">
+                                                                        <option value="">เลือก</option>
+                                                                        {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
+                                                                        <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">
+                                                                            ลูกค้าเลื่อนเข้าชมวันอื่น</option>
+                                                                        <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">
+                                                                            ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
+                                                                        <option value="อื่นๆ">อื่น ๆ</option>
+                                                                    </select>
+                                                                </div>
 
-                                                                <label>ระบุเหตุผลอื่น ๆ</label>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <div id="my-element-text" style="display:none">
 
-                                                                <input type="text" class="form-control"
-                                                                    name="because_cancel_other" id="because_cancel_other"
-                                                                    value="">
+                                                                    <label>ระบุเหตุผลอื่น ๆ</label>
+
+                                                                    <input type="text" class="form-control"
+                                                                        name="because_cancel_other"
+                                                                        id="because_cancel_other" value="">
+                                                                </div>
+
                                                             </div>
 
+
                                                         </div>
+                                                        <div class="modal-footer">
 
-
-                                                    </div>
-                                                    <div class="modal-footer">
-
-                                                        <button type="submit" class="btn btn-success"
-                                                            id="">ตกลง</button>
-                                                        <button type="button" class="btn btn-danger pull-left"
-                                                            data-dismiss="modal">ยกเลิก</button>
-                                                        {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
-                                                    </div>
-                                            </form>
+                                                            <button type="submit" class="btn btn-success"
+                                                                id="">ตกลง</button>
+                                                            <button type="button" class="btn btn-danger pull-left"
+                                                                data-dismiss="modal">ยกเลิก</button>
+                                                            {{-- <button type="reset" class="btn btn-danger btn-block">ล้าง</button> --}}
+                                                        </div>
+                                                </form>
+                                            </div>
+                                            <!-- /.modal-content -->
                                         </div>
-                                        <!-- /.modal-content -->
-                                    </div>
-                                    <!-- /.modal-dialog -->
+                                    @endif
+
                     </div>
 
                     <!-- /.modal detail -->
@@ -539,41 +545,41 @@
 
                                     </dl>
                                     @if ($booking->job_detailsubmission != null && $booking->job_img != null)
+                                        <h4><u>รายละเอียดส่งงาน</u></h4>
+                                        <dl class="dl-horizontal bgshow">
+                                            <dt>ความเห็นลูกค้า</dt>
+                                            <dd>{{ $booking->job_detailsubmission }}</dd>
+                                            <dt>คะแนนพึงพอใจ</dt>
+                                            <dd>
+                                                @if ($booking->job_score <= 1)
+                                                    <span class="starshow">&#9733;</span>
+                                                @elseif ($booking->job_score <= 2)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @elseif ($booking->job_score <= 3)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @elseif ($booking->job_score <= 4)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @else
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @endif
+                                                {{ $booking->job_score }} ดาว
+                                            </dd>
 
-                                    <h4><u>รายละเอียดส่งงาน</u></h4>
-                                    <dl class="dl-horizontal bgshow">
-                                        <dt>ความเห็นลูกค้า</dt>
-                                        <dd>{{$booking->job_detailsubmission}}</dd>
-                                        <dt>คะแนนพึงพอใจ</dt>
-                                        <dd>
-                                            @if ($booking->job_score<=1)
-                                            <span class="starshow">&#9733;</span>
-                                            @elseif ($booking->job_score<=2)
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @elseif ($booking->job_score<=3)
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @elseif ($booking->job_score<=4)
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @else
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @endif
-                                            {{$booking->job_score}} ดาว
-                                       </dd>
+                                            <dt>รูปภาพประกอบ</dt>
+                                            <dd><img class="img-responsive" src="{{ $booking->job_img }}"
+                                                    width="150px"></dd>
 
-                                        <dt>รูปภาพประกอบ</dt>
-                                        <dd><img class="img-responsive" src="{{$booking->job_img}}" width="150px"></dd>
-
-                                    </dl>
+                                        </dl>
                                     @endif
                                 </div>
 
@@ -583,106 +589,122 @@
                         <!-- /.modal-dialog -->
                     </div>
 
-                    <!-- /.modal sendjob -->
-                    <div class="modal fade" id="modal-update-{{ $booking->bkid }}">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="">ส่งงาน</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- form start -->
-                                    <form id="" name="" action="{{ route('booking.update.job') }}"
-                                        method="post" class="form-horizontal" enctype="multipart/form-data">
-                                        @csrf
-                                        @method('post')
-                                        <input type="hidden" name="id" id="id"
-                                            value="{{ $booking->bkid }}">
-                                        <div class="box-body">
 
-                                            <div class="form-group">
-                                                <label>สถานะการจอง</label>
-                                                <select class="form-control" name="booking_status" id="my-dropdown_s2"
-                                                    required>
-                                                    <option value="">เลือก</option>
-                                                    @if ($booking->booking_status == 0)
-                                                        <option value="1">รับงาน</option>
-                                                    @endif
-                                                    @if ($booking->booking_status == 2)
-                                                        <option value="3">เยี่ยมชมเรียบร้อย</option>
-                                                    @endif
-
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label>รายละเอียดรับลูกค้า</label>
-                                                <textarea class="form-control" rows="3" id="job_detailsubmission" name="job_detailsubmission" placeholder=""
-                                                    autocomplete="off" required></textarea>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="image">เลือกรูป</label>
-                                                <input type="file" class="form-control" name="job_img" id="job_img"
-                                                    onchange="previewImage(this);" accept="image/jpeg">
-
-                                                <img id="preview" src="#" alt="Image preview"
-                                                    style="display:none;" width="150px">
-
-                                            </div>
-
-                                        </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-success btn-block">ตกลง</button>
-                                </div>
-                                </form>
-                            </div>
-                            <!-- /.modal-content -->
-                        </div>
-                        <!-- /.modal-dialog -->
-
-                    </div>
-
-                    <!-- /.modal score -->
-                    <div class="modal fade" id="modal-score-{{ $booking->bkid }}">
-                        <div class="modal-dialog modal-sm">
-                            <form id="updateScoreForm" method="POST" name="updateScoreForm" class="form-horizontal"
-                                action="{{ route('booking.update.score') }}">
-                                @csrf
-                                @method('POST')
-                                <input type="hidden" name="booking_id" id="booking_id" value="{{ $booking->bkid }}">
+                    @if ($booking->booking_status == 2)
+                        <!-- /.modal sendjob -->
+                        <div class="modal fade" id="modal-update-{{ $booking->bkid }}">
+                            <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">คะแนนความพึงพอใจ</h4>
+                                        <h4 class="modal-title" id="">ส่งงาน</h4>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="form-group">
-                                            <label>เลือก ระดับความพึ่งพอใจ</label>
-                                            <div class="rating text-center">
-                                                <span class="star" data-value="1">&#9733;</span>
-                                                <span class="star" data-value="2">&#9733;</span>
-                                                <span class="star" data-value="3">&#9733;</span>
-                                                <span class="star" data-value="4">&#9733;</span>
-                                                <span class="star" data-value="5">&#9733;</span>
-                                            </div>
-                                        </div>
+                                        <!-- form start -->
+                                        <form id="" name="" action="{{ route('booking.update.job') }}"
+                                            method="post" class="form-horizontal" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('post')
+                                            <input type="hidden" name="id" id="id"
+                                                value="{{ $booking->bkid }}">
+                                            <div class="box-body">
 
+                                                <div class="form-group">
+                                                    <label>สถานะการจอง</label>
+                                                    <select class="form-control" name="booking_status"
+                                                        id="my-dropdown_s2" required>
+                                                        <option value="">เลือก</option>
+                                                        @if ($booking->booking_status == 0)
+                                                            <option value="1">รับงาน</option>
+                                                        @endif
+                                                        @if ($booking->booking_status == 2)
+                                                            <option value="3">เยี่ยมชมเรียบร้อย</option>
+                                                        @endif
+
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>รายละเอียดรับลูกค้า</label>
+                                                    <textarea class="form-control" rows="3" id="job_detailsubmission" name="job_detailsubmission" placeholder=""
+                                                        autocomplete="off" required></textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="image">เลือกรูป</label>
+                                                    <input type="file" class="form-control" name="job_img"
+                                                        id="job_img" onchange="previewImage(this);"
+                                                        accept="image/jpeg">
+
+                                                    <img id="preview" src="#" alt="Image preview"
+                                                        style="display:none;" width="150px">
+
+                                                </div>
+
+                                            </div>
                                     </div>
                                     <div class="modal-footer">
-
-                                        <button type="submit" class="btn btn-success btn-block"
-                                            id="">ตกลง</button>
-
+                                        <button type="submit" class="btn btn-success btn-block">ตกลง</button>
                                     </div>
-                            </form>
+                                    </form>
+                                </div>
+                                <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+
                         </div>
-                        <!-- /.modal-content -->
-                    </div>
+                    @endif
+
+                    @if ($booking->job_score == null)
+                        <!-- /.modal score -->
+                        <div class="modal fade" id="modal-score-{{ $booking->bkid }}">
+                            <div class="modal-dialog modal-sm">
+                                <form id="updateScoreForm" method="POST" name="updateScoreForm" class="form-horizontal"
+                                    action="{{ route('booking.update.score') }}">
+                                    @csrf
+                                    @method('POST')
+                                    <input type="hidden" name="booking_id" id="booking_id"
+                                        value="{{ $booking->bkid }}">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title">คะแนนความพึงพอใจ</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <label>เลือก ระดับความพึ่งพอใจ</label>
+
+                                                <div class="rating text-center">
+
+                                                    <span class="star" data-value="1">&#9733;</span>
+                                                    <span class="star" data-value="2">&#9733;</span>
+                                                    <span class="star" data-value="3">&#9733;</span>
+                                                    <span class="star" data-value="4">&#9733;</span>
+                                                    <span class="star" data-value="5">&#9733;</span>
+                                                </div>
+                                                <h4 class="text-center">1 &nbsp;&nbsp; &nbsp; 2 &nbsp;&nbsp; &nbsp; 3&nbsp;
+                                                    &nbsp; &nbsp; 4&nbsp; &nbsp; &nbsp; 5</h4>
+                                                <h5 class="text-center">คะแนน</h5>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+
+                                            <button type="submit" class="btn btn-success btn-block"
+                                                id="">ตกลง</button>
+
+                                        </div>
+                                </form>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                    @endif
+
+
+
 
                 </div>
                 @endforeach
@@ -731,28 +753,34 @@
                 $('#table').DataTable().button('.buttons-excel').trigger();
             });
 
-            $("#my-dropdown").change(function() {
-                const result = $("#my-dropdown").val();
-                //console.log(v);
+            // if ยกเลิก
+            @foreach ( $ItemStatusHowCancel as $item)
+
+            $("#my-dropdown-{{$item->id}}").change(function() {
+
+                const result = $("#my-dropdown-{{$item->id}}").val();
+                //console.log(result);
                 if (result == '4') {
-                    $("#my-element").show();
+                    $("#my-element-{{$item->id}}").show();
+
                 } else {
-                    $("#my-element").hide();
+
+                    $("#my-element-{{$item->id}}").hide();
                 }
-
             });
-
-            $("#my-dropdown2").change(function() {
-                const result2 = $("#my-dropdown2").val();
+            $("#my-dropdown2-{{$item->id}}").change(function() {
+                const result2 = $("#my-dropdown2-{{$item->id}}").val();
                 //console.log(result2);
                 if (result2 == 'อื่นๆ') {
-                    $("#my-element-text").show();
+                    $("#my-element-text-{{$item->id}}").show();
 
                 } else {
 
-                    $("#my-element-text").hide();
+                    $("#my-element-text-{{$item->id}}").hide();
                 }
             });
+
+            @endforeach
 
             $('#updateScoreForm').submit(function(e) {
                 e.preventDefault();
@@ -801,7 +829,7 @@
 
             $('.rating .star').click(function() {
                 $(this).addClass('active').prevAll('.star').addClass(
-                'active'); // เพิ่ม class active ให้กับคะแนนที่ถูกคลิกและคะแนนก่อนหน้านั้น
+                    'active'); // เพิ่ม class active ให้กับคะแนนที่ถูกคลิกและคะแนนก่อนหน้านั้น
                 $(this).nextAll('.star').removeClass('active'); // ลบ class active ออกจากคะแนนถัดไป
             });
 

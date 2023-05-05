@@ -295,18 +295,18 @@
                                         <td class="project-state">
                                             @php
                                                 if ($booking->booking_status == 0) {
-                                                    echo $textStatus = "<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
-                                                } elseif ($booking->booking_status == 1) {
-                                                    echo $textStatus = "<span class=\"badge\" style=\"background-color:#3c8dbc\">รับงานแล้ว</span>";
-                                                } elseif ($booking->booking_status == 2) {
-                                                    echo $textStatus = "<span class=\"badge\" style=\"background-color:#00a65a\">จองสำเร็จ</span>";
-                                                } elseif ($booking->booking_status == 3) {
-                                                    echo $textStatus = "<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
-                                                } elseif ($booking->booking_status == 4) {
-                                                    echo $textStatus = "<span class=\"badge\" style=\"background-color:#cc2d2d\">ยกเลิก</span>";
-                                                } else {
-                                                    echo $textStatus = "<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
-                                                }
+                                                echo $textStatus = "<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
+                                            } elseif ($booking->booking_status == 1) {
+                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
+                                            } elseif ($booking->booking_status == 2) {
+                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
+                                            } elseif ($booking->booking_status == 3) {
+                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
+                                            } elseif ($booking->booking_status == 4) {
+                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
+                                            } else {
+                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
+                                            }
 
                                             @endphp
 
@@ -353,7 +353,7 @@
                                                         data-target="#modal-user-{{ $booking->bkid }}">
                                                         <i class="fa fa-pencil">
                                                         </i>
-                                                        เปลี่ยนเจ้าหน้าที่
+                                                        เจ้าหน้าที่
                                                     </button>
                                                 @endif
                                             @endif
@@ -395,21 +395,22 @@
                                                         <div class="form-group">
                                                             <label>สถานะการจอง</label>
                                                             <select class="form-control" name="booking_status"
-                                                                id="my-dropdown" required>
+                                                                id="my-dropdown-{{ $booking->bkid }}" required>
 
                                                                 <option value="">เลือก</option>
-                                                                <option value="1"
-                                                                    {{ $booking->booking_status == 1 ? 'selected' : '' }}>
-                                                                    รับงาน</option>
+                                                                @if ($booking->booking_status < 1)
+                                                                <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}> รับงาน</option>
+                                                                @endif
+
                                                                 <option value="4"
                                                                     {{ $booking->booking_status == 4 ? 'selected' : '' }}>
                                                                     ยกเลิก</option>
                                                             </select>
                                                         </div>
                                                         <div class="form-group">
-                                                            <div id="my-element" style="display:none">
+                                                            <div id="my-element-{{ $booking->bkid }}" style="display:none">
                                                                 <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                                <select class="form-control" id="my-dropdown2"
+                                                                <select class="form-control" id="my-dropdown2-{{ $booking->bkid }}"
                                                                     name="because_cancel_remark">
                                                                     <option value="">เลือก</option>
                                                                     {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
@@ -423,10 +424,10 @@
 
                                                         </div>
                                                         <div class="form-group">
-                                                            <div id="my-element-text" style="display:none">
+                                                            <div id="my-element-text-{{ $booking->bkid }}" style="display:none">
                                                                 <label>ระบุเหตุผลอื่น ๆ</label>
 
-                                                                <input type="text" name="because_cancel_other"
+                                                                <input type="text" class="form-control"  name="because_cancel_other"
                                                                     id="because_cancel_other" value="">
                                                             </div>
 
@@ -630,6 +631,7 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
+
                 @endforeach
 
                 </tbody>
@@ -685,29 +687,35 @@
             })
 
         });
-        $("#my-dropdown").change(function() {
+        // if ยกเลิก
+        @foreach ( $ItemStatusHowCancel as $item)
 
-            const result = $("#my-dropdown").val();
+        $("#my-dropdown-{{$item->id}}").change(function() {
+
+            const result = $("#my-dropdown-{{$item->id}}").val();
             //console.log(v);
             if (result == '4') {
-                $("#my-element").show();
+                $("#my-element-{{$item->id}}").show();
 
             } else {
 
-                $("#my-element").hide();
+                $("#my-element-{{$item->id}}").hide();
             }
         });
-        $("#my-dropdown2").change(function() {
-            const result2 = $("#my-dropdown2").val();
-            console.log(result2);
+        $("#my-dropdown2-{{$item->id}}").change(function() {
+            const result2 = $("#my-dropdown2-{{$item->id}}").val();
+            //console.log(result2);
             if (result2 == 'อื่นๆ') {
-                $("#my-element-text").show();
+                $("#my-element-text-{{$item->id}}").show();
 
             } else {
 
-                $("#my-element-text").hide();
+                $("#my-element-text-{{$item->id}}").hide();
             }
         });
+
+        @endforeach
+
         //Delete
         $(document).on('click', '.delete-item', function() {
             let id = $(this).data('id');

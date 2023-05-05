@@ -150,7 +150,7 @@
 
                         <div id="external-events">
                             <div class="external-event bg-gray">วันหยุด</div>
-                            <div class="external-event bg-info">เข้าสำนักงานใหญ่</div>
+                            <div class="external-event bg-aqua">เข้าสำนักงานใหญ่</div>
                             <div class="external-event bg-red">ยกเลิก</div>
                         </div>
 
@@ -161,7 +161,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h4><i class="icon fa fa-info"></i> Information!</h4>
                         - วันหยุดของคุณจะถูกจัดการโดย Manager หรือ Supervisor <br>
-                        - เมื่อคุณลงวันหยุด ระบบจะไม่ทำการเลือกคุณในกรณีที่ Sale นัดหมาย/จอง
+                        - เมื่อคุณลงวันหยุดหรือเข้าสำนักงานใหญ่ ระบบจะไม่ทำการเลือกคุณในกรณีที่ Sale นัดหมาย/จอง
                     </div>
               </div>
 

@@ -10,6 +10,7 @@ use App\Models\Booking;
 use App\Models\Bookingdetail;
 use App\Models\Team;
 use App\Models\Subteam;
+use App\Models\Log;
 use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
 use Illuminate\Support\Facades\DB;
@@ -272,7 +273,7 @@ class BookingController extends Controller
              ->orderBy('role_users.id') // เรียงลำดับตาม ID พนักงาน
              ->get();
 
-             dd($employees_not_on_holiday);
+             //dd($employees_not_on_holiday);
              foreach ($employees_not_on_holiday as $employee) {
                 //dd($employee);
                 $booking_count = Booking::where('booking_start', $booking_start)
@@ -323,8 +324,9 @@ class BookingController extends Controller
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
            ->select('bookings.*', 'bookingdetails.*','teams.id', 'teams.team_name', 'subteams.subteam_name', 'bookings.id as bkID')->latest()->first();
-            //$projects = Project::where('id', $request->project_id)->first();
-            $projects = DB::connection('mysql_project')->table('projects')->where('id', $request->project_id)->first();
+
+           $projects = Project::where('id', $request->project_id)->first();
+            //$projects = DB::connection('mysql_project')->table('projects')->where('id', $request->project_id)->first();
 
              //dd($id_booking);
 
@@ -387,7 +389,7 @@ class BookingController extends Controller
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                 'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
                 '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                ." \n ✅กดรับจอง => ".'https://www.google.co.th');
+                ." \n ✅กดรับจอง => ".'https://bit.ly/3AUARP0');
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
@@ -411,6 +413,8 @@ class BookingController extends Controller
                 // ], 201);
 
                 // return back();
+                Log::addLog($request->session()->get('loginId'), 'Create', $request->booking_title.", ".$id_booking->bkID );
+
                 Alert::success('Success', 'จองสำเร็จ!');
                 return redirect()->back();
 
@@ -428,7 +432,7 @@ class BookingController extends Controller
 
     }
 
-    //ลำข้อมูลการจอง
+    //ลบข้อมูลการจอง
     public function destroyBooking(Request $request,$id)
     {
 
@@ -440,9 +444,12 @@ class BookingController extends Controller
 
         if (!$booking || !$bookingdetail) {
             return response()->json([
-                'error' => 'Error!'
-            ]);
+                'message' => 'เกิดข้อผิดพลาด'
+            ], 404);
         }else{
+
+            Log::addLog($request->session()->get('loginId'), 'Delete', $booking->booking_title.", ".$id );
+
             $booking->delete();
             $bookingdetail->delete();
 
@@ -459,9 +466,9 @@ class BookingController extends Controller
                     'หมายเลขการจอง : *'.$id."* \n".
                     'ถูกลบเรียบร้อยแล้ว❗️'." \n");
 
-            return response()->json([
-                'success' => 'successfully!'
-            ]);
+                return response()->json([
+                    'message' => 'ลบข้อมูลสำเร็จ!'
+                ], 201);
         }
 
     }
@@ -476,7 +483,8 @@ class BookingController extends Controller
         ->with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
         ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid')->where('bookings.id',$request->booking_id)->first();
 
-        $projects = DB::connection('mysql_project')->table('projects')->where('id', $booking->project_id)->first();
+        $projects = Project::where('id', $booking->project_id)->first();
+        //$projects = DB::connection('mysql_project')->table('projects')->where('id', $booking->project_id)->first();
        //dd($request);
 
         if (!$booking) {
@@ -490,6 +498,8 @@ class BookingController extends Controller
             $bookings->because_cancel_other = $request->because_cancel_other;
             $bookings->save();
 
+
+
             if ($request->because_cancel_remark=="อื่นๆ") {
              $becaseText = "อื่นๆ เพราะ=>".$request->because_cancel_other;
             }else{
@@ -502,6 +512,8 @@ class BookingController extends Controller
                 $textStatus="รับงานแล้ว";
 
                 $oneDayBeforeBookingDate = date('d/m/Y', strtotime($booking->booking_start . ' -1 day'));
+
+                $oneDayBeforeBookingDateTH = date('d/m/Y', strtotime($oneDayBeforeBookingDate.' +543 year'));
 
                 $Strdate_start = date('d/m/Y', strtotime($booking->booking_start.' +543 year'));
                 $Strtime_start = date('H:i', strtotime($booking->booking_start));
@@ -533,9 +545,11 @@ class BookingController extends Controller
                     'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
                     'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
                 'สถานะจอง :✅ *'.$textStatus."* \n".
-                '⚠️ ผู้รับผิดชอบ กรุณากดคอนเฟริ์มนัด ในวันที่ `'.$oneDayBeforeBookingDate.'` ภายในเวลา 16.00-17.30 น.'." \n".
+                '⚠️ ผู้รับผิดชอบ กรุณากดคอนเฟริ์มนัด ในวันที่ `'.$oneDayBeforeBookingDateTH.'` ภายในเวลา 16.00-17.30 น.'." \n".
                 '🚫 หากไม่ *คอนเฟิร์ม* ระบบจะยกเลิกการจองอัตโนมัติ'
-                ." \n กดคอนเฟริ์ม => ".'https://www.google.co.th');
+                ." \n กดคอนเฟริ์ม => ".'https://bit.ly/3AUARP0');
+
+                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title.", ".$booking->bkid.", ".$textStatus );
 
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
@@ -573,6 +587,8 @@ class BookingController extends Controller
                     'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
                 'สถานะจอง :✅ *'.$textStatus."* \n");
 
+                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title.", ".$booking->bkid.", ".$textStatus );
+
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
 
@@ -609,6 +625,7 @@ class BookingController extends Controller
                     'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
                 'สถานะ :✅ *'.$textStatus."* \n"
                 );
+                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title.", ".$booking->bkid.", ".$textStatus );
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             }elseif($request->booking_status==4){
@@ -647,6 +664,7 @@ class BookingController extends Controller
                 'สถานะจอง :❌ *'.$textStatus."* \n".
                 'เหตุผล : '.$becaseText
                 );
+                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title.", ".$booking->bkid.", ".$textStatus.", ".$becaseText );
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             }else{
@@ -680,6 +698,7 @@ class BookingController extends Controller
                 'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
                 'สถานะจอง :❌ *'.$textStatus."* \n");
 
+                Log::addLog('System', 'Update Status', $booking->booking_title.", ".$booking->bkid.", ".$textStatus );
                 // Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 // return redirect()->back();
             }
@@ -705,7 +724,8 @@ class BookingController extends Controller
        ->select('bookings.*', 'bookingdetails.*','teams.id', 'teams.team_name', 'subteams.subteam_name')
        ->where('bookings.id',"=",$request->booking_id)->first();
 
-        $projects = DB::connection('mysql_project')->table('projects')->where('id', $bookings->project_id)->first();
+       $projects = Project::where('id', $bookings->project_id)->first();
+        //$projects = DB::connection('mysql_project')->table('projects')->where('id', $bookings->project_id)->first();
 
 
 
@@ -738,7 +758,7 @@ class BookingController extends Controller
                     'เบอร์สายงาน : *'.$bookings->user_tel ."* \n".
                     'จน. โครงการ : * ['.$bookings->booking_emp_ref[0]->name_th ."] * \n\n".
                     '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                    ." \n ✅กดรับจอง => ".'https://www.google.co.th');
+                    ." \n ✅กดรับจอง => ".'https://bit.ly/3AUARP0');
 
 
                 $token_line2 = config('line-notify.access_token_sale');
@@ -760,6 +780,8 @@ class BookingController extends Controller
                     'จน. โครงการ : * ['.$bookings->booking_emp_ref[0]->name_th ."] * \n\n".
                     '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
 
+                    Log::addLog($request->session()->get('loginId'), 'Update Employee Project', $bookings->booking_title.", ".$request->booking_id.", ".$bookings->booking_emp_ref[0]->name_th );
+
                 Alert::success('Success', 'อัปเดตข้อมูลสำเร็จแล้ว!');
                 return redirect()->back();
 
@@ -772,11 +794,12 @@ class BookingController extends Controller
     {
 
             //dd($request);
-            $dataUserLogin = array();
 
-            $dataUserLogin = DB::connection('mysql_user')->table('users')
-            ->where('id', '=', Session::get('loginId'))
-            ->first();
+            $dataUserLogin = User::where('id', Session::get('loginId'))->first();
+
+            // $dataUserLogin = DB::connection('mysql_user')->table('users')
+            // ->where('id', '=', Session::get('loginId'))
+            // ->first();
             $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
 
             $booking = Booking::where('bookings.id',"=",$request->booking_id)->first();
@@ -785,12 +808,9 @@ class BookingController extends Controller
            ->with('booking_emp_ref:id,code,name_th,phone')
            ->with('booking_project_ref:id,name')
           ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-          ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-          ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
           ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
           ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-          ->select('bookings.*', 'bookingdetails.*', 'sales.fullname as sale_name',
-          'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+          ->select('bookings.*', 'bookingdetails.*','teams.id', 'teams.team_name', 'subteams.subteam_name')
           ->where('bookings.id',"=",$request->booking_id)->first();
 
 
@@ -817,8 +837,8 @@ class BookingController extends Controller
 
             //dd($booking->project_id);
             //$id_booking = Booking::latest()->first();
-
-            $projects = DB::connection('mysql_project')->table('projects')->where('id', $request->project_id)->first();
+            $projects = Project::where('id', $request->project_id)->first();
+            //$projects = DB::connection('mysql_project')->table('projects')->where('id', $request->project_id)->first();
 
 
 
@@ -901,6 +921,7 @@ class BookingController extends Controller
                 'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th."* \n\n".
                 '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
 
+                Log::addLog($request->session()->get('loginId'), 'Update Booking', $request->booking_title.", ".$request->booking_id);
                 // return response()->json([
                 //     'message' => 'เพิ่มข้อมูลสำเร็จ'
                 // ], 201);
@@ -978,14 +999,13 @@ class BookingController extends Controller
         ->with('booking_emp_ref:id,code,name_th,phone')
         ->with('booking_project_ref:id,name')
        ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-       ->leftJoin('users as sales', 'sales.id', '=', 'bookings.user_id')
-       ->leftJoin('users as employees', 'employees.id', '=', 'bookings.teampro_id')
        ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
        ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-       ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid', 'sales.fullname as sale_name',
-       'employees.fullname as emp_name','teams.id', 'teams.team_name', 'subteams.subteam_name')
+       ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->where('bookings.id',"=",$id)->first();
         //dd($bookings);
+        Log::addLog($request->session()->get('loginId'), 'Print Booking', $bookings->booking_title.", ".$bookings->booking_id);
+
         return view("booking.print",compact('bookings'));
     }
 
@@ -1006,10 +1026,13 @@ class BookingController extends Controller
             $bookings->job_score = $request->rating;
             $bookings->save();
 
+            Log::addLog($request->session()->get('loginId'), 'Update Score', $bookings->booking_title.", ".$request->booking_id);
+
             return response()->json([
                 'message' => 'ให้คะแนนความพึ่งพอใจเรียบร้อย',
                 'data_id' => $bookings->id
             ], 201);
+
 
 
         }else{
@@ -1017,6 +1040,7 @@ class BookingController extends Controller
                 'message' => 'Error',
                 'data_id' => $bookings->id
             ], 404);
+            return redirect()->back();
 
         }
 
@@ -1056,8 +1080,8 @@ class BookingController extends Controller
             // อ่านขนาดของรูปภาพ
             list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName));
 
-            // กำหนดขนาดใหม่ของรูปภาพเมื่อย่อขนาดให้เหลือ 250x250
-            $newWidth = 300;
+            // กำหนดขนาดใหม่ของรูปภาพเมื่อย่อขนาดให้เหลือ 350x450
+            $newWidth = 350;
             $newHeight = 450;
 
             // สร้างรูปภาพใหม่โดยใช้ฟังก์ชัน imagecreatefromjpeg() หรือ imagecreatefrompng() ขึ้นอยู่กับประเภทของไฟล์รูปภาพ
@@ -1074,14 +1098,13 @@ class BookingController extends Controller
             // ลบไฟล์รูปภาพเดิม
             //unlink(public_path('images/jobs/' . $imageName));
 
-            // สามารถเก็บชื่อไฟล์รูปภาพที่ย่อขนาดแล้วไว้ในฐานข้อมูลหรือทำอื่นๆ ตามที่ต้องการ
 
-            // ส่งกลับไปยังหน้าแสดงผลหรือทำการ redirect
             $bookings->booking_status = $request->booking_status;
             $bookings->job_detailsubmission = $request->job_detailsubmission;
             $bookings->job_img = $thumbnailPath;
             $bookings->save();
 
+            Log::addLog($request->session()->get('loginId'), 'Update Job Succress', $bookings->booking_title.", ".$request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
             return redirect()->back();
         }
