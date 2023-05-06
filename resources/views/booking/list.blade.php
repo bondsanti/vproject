@@ -123,7 +123,7 @@
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <table id="table" style="width:100%" class="table table-bordered table-striped">
+                        <table id="table" class="table table-hover">
                             <thead>
                                 <tr>
                                     {{-- <th class="text-center"><button id="print-button" onclick="printChecked()">Print</button></th> --}}
@@ -220,48 +220,29 @@
                                         <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                             <i class="fa fa-print">
                                             </i>
-                                            พิมพ์
                                         </a>
 
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                             <i class="fa fa-folder">
                                             </i>
-                                            รายละเอียด
+
                                           </button>
                                           <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
                                             <i class="fa fa-refresh">
                                             </i>
-                                            สถานะ
+
                                           </button>
-                                          @if ($booking->booking_title=="เยี่ยมโครงการ")
 
                                             <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
                                                 <i class="fa fa-pencil">
                                                 </i>
-                                                แก้ไข
+
                                             </a>
-
-
-                                          @endif
-                                          @if ($booking->booking_title=="ประเมินห้องชุด")
-                                          <a class="btn btn-info btn-sm" href="">
-                                            <i class="fa fa-pencil">
-                                            </i>
-                                            แก้ไข
-                                         </a>
-                                          @endif
-                                          @if ($booking->booking_title=="ตรวจDF/รับมอบห้อง")
-                                          <a class="btn btn-info btn-sm" href="">
-                                            <i class="fa fa-pencil">
-                                            </i>
-                                            แก้ไข
-                                         </a>
-                                          @endif
 
                                         <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                             <i class="fa fa-trash">
                                             </i>
-                                            ลบ
+
                                         </button>
 
 
@@ -283,19 +264,18 @@
                                         <div class="modal-body">
                                             <div class="form-group">
                                                 <label>สถานะการจอง</label>
-                                                <select class="form-control" name="booking_status" id="my-dropdown" required>
-                                                    @if ($booking->booking_status <=0)
-                                                    <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
-                                                    @endif
+                                                <select class="form-control" name="booking_status" id="my-dropdown-{{$booking->bkid}}" required>
 
+                                                <option value="0" {{ $booking->booking_status == 0 ? 'selected' : '' }}>รอรับงาน</option>
                                                 <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}>รับงานแล้ว</option>
+                                                <option value="2" {{ $booking->booking_status == 2 ? 'selected' : '' }}>จองสำเร็จ</option>
                                                 <option value="4" {{ $booking->booking_status == 4 ? 'selected' : '' }}>ยกเลิก</option>
                                                 </select>
                                             </div>
                                             <div class="form-group">
-                                                <div id="my-element" style="display:none">
+                                                <div id="my-element-{{$booking->bkid}}" style="display:none">
                                                     <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                    <select class="form-control" id="my-dropdown2" name="because_cancel_remark">
+                                                    <select class="form-control" id="my-dropdown2-{{$booking->bkid}}" name="because_cancel_remark">
                                                         <option value="">เลือก</option>
                                                     {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
                                                     <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
@@ -306,7 +286,7 @@
 
                                             </div>
                                             <div class="form-group">
-                                                <div id="my-element-text" style="display:none">
+                                                <div id="my-element-text-{{$booking->bkid}}" style="display:none">
                                                     <label>ระบุเหตุผลอื่น ๆ</label>
 
                                                     <input type="text" name="because_cancel_other" id="because_cancel_other" value="">
@@ -461,33 +441,47 @@
                 'searching'   : true,
                 'ordering'    : false,
                 'info'        : false,
-                'autoWidth'   : true
-            })
+                'autoWidth'   : false,
+                "responsive": true,
+                "buttons": ["excel"],
+                'language': {
+                    'buttons': {
+                        'excel': 'Export to Excel'
+                    }
+                }
+            });
+            $('#exportBtn').on('click', function() {
+                $('#table').DataTable().button('.buttons-excel').trigger();
+            });
 
         });
-        $("#my-dropdown").change(function () {
+        // if ยกเลิก
+        @foreach ( $ItemStatusHowCancel as $item)
+        $("#my-dropdown-{{$item->id}}").change(function() {
 
-            const result = $("#my-dropdown").val();
-            //console.log(v);
-            if (result == '4') {
-                $("#my-element").show();
+        const result = $("#my-dropdown-{{$item->id}}").val();
+        //console.log(result);
+        if (result == '4') {
+            $("#my-element-{{$item->id}}").show();
 
-            } else {
+        } else {
 
-                $("#my-element").hide();
-            }
+            $("#my-element-{{$item->id}}").hide();
+        }
         });
-        $("#my-dropdown2").change(function () {
-        const result2 = $("#my-dropdown2").val();
-            console.log(result2);
-            if (result2 == 'อื่นๆ') {
-                $("#my-element-text").show();
+        $("#my-dropdown2-{{$item->id}}").change(function() {
+        const result2 = $("#my-dropdown2-{{$item->id}}").val();
+        //console.log(result2);
+        if (result2 == 'อื่นๆ') {
+            $("#my-element-text-{{$item->id}}").show();
 
-            } else {
+        } else {
 
-                $("#my-element-text").hide();
-            }
+            $("#my-element-text-{{$item->id}}").hide();
+        }
         });
+
+        @endforeach
         //Delete
         $(document).on('click', '.delete-item', function() {
             let id = $(this).data('id');
@@ -514,21 +508,25 @@
                             '_token': '{{ csrf_token() }}'
                         },
                         success: function(response) {
-                            window.location.href = '{{ route("listBooking") }}';
+                            setTimeout("location.href = '{{ route("listBooking") }}';",2300);
+                            //window.location.href = '{{ route("listBooking") }}';
                             Swal.fire({
                                 title: 'สำเร็จ!',
                                 text: 'ลบข้อมูลเรียบร้อย..',
-                                icon: 'success'
+                                icon: 'success',
+                                timer: 2500
                             });
                             //table.draw();
 
                         },
-                        error: function() {
-                            window.location.href = '{{ route("listBooking") }}';
+                        error: function() {4
+                            setTimeout("location.href = '{{ route("listBooking") }}';",2300);
+                            // window.location.href = '{{ route("listBooking") }}';
                             Swal.fire({
                                 title: 'Oops...',
                                 text: 'มีบางอย่างผิดพลาด!',
-                                icon: 'error'
+                                icon: 'error',
+                                timer: 2500
                             });
                             //table.draw();
 

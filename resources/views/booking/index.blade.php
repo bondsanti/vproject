@@ -337,6 +337,17 @@
                             </div>
                             <div class="form-group">
                                 <div class="row">
+                                    @if ($dataRoleUser->role_type== "SuperAdmin")
+                                    <div class="col-xs-6">
+                                        <label>ชื่อ-นามสกุล (Sale)</label>
+                                        <select class="form-control select2" style="width: 100%;" name="user_id" autocomplete="off" >
+                                            <option value="">เลือก</option>
+                                            @foreach ($dataSales as $dataSale)
+                                            <option value="{{$dataSale->user_ref[0]->id}}">{{$dataSale->user_ref[0]->name_sale}}</option>
+                                           @endforeach
+                                        </select>
+                                    </div>
+                                    @else
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
@@ -344,6 +355,7 @@
                                         <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
 
                                     </div>
+                                    @endif
                                     <div class="col-xs-6">
                                         <label>*เบอร์ติดต่อสายงาน</label>
                                         <input type="text" class="form-control" name="user_tel" data-inputmask='"mask": "(999) 999-9999"' data-mask value="" autocomplete="off">

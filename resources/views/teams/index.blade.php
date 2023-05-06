@@ -211,7 +211,7 @@
                             Swal.fire({
                                 position: 'top-center',
                                 icon: 'error',
-                                title: 'เพิ่มข้อมูลสำเร็จ!',
+                                title: 'เกิดข้อผิดพลาด!',
                                 showConfirmButton: true,
                                 timer: 2500
                             });
@@ -244,18 +244,28 @@
 
                             success: function(data) {
 
+                                Swal.fire({
+                                icon: 'success',
+                                title: 'ลบข้อมูลสำเร็จ !',
+                                showConfirmButton: true,
+                                timer: 2500
+                                });
+
                                 setTimeout("location.href = '{{ route("team") }}';",1000);
 
                             },
-                            error: function(data) {
-                                //console.log('Error:', data);
+                            statusCode: {
+                                400: function() {
+                                Swal.fire({
+                                    position: 'top-center',
+                                    icon: 'error',
+                                    title: 'ไม่สามารถลบได้ เนื่องจาก ข้อมูลนี้มีใช้อยู่ในฐานข้อมูล',
+                                    showConfirmButton: true,
+                                    timer: 2500
+                                });
+                                }
                             }
                         });
-                        Swal.fire(
-                            'สำเร็จ!',
-                            'ลบข้อมูลเรียบร้อย..',
-                            'success'
-                        )
                     }
                 });
 
@@ -323,7 +333,7 @@
                             Swal.fire({
                                 position: 'top-center',
                                 icon: 'error',
-                                title: 'เพิ่มข้อมูลสำเร็จ!',
+                                title: 'เกิดข้อผิดพลาด!',
                                 showConfirmButton: true,
                                 timer: 2500
                             });

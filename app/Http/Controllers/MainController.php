@@ -45,12 +45,21 @@ class MainController extends Controller
             $countCancelBooking = Booking::where('booking_status',4)->count();
             $countExitBooking = Booking::where('booking_status',5)->count();
 
+            $countUser = Role_user::count();
+            $countUserAdmin = Role_user::where('role_type',"=",'Admin')->count();
+            $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
+            $countUserSale= Role_user::where('role_type',"=",'Sale')->count();
+
              return view('index',compact('dataUserLogin',
              'dataRoleUser',
              'countAllBooking',
              'countSucessBooking',
              'countCancelBooking',
-             'countExitBooking'));
+             'countExitBooking',
+             'countUser',
+             'countUserAdmin',
+             'countUserStaff',
+             'countUserSale',));
 
         }elseif ($dataRoleUser->role_type=="Admin") {
             $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')

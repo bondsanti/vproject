@@ -30,7 +30,7 @@ class BookingController extends Controller
 
         $dataUserLogin = User::where('id', Session::get('loginId'))->first();
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
-
+        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
         //โครงการ
         $projects = Project::where('active',1)->get();
 
@@ -135,7 +135,7 @@ class BookingController extends Controller
 
 
 
-            return view("booking.index",compact('dataUserLogin','dataRoleUser','projects','teams'));
+            return view("booking.index",compact('dataUserLogin','dataRoleUser','projects','teams','dataSales'));
 
 
     }
@@ -145,6 +145,7 @@ class BookingController extends Controller
 
         $dataUserLogin = User::where('id', Session::get('loginId'))->first();
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
 
         //โครงการ
         $projects = Project::where('active',1)->get();
@@ -162,7 +163,7 @@ class BookingController extends Controller
         ->where('bookings.id',"=",$id)->first();
         // dd($bookings);
 
-       return view("booking.edit",compact('dataUserLogin','dataRoleUser','bookings','projects','teams'));
+       return view("booking.edit",compact('dataUserLogin','dataRoleUser','bookings','projects','teams','dataSales'));
 
     }
     //รายการจอง เฉพาะ Superadmin
@@ -184,6 +185,9 @@ class BookingController extends Controller
          //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
          //dd($CountBooking);
 
+         //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
+        $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
+
 
          $bookings = Booking::with('booking_user_ref:id,code,name_th')
          ->with('booking_emp_ref:id,code,name_th,phone')
@@ -201,7 +205,8 @@ class BookingController extends Controller
        'teams',
        'subTeams',
         'dataEmps',
-        'dataSales'));
+        'dataSales',
+        'ItemStatusHowCancel'));
 
     }
 
@@ -389,7 +394,10 @@ class BookingController extends Controller
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                 'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
                 '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                ." \n ✅กดรับจอง => ".'https://bit.ly/3AUARP0');
+                // ." \n ✅กดรับจอง => ".'https://bit.ly/3AUARP0');
+                ." \n ✅กดรับจอง => ".route('main'));
+
+
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
@@ -547,7 +555,8 @@ class BookingController extends Controller
                 'สถานะจอง :✅ *'.$textStatus."* \n".
                 '⚠️ ผู้รับผิดชอบ กรุณากดคอนเฟริ์มนัด ในวันที่ `'.$oneDayBeforeBookingDateTH.'` ภายในเวลา 16.00-17.30 น.'." \n".
                 '🚫 หากไม่ *คอนเฟิร์ม* ระบบจะยกเลิกการจองอัตโนมัติ'
-                ." \n กดคอนเฟริ์ม => ".'https://bit.ly/3AUARP0');
+                // ." \n กดคอนเฟริ์ม => ".'https://bit.ly/3AUARP0');
+                ." \n กดคอนเฟริ์ม => ".route('main'));
 
                 Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title.", ".$booking->bkid.", ".$textStatus );
 
@@ -1173,6 +1182,8 @@ class BookingController extends Controller
         $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
         // dd($dataEmps);
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+          //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
+        $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
 
         if ($dataRoleUser->role_type== "SuperAdmin"){
 
@@ -1229,7 +1240,7 @@ class BookingController extends Controller
               'teams',
               'subTeams',
                'dataEmps',
-               'dataSales'));
+               'dataSales','ItemStatusHowCancel'));
 
 
 

@@ -133,5 +133,7 @@ Route::get('/report/booking/group/project',[ReportController::class,'reportGroup
 Route::get('/report/booking/group/project/pie',[ReportController::class,'reportGroupByProjectPie'])->middleware('isLogin');
 
 Route::get('/report/booking/team',[ReportController::class,'reportByTeam'])->name('report.book.team')->middleware('isLogin');
+Route::get('/report/booking/team/pie',[ReportController::class,'reportByTeamPie'])->middleware('isLogin');
 Route::get('/report/booking/subteam',[ReportController::class,'reportBySubTeam'])->middleware('isLogin');
+Route::get('/report/booking/subteam/pie',[ReportController::class,'reportBySubTeam'])->middleware('isLogin');
 Route::get('/report/booking/group/project/team',[ReportController::class,'reportGroupProjectByTeam'])->middleware('isLogin');

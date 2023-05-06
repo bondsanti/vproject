@@ -8,6 +8,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role_user;
 use App\Models\Team;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
 class TeamController extends Controller
@@ -56,13 +57,21 @@ class TeamController extends Controller
 
     public function destroy($id){
 
+        $checkDataBooking = Booking::where('team_id',$id)->count();
+        if ($checkDataBooking > 0 ) {
 
-        $team = Team::where('id',"=",$id)->delete($id);
-       //Role_user::find($id)->delete($id);
+            return response()->json([
+                'message' => 'ไม่สามารถลบได้ เนื่องจาก ข้อมูลนี้มีใช้อยู่ในฐานข้อมูล'
+            ], 400);
 
-       return response()->json([
-           'message' => 'ลบข้อมูลสำเร็จ'
-       ], 201);
+        }else{
+            $team = Team::where('id',"=",$id)->delete($id);
+        //Role_user::find($id)->delete($id);
+
+        return response()->json([
+            'message' => 'ลบข้อมูลสำเร็จ'
+        ], 201);
+        }
 
     }
 

@@ -100,6 +100,28 @@
 
                 <div class="box box-solid">
                     <div class="box-header">
+                        <i class="fa fa-pie-chart"></i>
+                        <h3 class="box-title">แผนภูมิวงกลม</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="box-body">
+                        <figure class="highcharts-figure">
+                            <div id="container3"></div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xs-12">
+
+                <div class="box box-solid">
+                    <div class="box-header">
                         <i class="fa fa-bar-chart-o"></i>
                         <h3 class="box-title">กราฟแท่ง</h3>
                         <div class="box-tools pull-right">
@@ -117,11 +139,12 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 col-xs-12">
+
+            <div class="col-md-6 col-xs-12">
 
                 <div class="box box-solid">
                     <div class="box-header">
-                        <i class="fa fa-bar-chart-o"></i>
+                        <i class="fa fa-pie-chart"></i>
                         <h3 class="box-title">แผนภูมิวงกลม</h3>
                         <div class="box-tools pull-right">
                             <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -133,7 +156,7 @@
 
                     <div class="box-body">
                         <figure class="highcharts-figure">
-                            <div id="container3"></div>
+                            <div id="container4"></div>
                         </figure>
                     </div>
                 </div>
@@ -193,12 +216,12 @@
 
                                     // อัพเดทข้อมูล series
                                 const teamIndex = chartSeries.findIndex(series => series.name === teamName);
-                                chartSeries[teamIndex].data[month]++;
+                                chartSeries[teamIndex].data[month] = booking.total_bookings;
                         });
 
                         const chart = Highcharts.chart('container1', {
                         title: {
-                            text: 'สรุปลูกค้าเข้าชมโครงการแยกแต่ละทีมในปี ' + moment().add(543, 'years').format('YYYY'),
+                            text: 'สรุปจำนวนลูกค้าเข้าชมโครงการ แยกแต่ละทีม ประจำปี ' + moment().add(543, 'years').format('YYYY'),
                             align: 'center'
                         },
                         xAxis: {
@@ -249,12 +272,12 @@
                                 });
 
                                 const SubTeamIndex = chartSeries.findIndex(series => series.name === 'สายงาน ' + booking.subteam_name);
-                                chartSeries[SubTeamIndex].data[month]++;
+                                chartSeries[SubTeamIndex].data[month] = booking.total_bookings;
                         });
 
                         const chart = Highcharts.chart('container2', {
                         title: {
-                            text: 'สรุปลูกค้าเข้าชมโครงการแยกแต่ละสายงานในปี ' + moment().add(543, 'years').format('YYYY'),
+                            text: 'สรุปจำนวนลูกค้าเข้าชมโครงการ แยกแต่ละสายงาน ประจำปี ' + moment().add(543, 'years').format('YYYY'),
                             align: 'center'
                         },
                         xAxis: {
@@ -277,68 +300,122 @@
                     }
                 }),
 
-                // Team null booking
-                // $.ajax({
-                //     type: 'GET',
-                //     url: '/report/booking/team',
-                //     success: function(response) {
-                //         const result1 = response;
-                //         const chart = Highcharts.chart('container1', {
-                //             title: {
-                //                 text: 'สรุปลูกค้านัดเข้าชมแต่ละทีมในปี ' + moment().add(543, 'years').format('YYYY'),
-                //                 align: 'center'
-                //             },
-                //             xAxis: {
-                //                 categories: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
-                //                 title: {
-                //                     text: 'เดือน'
-                //                 }
-                //             },
-                //             yAxis: {
-                //                 title: {
-                //                     text: 'จำนวน'
-                //                 },
-                //                 allowDecimals: false,
-                //             },
-                //         });
+                $.ajax({
+                    type: 'GET',
+                    url: '/report/booking/team/pie',
+                    success: function(response) {
+                        const chartData = [];
+                        const result3 = response;
+                        //console.log(result3);
+                        result3.forEach(function(item) {
+                            chartData.push({
+                                name: item.team_name,
+                                y: item.total_bookings
+                            });
+                        });
+                        // create the chart
+                        Highcharts.chart('container3', {
+                            chart: {
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                type: 'pie'
+                            },
+                            title: {
+                                text: 'สรุปภาพรวมลูกค้าเข้าชมโครงการ แต่ละทีม ประจำปี ' + moment().add(543, 'years').format('YYYY'),
+                                align: 'center'
+                            },
+                            tooltip: {
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            accessibility: {
+                                point: {
+                                    valueSuffix: '%'
+                                }
+                            },
+                            plotOptions: {
+                                pie: {
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true,
+                                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                    }
+                                }
+                            },
+                            series: [{
+                                name: 'จำนวน',
+                                colorByPoint: true,
+                                data: chartData
+                            }]
+                        });
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                    }
+                }),
 
-                //         const teams = [...new Set(result1.map(booking => booking.team_name))];
+                $.ajax({
+                    type: 'GET',
+                    url: '/report/booking/subteam/pie',
+                    success: function(response) {
+                        const chartData = [];
+                        const result4 = response;
+                        //console.log(result3);
+                        result4.forEach(function(item) {
+                            chartData.push({
+                                name: item.subteam_name,
+                                y: item.total_bookings
+                            });
+                        });
+                        // create the chart
+                        Highcharts.chart('container4', {
+                            chart: {
+                                plotBackgroundColor: null,
+                                plotBorderWidth: null,
+                                plotShadow: false,
+                                type: 'pie'
+                            },
+                            title: {
+                                text: 'สรุปภาพรวมลูกค้าเข้าชมโครงการ แต่ละสายงาน ประจำปี ' + moment().add(543, 'years').format('YYYY'),
+                                align: 'center'
+                            },
+                            tooltip: {
+                                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            },
+                            accessibility: {
+                                point: {
+                                    valueSuffix: '%'
+                                }
+                            },
+                            plotOptions: {
+                                pie: {
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true,
+                                        format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                    }
+                                }
+                            },
+                            series: [{
+                                name: 'จำนวน',
+                                colorByPoint: true,
+                                data: chartData
+                            }]
+                        });
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                    }
+                }),
 
-                //         teams.forEach(team => {
-                //             const teamBookings = result1.filter(booking => booking.team_name === team);
-                //             const data = Array(12).fill(0);
-
-                //             teamBookings.forEach(booking => {
-                //                 const month = parseInt(booking.month) - 1;
-                //                 data[month] = booking.total_bookings;
-                //             });
-
-                //             chart.addSeries({
-                //                 type: 'column',
-                //                 name: 'ทีม ' + team,
-                //                 data: data,
-                //                 showInLegend: true,
-                //                 dataLabels: {
-                //                     enabled: true,
-                //                     color: '#000',
-                //                     align: 'center',
-                //                     formatter: function() {
-                //                         return this.y;
-                //                     }
-                //                 }
-                //             });
-                //         });
-                //     },
-                //     error: function(xhr) {
-                //         console.log(xhr.responseText);
-                //     }
-                // });
 
 
 
 
 
-            ).then(function(result1,result2) {
+            ).then(function(result1,result2,result3,result4) {
 
                 //console.log(result1);
                 //console.log(result2);

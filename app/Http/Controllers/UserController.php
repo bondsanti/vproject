@@ -5,6 +5,7 @@ use Session;
 use DataTables;
 use App\Models\Role_user;
 use App\Models\User;
+use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -15,11 +16,8 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
    public function index(Request $request){
-    $dataUserLogin = array();
 
-    $dataUserLogin = DB::connection('mysql_user')->table('users')
-    ->where('id', '=', Session::get('loginId'))
-    ->first();
+    $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
 
     $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
 
@@ -80,7 +78,14 @@ class UserController extends Controller
 
         $user = User::where('code',"=",$request->code)->first();
 
-        //dd($user);
+        if (!$user) {
+            return response()->json([
+                'errors' => [
+                    'message'=>'Code ไม่ถูกต้อง ไม่พบผู้ใช้งาน'
+                    ]
+            ],400);
+        }else{
+             //dd($user);
 
         $validator = Validator::make($request->all(),[
             'code'=>'required',
@@ -106,23 +111,41 @@ class UserController extends Controller
 
         }
 
-    return response()->json(['error'=>$validator->errors()]);
+        return response()->json(['error'=>$validator->errors()]);
+
+        }
+
+
 
    }
 
    public function destroy($id){
 
-             $user = User::where('id',"=",$id)->first();
-             $user->active_vproject = "0";
-             $user->save();
+            $checkDataBooking = Booking::where('user_id',$id)->orwhere('teampro_id',$id)->count();
 
-             Role_user::where('user_id',"=",$id)->delete($id);
-            //Role_user::find($id)->delete($id);
+            if ($checkDataBooking > 0 ) {
+
+                return response()->json([
+                    'message' => 'ไม่สามารถลบได้ ต้อง Disable เท่านั้น'
+                ], 400);
+
+            }else{
+
+                $user = User::where('id',"=",$id)->first();
+                $user->active_vproject = "0";
+                $user->save();
+
+                Role_user::where('user_id',"=",$id)->delete($id);
+               //Role_user::find($id)->delete($id);
 
 
-            return response()->json([
-                'message' => 'ลบข้อมูลสำเร็จ'
-            ], 201);
+               return response()->json([
+                   'message' => 'ลบข้อมูลสำเร็จ'
+               ], 201);
+
+            }
+
+
    }
 
    public function edit($id){

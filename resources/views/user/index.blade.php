@@ -356,7 +356,7 @@
                     dataType: 'json',
 
                     success: function(data) {
-                        //console.log(data.error)
+
                         if (data.success = true) {
 
                             if ($.isEmptyObject(data.error)) {
@@ -389,17 +389,28 @@
 
                         } else {
                             Swal.fire({
-                                position: 'top-center',
-                                icon: 'error',
-                                title: 'เพิ่มข้อมูลสำเร็จ!',
-                                showConfirmButton: true,
-                                timer: 2500
-                            });
+                            position: 'top-center',
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            showConfirmButton: true,
+                            timer: 2500
+                        });
                             $('#userForm')[0].reset();
                         }
 
 
                     },
+                    statusCode: {
+                        400: function() {
+                        Swal.fire({
+                            position: 'top-center',
+                            icon: 'error',
+                            title: 'Code อาจไม่ถูกต้อง ไม่พบผู้ใช้งาน.. กรุณาลองใหม่',
+                            showConfirmButton: true,
+                            timer: 2500
+                        });
+                        }
+                    }
 
                 });
             });
@@ -428,17 +439,31 @@
 
                             success: function(data) {
                                 //tableUser.draw();
-                                window.location.href = '{{ route("user") }}';
+                                Swal.fire({
+                                icon: 'success',
+                                title: 'ลบข้อมูลสำเร็จ !',
+                                showConfirmButton: true,
+                                timer: 2500
+                                });
+                                setTimeout(function() {
+                                    window.location.href = '{{ route('user') }}';
+                                }, 2300);
+
                             },
-                            error: function(data) {
-                                //console.log('Error:', data);
+                            statusCode: {
+                                400: function() {
+                                Swal.fire({
+                                    position: 'top-center',
+                                    icon: 'error',
+                                    title: 'ไม่สามารถลบได้ ต้อง Disable เท่านั้น',
+                                    showConfirmButton: true,
+                                    timer: 2500
+                                });
+                                }
                             }
+
                         });
-                        Swal.fire(
-                            'สำเร็จ!',
-                            'ลบข้อมูลเรียบร้อย..',
-                            'success'
-                        )
+
                     }
                 });
 

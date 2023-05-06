@@ -340,12 +340,24 @@
                             </div>
                             <div class="form-group">
                                 <div class="row">
+                                    @if ($dataRoleUser->role_type== "SuperAdmin")
+                                    <div class="col-xs-6">
+                                        <label>ชื่อ-นามสกุล (Sale)</label>
+                                        <select class="form-control select2" style="width: 100%;" name="user_id" autocomplete="off" >
+                                            <option value="">เลือก</option>
+                                            @foreach ($dataSales as $dataSale)
+                                            <option value="{{$dataSale->user_ref[0]->id}}"  {{ $dataSale->user_ref[0]->id == $bookings->user_id ? 'selected' : '' }}>{{$dataSale->user_ref[0]->name_sale}}</option>
+                                           @endforeach
+                                        </select>
+                                    </div>
+                                    @else
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <input type="hidden" class="form-control" name="user_id" value="{{$bookings->booking_user_ref[0]->id}}" >
                                         <input type="hidden" class="form-control" name="sale_name" value="{{$bookings->booking_user_ref[0]->name_th}}" >
                                         <input type="text" class="form-control" name="" value="{{$bookings->booking_user_ref[0]->name_th}}" disabled>
                                     </div>
+                                    @endif
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อสายงาน</label>
                                         <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" value="{{ $bookings->user_tel }}" autocomplete="off" required>

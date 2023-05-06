@@ -99,7 +99,7 @@
 
                 <div class="box box-solid">
                     <div class="box-header">
-                        <i class="fa fa-bar-chart-o"></i>
+                        <i class="fa fa-pie-chart"></i>
                         <h3 class="box-title">แผนภูมิวงกลม</h3>
                         <div class="box-tools pull-right">
                             <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -192,7 +192,7 @@
 
                         const chart = Highcharts.chart('container1', {
                             title: {
-                                text: 'สรุปลูกค้าเข้าชมโครงการในปี ' + moment().add(543, 'years').format('YYYY'),
+                                text: 'สรุปจำนวนลูกค้าเข้าชมโครงการ แยกแต่ละเดือน ประจำปี ' + moment().add(543, 'years').format('YYYY'),
                                 align: 'center'
                             },
                             xAxis: {
@@ -223,32 +223,32 @@
                         const chartSeries = [];
                         const result2 = response;
                         //console.log(result2);
-                            result2.forEach((booking, index) => {
-                                //const month = moment(booking.booking_start).month();
-                                const month = parseInt(booking.month) - 1;
-                                const project_name = booking.booking_project_ref.map(p => p.name).join(', '); // นำชื่อโครงการมาต่อกันเป็น String
-                                if (index === 0 || booking.project_id !== response[index - 1].project_id) {
-                                    chartSeries.push({
-                                        type: 'column',
-                                        name: 'โครงการ ' + project_name,
-                                        data: Array(12).fill(0),
-                                        showInLegend: true,
-                                        dataLabels: {
+                        result2.forEach((booking, index) => {
+                            const month = parseInt(booking.month) - 1;
+                            const project_name = booking.booking_project_ref.map(p => p.name).join(', ');
+                            if (index === 0 || booking.project_id !== response[index - 1].project_id) {
+                                chartSeries.push({
+                                    type: 'column',
+                                    name: 'โครงการ ' + project_name,
+                                    data: Array(12).fill(0),
+                                    showInLegend: true,
+                                    dataLabels: {
                                         enabled: true,
                                         color: '#000',
                                         align: 'center',
                                         formatter: function() {
                                             return this.y;
                                         }
-                                        }
-                                    });
-                                }
-                                const projectIndex = chartSeries.findIndex(series => series.name === 'โครงการ ' + project_name);
-                                chartSeries[projectIndex].data[month]++;
+                                    }
+                                });
+                            }
+                            const projectIndex = chartSeries.findIndex(series => series.name === 'โครงการ ' + project_name);
+                            chartSeries[projectIndex].data[month] = booking.total_bookings;
                         });
+
                         const chart = Highcharts.chart('container2', {
                         title: {
-                            text: 'สรุปลูกค้าเข้าแต่ละโครงการในปี ' + moment().add(543, 'years').format('YYYY'),
+                            text: 'สรุปจำนวนลูกค้าเข้าชมโคงการ แยกแต่ละโครงการ ประจำปี ' + moment().add(543, 'years').format('YYYY'),
                             align: 'center'
                         },
                         xAxis: {

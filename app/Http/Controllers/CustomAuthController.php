@@ -137,7 +137,7 @@ class CustomAuthController extends Controller
                 return back();
             }
         }else{
-            Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+            Alert::question('คุณยังไม่เปิดใช้งานระบบ', 'กรุณาติดต่อ Admin!!');
             return back();
         }
     }
