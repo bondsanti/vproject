@@ -35,10 +35,11 @@
         </style>
 <body class="hold-transition login-page">
 
-
+    <br><br>
     <div class="login-box">
         <div class="login-logo">
             <img src="{{url('uploads/logovb2.png')}}">
+
         </div>
         @include('sweetalert::alert')
 

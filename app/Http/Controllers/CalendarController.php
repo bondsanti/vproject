@@ -110,8 +110,13 @@ class CalendarController extends Controller
                 // ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')
                 // ->where('user_id',Session::get('loginId'))
                 // ->get();
-                $bookings = Booking::with('booking_project_ref:id,name')->with('booking_emp_ref:id,code,name_th,phone')
+                $bookings = Booking::with('booking_project_ref:id,name')//โครงการ
+                ->with('booking_emp_ref:id,code,name_th,phone')//จน. โครงการ
+                ->with('booking_user_ref:id,code,name_th')//ชื่อ Sale
                 ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')
+                ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+                ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+                ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
                 ->where('teampro_id',Session::get('loginId'))->get();
                 //dd($bookings);
 
@@ -151,8 +156,11 @@ class CalendarController extends Controller
                                 'project' => $booking->booking_project_ref[0]->name,
                                 'status' => $textStatus,
                                 'booking_status' => $booking->booking_status,
-                                'customer' => $booking->customer_name." ".$booking->customer_tel,
+                                // 'customer' => $booking->customer_name." ".$booking->customer_tel,
+                                'sale'=> $booking->booking_user_ref[0]->name_th,
                                 'employee'=> $booking->booking_emp_ref[0]->name_th." ".$booking->booking_emp_ref[0]->phone,
+                                'team_name'=> $booking->team_name."/".$booking->subteam_name,
+                                'tel'=> $booking->user_tel,
                                 'room_no'=>$booking->room_no,
                                 'room_price'=> number_format($booking->room_price),
                                 'cus_req'=>$booking->customer_req,

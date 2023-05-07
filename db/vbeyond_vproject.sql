@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2023 at 08:27 PM
+-- Generation Time: May 07, 2023 at 11:55 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 7.4.30
 
@@ -44,13 +44,6 @@ CREATE TABLE `bookingdetails` (
   `room_price` int(10) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `bookingdetails`
---
-
-INSERT INTO `bookingdetails` (`id`, `booking_id`, `customer_name`, `customer_tel`, `customer_req`, `customer_req_bank`, `customer_req_bank_other`, `customer_doc_personal`, `num_home`, `num_idcard`, `num_app_statement`, `num_statement`, `room_no`, `room_price`) VALUES
-(23, '66001', 'สมศักดิ์ ใจดี', '(069) 554-5121', 'ชมห้องตัวอย่าง,พาชมห้องราคา', '', NULL, '', NULL, NULL, NULL, NULL, 'A420', 1200000);
-
 -- --------------------------------------------------------
 
 --
@@ -68,8 +61,8 @@ CREATE TABLE `bookings` (
   `teampro_id` int(3) NOT NULL COMMENT 'ref_เจ้าหน้าโครงการที่รับผิดชอบ',
   `team_id` int(3) NOT NULL COMMENT 'ทีมสายงาน',
   `subteam_id` int(3) NOT NULL COMMENT 'ชื่อสายงาน',
-  `user_id` int(3) NOT NULL COMMENT 'ref_ผู้ทำรายงาน',
-  `user_tel` varchar(20) NOT NULL,
+  `user_id` int(3) NOT NULL COMMENT 'ref_sale',
+  `user_tel` varchar(20) NOT NULL COMMENT 'เบอร์สายงาน',
   `remark` text DEFAULT NULL COMMENT 'หมายเหตุการจอง',
   `because_cancel_remark` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจอง',
   `because_cancel_other` text DEFAULT NULL COMMENT 'เหตุผลยกเลิกการจองอื่น ๆ',
@@ -79,13 +72,6 @@ CREATE TABLE `bookings` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `bookings`
---
-
-INSERT INTO `bookings` (`id`, `booking_title`, `booking_start`, `booking_end`, `booking_status`, `project_id`, `booking_status_df`, `teampro_id`, `team_id`, `subteam_id`, `user_id`, `user_tel`, `remark`, `because_cancel_remark`, `because_cancel_other`, `job_detailsubmission`, `job_img`, `job_score`, `created_at`, `updated_at`) VALUES
-('66001', 'เยี่ยมโครงการ', '2023-04-20 15:00', '2023-04-20 18:00', NULL, 166, 0, 1233, 4, 11, 3526, '(022) 222-2222', NULL, NULL, NULL, NULL, NULL, NULL, '2023-04-09 15:16:03', '2023-04-09 18:26:33');
 
 -- --------------------------------------------------------
 
@@ -105,25 +91,17 @@ CREATE TABLE `holiday_users` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `projects`
+-- Table structure for table `logs`
 --
 
-CREATE TABLE `projects` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `project_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_active` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+CREATE TABLE `logs` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(30) NOT NULL,
+  `action` text NOT NULL,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `projects`
---
-
-INSERT INTO `projects` (`id`, `project_name`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'โครงการ Altitude  Unicorn', 'enable', NULL, NULL),
-(2, 'โครงการมอนเต้ พระราม 9', 'enable', NULL, NULL),
-(3, 'โครงการ Be condo', 'enable', NULL, NULL);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -134,21 +112,23 @@ INSERT INTO `projects` (`id`, `project_name`, `is_active`, `created_at`, `update
 CREATE TABLE `role_users` (
   `id` int(10) NOT NULL,
   `user_id` int(5) NOT NULL,
-  `role_type` varchar(10) NOT NULL
+  `role_type` varchar(10) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `role_users`
 --
 
-INSERT INTO `role_users` (`id`, `user_id`, `role_type`) VALUES
-(1, 3464, 'SuperAdmin'),
-(2, 3539, 'Staff'),
-(3, 1233, 'Staff'),
-(4, 3526, 'Sale'),
-(5, 3510, 'Staff'),
-(6, 1603, 'Admin'),
-(7, 3511, 'Sale');
+INSERT INTO `role_users` (`id`, `user_id`, `role_type`, `created_at`, `updated_at`) VALUES
+(1, 3464, 'SuperAdmin', '2023-05-04 17:09:38', '2023-05-04 17:09:38'),
+(2, 1603, 'Admin', '2023-05-04 17:10:58', '2023-05-04 17:10:58'),
+(3, 3539, 'Staff', '2023-05-04 17:12:35', '2023-05-04 17:12:35'),
+(4, 1233, 'Staff', '2023-05-04 17:12:35', '2023-05-04 17:12:35'),
+(5, 3510, 'Staff', '2023-05-04 17:13:21', '2023-05-04 17:13:21'),
+(6, 3526, 'Sale', '2023-05-04 17:13:21', '2023-05-04 17:13:21'),
+(7, 3511, 'Sale', '2023-05-04 17:14:02', '2023-05-04 17:14:02');
 
 -- --------------------------------------------------------
 
@@ -209,32 +189,6 @@ INSERT INTO `teams` (`id`, `team_name`, `created_at`, `updated_at`) VALUES
 (5, 'คุณแอ็พ(ศิระ)', '2023-04-09 14:52:34', '2023-04-09 15:05:44'),
 (6, 'คุณเซน', '2023-04-09 14:53:03', '2023-04-09 14:53:03');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE `users` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fullname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `team_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `active` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tel` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `code`, `password`, `fullname`, `role`, `team_id`, `active`, `tel`, `created_at`, `updated_at`) VALUES
-(1, 'admin', '$2y$10$ZOMlS2LD8VlfjQbeO6YZa.NGrTgk4gItjBfAMstcsJkA7Y5YU2Uni', 'Admin IT', 'admin', '0', 'enable', NULL, '2023-03-04 03:42:36', '2023-03-04 03:42:36');
-
 --
 -- Indexes for dumped tables
 --
@@ -258,9 +212,9 @@ ALTER TABLE `holiday_users`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `projects`
+-- Indexes for table `logs`
 --
-ALTER TABLE `projects`
+ALTER TABLE `logs`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -282,13 +236,6 @@ ALTER TABLE `teams`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_code_unique` (`code`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -296,25 +243,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookingdetails`
 --
 ALTER TABLE `bookingdetails`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `holiday_users`
 --
 ALTER TABLE `holiday_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `projects`
+-- AUTO_INCREMENT for table `logs`
 --
-ALTER TABLE `projects`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `role_users`
 --
 ALTER TABLE `role_users`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `subteams`
@@ -327,12 +274,6 @@ ALTER TABLE `subteams`
 --
 ALTER TABLE `teams`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1101,7 +1101,7 @@ class BookingController extends Controller
             imagecopyresized($thumbnail, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
             // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
-            $thumbnailPath = public_path('images/jobs/' . $imageName);
+            $thumbnailPath = 'images/jobs/' . $imageName;
             imagejpeg($thumbnail, $thumbnailPath);
 
             // ลบไฟล์รูปภาพเดิม
