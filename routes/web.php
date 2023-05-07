@@ -137,3 +137,8 @@ Route::get('/report/booking/team/pie',[ReportController::class,'reportByTeamPie'
 Route::get('/report/booking/subteam',[ReportController::class,'reportBySubTeam'])->middleware('isLogin');
 Route::get('/report/booking/subteam/pie',[ReportController::class,'reportBySubTeam'])->middleware('isLogin');
 Route::get('/report/booking/group/project/team',[ReportController::class,'reportGroupProjectByTeam'])->middleware('isLogin');
+
+
+//ChackBooking to alert auto
+Route::get('/alert/booking',[MainController::class,'checkAlertBookingConfirm']);
+Route::get('/alert/booking/sale',[MainController::class,'checkAlertBookingConfirmSale']);

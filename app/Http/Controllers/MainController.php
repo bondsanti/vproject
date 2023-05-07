@@ -8,6 +8,9 @@ use App\Models\Role_user;
 use App\Models\Booking;
 use App\Models\Project;
 use App\Models\Subteam;
+use App\Models\Log;
+use Carbon\Carbon;
+use Phattarachai\LineNotify\Line;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -148,6 +151,97 @@ class MainController extends Controller
         }
     }
 
+
+    public function checkAlertBookingConfirm(){
+
+        $bookings = Booking::where('booking_status', 0)->get();
+
+             foreach ($bookings as $booking) {
+                $bookingId = $booking->id;
+
+                DB::table('bookings')
+                ->where('id', '=', $bookingId)
+                ->update([
+                    'bookings.booking_status' => '5',
+                    'bookings.because_cancel_remark' => 'ถูกยกเลิกอัตโนมัติ',
+                    'bookings.because_cancel_other' => 'เจ้าหน้าที่โครงการไม่กดรับจอง',
+                ]);
+
+                 Log::addLog('System', 'Update Status', 'ยกเลิกอัตโนมัติ เจ้าหน้าที่โครงการไม่กดรับจอง');
+
+                 $token_line1 = config('line-notify.access_token_project');
+                 $line = new Line($token_line1);
+                 $line->send(
+                     '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
+                     '----------------------------'." \n".
+                     'หมายเลขการจอง : *'.$bookingId."* \n".
+                    'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
+                 );
+                 $token_line2 = config('line-notify.access_token_sale');
+                 $line = new Line($token_line2);
+                 $line->send(
+                     '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
+                     '----------------------------'." \n".
+                     'หมายเลขการจอง : *'.$bookingId."* \n".
+                    'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
+                 );
+
+             }
+
+
+             return response()->json("OK", 200);
+    }
+
+    public function checkAlertBookingConfirmSale(){
+
+        $currentDate = Carbon::now();
+        $currentTime = date('H:i:s');
+        $endTime = '17:30:00';
+
+        // if ($currentTime == $endTime) {
+
+            $bookings = Booking::where('booking_status', 1)
+            // ->whereDate('created_at', $currentDate->toDateString())
+            ->get();
+
+
+             foreach ($bookings as $booking) {
+                $bookingId = $booking->id;
+
+                DB::table('bookings')
+                ->where('id', '=', $bookingId)
+                ->update([
+                    'bookings.booking_status' => '5',
+                    'bookings.because_cancel_remark' => 'ถูกยกเลิกอัตโนมัติ',
+                    'bookings.because_cancel_other' => 'Saleไม่กดคอนเฟิร์มนัด',
+                ]);
+
+                 Log::addLog('System', 'Update Status', 'ยกเลิกอัตโนมัติ Sale ไม่กดคอนเฟิร์มนัด');
+
+                 $token_line1 = config('line-notify.access_token_project');
+                 $line = new Line($token_line1);
+                 $line->send(
+                     '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
+                     '----------------------------'." \n".
+                     'หมายเลขการจอง : *'.$bookingId."* \n".
+                    'เหตุผล : Sale ❌ไม่กดคอนเฟิร์มนัด  ภายในเวลาที่กำหนด 😥'
+                 );
+                 $token_line2 = config('line-notify.access_token_sale');
+                 $line = new Line($token_line2);
+                 $line->send(
+                     '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
+                     '----------------------------'." \n".
+                     'หมายเลขการจอง : *'.$bookingId."* \n".
+                    'เหตุผล : Sale ❌ไม่กดคอนเฟิร์มนัด  ภายในเวลาที่กำหนด 😥'
+                 );
+
+             }
+
+
+             return response()->json("OK", 200);
+        // }
+
+    }
 
     /**
      * Show the form for creating a new resource.
