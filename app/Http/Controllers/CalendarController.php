@@ -117,13 +117,20 @@ class CalendarController extends Controller
                 ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
                 ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
                 ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
-                ->where('teampro_id',Session::get('loginId'))->get();
+                // ->where('teampro_id',Session::get('loginId'))->get();
+                ->get();
                 //dd($bookings);
 
                 foreach ($bookings as $booking)
                     {
                             $start_time = Carbon::parse($booking->booking_start)->toIso8601String();
                             $end_time = Carbon::parse($booking->booking_end)->toIso8601String();
+
+                            if($booking->user_id==Session::get('loginId')){
+                                $isTitle="📌";
+                            }else{
+                                $isTitle="";
+                            }
 
                             if($booking->booking_status==0){
                                 $backgroundColor="#a6a6a6";
@@ -152,7 +159,7 @@ class CalendarController extends Controller
                             }
                             $event = [
                                 'id' => $booking->id,
-                                'title' => $booking->booking_title,
+                                'title' => $isTitle." ".$booking->booking_title,
                                 'project' => $booking->booking_project_ref[0]->name,
                                 'status' => $textStatus,
                                 'booking_status' => $booking->booking_status,

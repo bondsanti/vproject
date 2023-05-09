@@ -31,6 +31,10 @@
 
     @include('sweetalert::alert')
     <!-- Main content -->
+
+
+
+
     <section class="content">
         <div class="row">
             <div class="col-md-6">
@@ -430,7 +434,7 @@
     <script>
         Swal.fire({
             title: 'เกิดข้อผิดพลาด!',
-            text: 'กรุณาตรวจเช็คข้อมูล',
+            text: 'กรุณากรอกข้อมูลให้ครบถ้วน',
             icon: 'error',
             showCancelButton: false,
             confirmButtonText: 'OK',

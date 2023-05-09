@@ -76,16 +76,16 @@ class UserController extends Controller
 
    public function insert(Request $request){
 
-        $user = User::where('code',"=",$request->code)->first();
+        $user = User::where('code',$request->code)->first();
 
-        if (!$user) {
-            return response()->json([
-                'errors' => [
-                    'message'=>'Code ไม่ถูกต้อง ไม่พบผู้ใช้งาน'
-                    ]
-            ],400);
-        }else{
-             //dd($user);
+       // dd($user);
+
+       if (!$user) {
+        return response()->json([
+            'message' => 'Code ไม่ถูกต้อง'
+        ], 400);
+
+       }else{
 
         $validator = Validator::make($request->all(),[
             'code'=>'required',
@@ -94,6 +94,8 @@ class UserController extends Controller
             'code.required'=>'กรอก Code',
             'role_type.required' => 'เลือกประเภทผู้ใช้งาน',
         ]);
+
+
 
         if ($validator->passes()) {
 
@@ -110,10 +112,12 @@ class UserController extends Controller
             ], 201);
 
         }
-
         return response()->json(['error'=>$validator->errors()]);
 
-        }
+       }
+
+
+
 
 
 

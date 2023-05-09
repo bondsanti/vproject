@@ -155,41 +155,78 @@ class MainController extends Controller
     public function checkAlertBookingConfirm(){
 
         $bookings = Booking::where('booking_status', 0)->get();
+        //dd($bookings);
+        $currentDate = date('Y-m-d');
+        $currentTime = date('H:i:s');
+        $startTime = '16:00:00';
+        $endTime = '17:30:00';
 
-             foreach ($bookings as $booking) {
+       // dd($startTime1);
+
+
+        if($bookings){
+
+            foreach ($bookings as $booking) {
+
                 $bookingId = $booking->id;
+                $booking_start = date('Y-m-d', strtotime($booking->booking_start));
 
-                DB::table('bookings')
-                ->where('id', '=', $bookingId)
-                ->update([
-                    'bookings.booking_status' => '5',
-                    'bookings.because_cancel_remark' => 'ถูกยกเลิกอัตโนมัติ',
-                    'bookings.because_cancel_other' => 'เจ้าหน้าที่โครงการไม่กดรับจอง',
-                ]);
+                //check จองล่วงหน้า 1 วัน
+                //$oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
+                $limitTime = date('H:i:s', strtotime($booking->created_at.' +1 Hour'));
 
-                 Log::addLog('System', 'Update Status', 'ยกเลิกอัตโนมัติ เจ้าหน้าที่โครงการไม่กดรับจอง');
+                if ($currentTime > $limitTime){
 
-                 $token_line1 = config('line-notify.access_token_project');
-                 $line = new Line($token_line1);
-                 $line->send(
-                     '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
-                     '----------------------------'." \n".
-                     'หมายเลขการจอง : *'.$bookingId."* \n".
-                    'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
-                 );
-                 $token_line2 = config('line-notify.access_token_sale');
-                 $line = new Line($token_line2);
-                 $line->send(
-                     '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
-                     '----------------------------'." \n".
-                     'หมายเลขการจอง : *'.$bookingId."* \n".
-                    'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
-                 );
+                    DB::table('bookings')
+                    ->where('id', '=', $bookingId)
+                    ->update([
+                        'bookings.booking_status' => '5',
+                        'bookings.because_cancel_remark' => 'ถูกยกเลิกอัตโนมัติ',
+                        'bookings.because_cancel_other' => 'เจ้าหน้าที่โครงการไม่กดรับจอง',
+                    ]);
 
-             }
+                    Log::addLog('System', 'Update Status', 'ยกเลิกอัตโนมัติ เจ้าหน้าที่โครงการไม่กดรับจอง');
+
+                    $token_line1 = config('line-notify.access_token_project');
+                    $line = new Line($token_line1);
+                    $line->send(
+                        '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
+                        '----------------------------'." \n".
+                        'หมายเลขการจอง : *'.$bookingId."* \n".
+                        'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
+                    );
+                    $token_line2 = config('line-notify.access_token_sale');
+                    $line = new Line($token_line2);
+                    $line->send(
+                        '🚨 *การจอง ถูกยกเลิกอัตโนมัติ '."* \n".
+                        '----------------------------'." \n".
+                        'หมายเลขการจอง : *'.$bookingId."* \n".
+                        'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
+                    );
+                    return response()->json("OK", 200);
+
+                }else{
+
+                    return response()->json("Not Send Alert", 200);
+                }
+
+            }
 
 
-             return response()->json("OK", 200);
+
+        }else{
+
+            return response()->json("Error not found", 404);
+
+        }
+
+
+
+
+
+
+
+
     }
 
     public function checkAlertBookingConfirmSale(){

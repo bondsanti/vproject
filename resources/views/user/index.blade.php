@@ -187,7 +187,7 @@
 
                                         <div class="col-sm-6">
                                             <select class="form-control" id="role_type" name="role_type">
-
+                                                <option value="SuperAdmin">SuperAdmin</option>
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
                                                 <option value="Sale">Sale</option>
@@ -235,6 +235,7 @@
                                         <div class="col-sm-6">
                                             <select class="form-control" id="role_edit" name="role_edit" required>
                                                 <option value="">เลือก</option>
+                                                <option value="SuperAdmin">SuperAdmin</option>
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
                                                 <option value="Sale">Sale</option>
@@ -371,7 +372,7 @@
                                 $('#userForm')[0].reset();
                                 $('#modal-default').modal('hide');
                                 //tableUser.draw();
-                                window.location.href = '{{ route("user") }}';
+                                setTimeout("location.href = '{{ route("user") }}';",2000);
                             } else {
                                 printErrorMsg(data.error);
                                 $('#savedata').html('ลองอีกครั้ง');
@@ -387,25 +388,14 @@
                                 });
                             }
 
-                        } else {
-                            Swal.fire({
-                            position: 'top-center',
-                            icon: 'error',
-                            title: 'เกิดข้อผิดพลาด',
-                            showConfirmButton: true,
-                            timer: 2500
-                        });
-                            $('#userForm')[0].reset();
                         }
-
-
                     },
                     statusCode: {
                         400: function() {
                         Swal.fire({
                             position: 'top-center',
                             icon: 'error',
-                            title: 'Code อาจไม่ถูกต้อง ไม่พบผู้ใช้งาน.. กรุณาลองใหม่',
+                            title: 'Code อาจไม่ถูกต้อง',
                             showConfirmButton: true,
                             timer: 2500
                         });
