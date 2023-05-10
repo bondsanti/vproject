@@ -51,6 +51,10 @@ class HolidayController extends Controller
                                     $backgroundColor="#00c0ef";
                                     $borderColor="#00c0ef";
                                     $textStatus="เข้าสำนักงานใหญ่";
+                                }elseif($holiday->status==2){
+                                    $backgroundColor="#119C07";
+                                    $borderColor="#119C07";
+                                    $textStatus="Stand By";
                                 }else{
                                     $backgroundColor="#dd4b39";
                                     $borderColor="#dd4b39";
@@ -131,6 +135,7 @@ class HolidayController extends Controller
 
         }
 
+
     }
 
     public function insert(Request $request){
@@ -156,6 +161,7 @@ class HolidayController extends Controller
             $holiday->end_date = $request->end_date;
             $holiday->remark = $request->remark;
             $holiday->status = $request->status;
+            $holiday->location = $request->location;
             $holiday->save();
 
             if ($holiday) {
@@ -207,11 +213,11 @@ class HolidayController extends Controller
     public function updateStatus(Request $request,$id){
 
         $holiday = Holiday::where('id',"=",$id)->first();
-
         $validator = Validator::make($request->all(),[
             'start_date' => 'required',
             'end_date' => 'required',
             'status' => 'required',
+
         ],[
             'start_date.required'=>'เลือกวันที่เริ่มต้น',
             'end_date.required'=>'เลือกวันที่สิ้นสุด',
@@ -245,6 +251,7 @@ class HolidayController extends Controller
             'start_date_edit' => 'required',
             'end_date_edit' => 'required',
             'status_edit' => 'required',
+
         ],[
             'start_date_edit.required'=>'เลือกวันที่เริ่มต้น',
             'end_date_edit.required'=>'เลือกวันที่สิ้นสุด',
@@ -252,12 +259,17 @@ class HolidayController extends Controller
         ]);
         if ($validator->passes()) {
             $holiday = Holiday::where('id',"=",$request->id_edit)->first();
-
+            if($request->status_edit != 2){
+                $location = "";
+            }else{
+                $location = $request->location_edit;
+            }
             $holiday->user_id = $request->user_id_edit;
             $holiday->start_date = $request->start_date_edit;
             $holiday->end_date = $request->end_date_edit;
             $holiday->remark = $request->remark_edit;
             $holiday->status = $request->status_edit;
+            $holiday->location = $location;
 
             $holiday->save();
 

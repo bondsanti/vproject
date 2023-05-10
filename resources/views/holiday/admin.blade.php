@@ -62,11 +62,13 @@
                                             <option value="">เลือก</option>
                                             <option value="0">หยุด</option>
                                             <option value="1">เข้าสำนักงานใหญ่</option>
+                                            <option value="2">Stand By</option>
                                           </select>
                                           <small class="text-danger mt-1 status_err"></small>
                                         </div>
 
                                     </div>
+
                                     <div class="col-xs-6">
                                         <div class="form-group">
                                             <label><span class="text-danger">*</span> วันที่เริ่ม:</label>
@@ -100,6 +102,15 @@
 
                                     <label>หมายเหตุ</label>
                                     <textarea class="form-control" rows="3" id="remark" name="remark" placeholder="ถ้ามี ..." autocomplete="off"></textarea>
+                                </div>
+                               <div class="form-group" id="locationshow">
+
+                                    <div class="form-group">
+                                    <label><span class="text-danger"></span> สถานที่ </label>
+                                    <input type="text" placeholder="location" class="form-control" name="location" value="" autocomplete="off">
+                                    </div>
+
+
                                 </div>
 
                                 <div class="box-footer text-center">
@@ -177,6 +188,7 @@
                     <h5>
                         &nbsp;&nbsp;สถานะ <span class="label label-default">วันหยุด</span>
                         &nbsp;<span class="label label-info">เข้าสำนักงานใหญ่</span>
+                        &nbsp;<span class="label label-success">Stand By</span>
                         &nbsp;<span class="label label-danger">ยกเลิก</span>
                     </h5>
                     <div id="calendar"></div>
@@ -215,6 +227,10 @@
                                         // $backgroundColor="#00c0ef";
                                         // $borderColor="#00c0ef";
                                         $textStatus="เข้าสำนักงานใหญ่";
+                                    }elseif($holiday->status==2){
+                                        // $backgroundColor="#dd4b39";
+                                        // $borderColor="#dd4b39";
+                                        $textStatus="Stand By";
                                     }else{
                                         // $backgroundColor="#dd4b39";
                                         // $borderColor="#dd4b39";
@@ -233,11 +249,11 @@
 
                             <td>
 
-                                <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
+                                {{-- <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
                                     <i class="fa fa-refresh">
                                     </i>
                                     สถานะ
-                                  </button>
+                                  </button> --}}
 
                                 <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
 
@@ -260,7 +276,7 @@
     </section>
     <!-- /.content -->
 
-    <div class="modal fade" id="updateStatus">
+    {{-- <div class="modal fade" id="updateStatus">
         <div class="modal-dialog modal-sm">
           <div class="modal-content">
             <div class="modal-header">
@@ -280,12 +296,19 @@
 
                         <option value="0">หยุด</option>
                         <option value="1">เข้าสำนักงานใหญ่</option>
-                        <option value="2">ยกเลิก</option>
+                        <option value="2">Stand By</option>
+                        <option value="3">ยกเลิก</option>
                         </select>
                         <small class="text-danger mt-1 status_err"></small>
                         </div>
                     </div>
 
+                </div>
+                <div class="form-group" id="locationshow_edit">
+                    <div class="form-group">
+                        <label><span class="text-danger"></span> สถานที่ </label>
+                        <input type="text" placeholder="location" class="form-control" id="location_edit" name="location_edit" value="" autocomplete="off">
+                    </div>
                 </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button>
@@ -296,7 +319,7 @@
           <!-- /.modal-content -->
         </div>
         <!-- /.modal-dialog -->
-    </div>
+    </div> --}}
 
     <div class="modal fade" id="updateData">
         <div class="modal-dialog modal-md">
@@ -331,6 +354,7 @@
                                 <option value="">เลือก</option>
                                 <option value="0">หยุด</option>
                                 <option value="1">เข้าสำนักงานใหญ่</option>
+                                <option value="2">Stand By</option>
                               </select>
                               <small class="text-danger mt-1 status_edit_err"></small>
                             </div>
@@ -369,6 +393,15 @@
 
                         <label>หมายเหตุ</label>
                         <textarea class="form-control" rows="3" id="remark_edit" name="remark_edit" placeholder="ถ้ามี ..." autocomplete="off"></textarea>
+                    </div>
+                    <div class="form-group" id="locationshow_edit">
+
+                        <div class="form-group">
+                            <label><span class="text-danger"></span> สถานที่ </label>
+                            <input type="text" placeholder="location" class="form-control" id="location_edit" name="location_edit" value="" autocomplete="off">
+                        </div>
+
+
                     </div>
                 </div>
             <div class="modal-footer">
@@ -516,6 +549,20 @@
                     });
 
                 });
+                $("#locationshow").hide();
+                $("#status").change(function() {
+                    const result = $("#status").val();
+                     //console.log(v);
+                    if (result == '2') {
+                        $("#locationshow").show();
+
+                    } else {
+
+                        $("#locationshow").hide();
+                    }
+                });
+
+
 
                 //updateStatus
                 $('body').on('click', '.updateStatus', function () {
@@ -605,8 +652,30 @@
                     $('#datepicker1_e').val(data.start_date);
                     $('#datepicker2_e').val(data.end_date);
                     $('#status_edit option[value="'+data.status+'"]').prop('selected', true);
-                    $('#remark_edit').val(data.remark);
+                    if (data.status == '2') {
+                            $("#locationshow_edit").show();
 
+                        } else {
+
+                            $("#locationshow_edit").hide();
+                        }
+                    $('#remark_edit').val(data.remark);
+                    $('#location_edit').val(data.location);
+
+                    });
+
+                     //location_edit
+
+                    $("#status_edit").change(function() {
+                        const result_edit = $("#status_edit").val();
+                        //console.log(v);
+                        if (result_edit == '2') {
+                            $("#locationshow_edit").show();
+
+                        } else {
+
+                            $("#locationshow_edit").hide();
+                        }
                     });
                 });
 
@@ -785,6 +854,8 @@
                 // Handle day click here
                 }
         });
+
+
     });
 </script>
 @endpush
