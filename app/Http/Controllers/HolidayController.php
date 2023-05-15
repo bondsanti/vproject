@@ -11,6 +11,7 @@ use Phattarachai\LineNotify\Line;
 use App\Models\Role_user;
 use App\Models\User;
 use App\Models\Holiday;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class HolidayController extends Controller
@@ -61,10 +62,21 @@ class HolidayController extends Controller
                                     $textStatus="ยกเลิก";
                                 }
 
+
+
+                                if($holiday->location){
+                                    $short_name = Str::limit($holiday->user_ref->name_th, 6);
+                                    $location = "@".$holiday->location;
+                                }else{
+                                    $location = "";
+                                    $short_name = $holiday->user_ref->name_th;
+                                }
+
                                 $event = [
                                     'id' => $holiday->id,
-                                    'title' => $holiday->user_ref->name_th,
-                                    'remark' => ($holiday->remark)? $holiday->remark:"-",
+                                    'title' => $short_name." ".$location,
+                                    'remark' => ($holiday->remark) ? $holiday->remark: "-",
+                                    'location' => ($holiday->location) ? $holiday->location: " ",
                                     'start' => $holiday->start_date,
                                     'end' => $end_date,
                                     'showStart' => $start_date_th,
@@ -112,9 +124,18 @@ class HolidayController extends Controller
                                 $textStatus="ยกเลิก";
                             }
 
+                            if($holiday->location){
+                                $short_name = Str::limit($holiday->user_ref->name_th, 6);
+                                $location = "@".$holiday->location;
+                            }else{
+                                $location = "";
+                                $short_name = $holiday->user_ref->name_th;
+                            }
+
+
                             $event = [
                                 'id' => $holiday->id,
-                                'title' => $holiday->user_ref->name_th,
+                                'title' => $short_name." ".$location,
                                 'remark' => ($holiday->remark)? $holiday->remark:"-",
                                 'start' => $holiday->start_date,
                                 'end' => $end_date,
@@ -141,10 +162,12 @@ class HolidayController extends Controller
     public function insert(Request $request){
 
         $validator = Validator::make($request->all(),[
+            'user_id' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
             'status' => 'required',
         ],[
+            'user_id.required'=>'เลือกพนักงาน',
             'start_date.required'=>'เลือกวันที่เริ่มต้น',
             'end_date.required'=>'เลือกวันที่สิ้นสุด',
             'status.required'=>'เลือกสถานะการหยุด',

@@ -85,11 +85,11 @@
         <div class="row">
             <!-- /.col -->
             <div class="col-md-12">
-                <div class="alert alert-info alert-dismissible">
+                {{-- <div class="alert alert-info alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h4><i class="icon fa fa-info"></i> Alert!</h4>
                     หาก Staff & Sale ท่านไหนมีข้อมูลการจอง จะไม่สามารถ ลบ ได้ หากไม่ใช้งาน User นั้นแล้วให้ทำการ <strong> Disable </strong> เพื่อปิดใช้งาน
-                  </div>
+                  </div> --}}
                 <div class="box box-primary">
                     <div class="box-header">
                         <h3 class="box-title">
@@ -126,7 +126,9 @@
                                     <td>{{($user->user_ref[0]->active_vproject=="0") ? "Disable":"Enable"}}</td>
 
                                     <td>
-                                        @if ($user->role_type!="SuperAdmin")
+
+                                        @if (Session::get('loginId') != $user->user_id)
+
                                         <button  data-id="{{$user->user_id}}" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>
 
 

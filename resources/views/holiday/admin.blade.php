@@ -52,6 +52,7 @@
 
                                             @endforeach
                                           </select>
+                                          <small class="text-danger mt-1 user_err"></small>
 
                                         </div>
                                     </div>
@@ -518,6 +519,7 @@
                                 } else {
                                     printErrorMsg(data.error);
                                     $('#savedata').html('ลองอีกครั้ง');
+                                    $('.user_err').text(data.error.user_id);
                                     $('.start_date_err').text(data.error.start_date);
                                     $('.end_date_err').text(data.error.end_date);
                                     $('.status_err').text(data.error.status);
@@ -526,7 +528,7 @@
                                     Swal.fire({
                                         position: 'top-center',
                                         icon: 'error',
-                                        title: data.message,
+                                        title: 'คุณกรอกข้อมูลไม่ครบถ้วน',
                                         showConfirmButton: true,
                                         timer: 1500
                                     });
@@ -834,9 +836,9 @@
                         html: `
                         <h5>สถานะ <strong class="text-success">${event.status}</strong></h5>
                         <h5><strong>วันที่ </strong> ${event.showStart} <strong> - </strong> ${event.showEnd}</h5>
-
                         <hr>
-                        <h5>หมายเหตุ <strong>${event.remark}</strong></h5>
+                        <h5>หมายเหตุ <strong> ${event.remark} </strong></h5>
+                        <h5>สถานที่ Stand by <strong> ${event.location} </strong></h5>
                         `,
                         icon: 'info',
                         confirmButtonText: 'OK'
