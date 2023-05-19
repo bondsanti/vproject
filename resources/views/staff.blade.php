@@ -635,7 +635,7 @@
                                                     <label for="image">เลือกรูป</label>
                                                     <input type="file" class="form-control" name="job_img"
                                                         id="job_img" onchange="previewImage(this);"
-                                                        accept="image/jpeg">
+                                                        accept="image/jpeg" required>
 
                                                     <img id="preview" src="#" alt="Image preview"
                                                         style="display:none;" width="150px">

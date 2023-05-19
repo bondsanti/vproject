@@ -26,6 +26,9 @@ class BookingController extends Controller
     public function bookingProject(Request $request)
     {
 
+        $currentTime = date('H:i:s');
+        $startTime = '08:30:00';
+        $endTime = '18:00:00';
 
         $events = [];
 
@@ -136,9 +139,20 @@ class BookingController extends Controller
             return response()->json($events);
     	} // call ajax
 
+        //check time booking for sale
+         if($dataRoleUser->role_type=="Sale"){
 
+            if ($currentTime >= $startTime && $currentTime <= $endTime) {
+                return view("booking.index",compact('dataUserLogin','dataRoleUser','projects','teams','dataSales'));
+                //return view("booking.close",compact('dataUserLogin','dataRoleUser'));
+            }else{
+                return view("booking.close",compact('dataUserLogin','dataRoleUser'));
+            }
 
+        }else{
             return view("booking.index",compact('dataUserLogin','dataRoleUser','projects','teams','dataSales'));
+        }
+
 
 
     }
@@ -559,9 +573,14 @@ class BookingController extends Controller
             }elseif($request->booking_status==1){
                 $textStatus="รับงานแล้ว";
 
-                $oneDayBeforeBookingDate = date('d/m/Y', strtotime($booking->booking_start . ' -1 day'));
+                //$oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
+                // $oneDayBeforeBookingDateTHg = date('d/m/Y', strtotime($oneDayBeforeBookingDate.' +543 year'));
 
-                $oneDayBeforeBookingDateTH = date('d/m/Y', strtotime($oneDayBeforeBookingDate.' +543 year'));
+                $oneDayBeforeBookingDate = Carbon::parse($booking->booking_start)->subDay();
+                $oneDayBeforeBookingDateTH = $oneDayBeforeBookingDate->addYears(543)->format('d/m/Y');
+
+                //dd($oneDayBeforeBookingDateTH);
+
 
                 $Strdate_start = date('d/m/Y', strtotime($booking->booking_start.' +543 year'));
                 $Strtime_start = date('H:i', strtotime($booking->booking_start));
@@ -807,7 +826,7 @@ class BookingController extends Controller
                     'เบอร์สายงาน : *'.$bookings->user_tel ."* \n".
                     'จน. โครงการ : * ['.$bookings->booking_emp_ref[0]->name_th ."] * \n\n".
                     '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                    ." \n ✅กดรับจอง => ".'https://bit.ly/3AUARP0');
+                    ." \n ✅กดรับจอง => ".route('main'));
 
 
                 $token_line2 = config('line-notify.access_token_sale');
@@ -1104,6 +1123,12 @@ class BookingController extends Controller
         //dd($request);
         $bookings = Booking::where('id', '=', $request->id)->first();
 
+        $booking = Booking::with('booking_user_ref:id,code,name_th')
+        ->with('booking_emp_ref:id,code,name_th,phone')
+        ->with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid')->where('bookings.id',$request->id)->first();
+
+        $projects = Project::where('id', $booking->project_id)->first();
 
 
      //dd($user);
@@ -1152,6 +1177,37 @@ class BookingController extends Controller
             $bookings->job_detailsubmission = $request->job_detailsubmission;
             $bookings->job_img = $thumbnailPath;
             $bookings->save();
+
+
+                $textStatus="เยี่ยมชมเรียบร้อย";
+
+
+                $token_line1 = config('line-notify.access_token_project');
+                $line = new Line($token_line1);
+                $line->send(
+                    '✨ *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                    '----------------------------'." \n".
+                'สถานะ :✅ *'.$textStatus."* \n"
+                );
+
+                $token_line2 = config('line-notify.access_token_sale');
+                $line = new Line($token_line2);
+                $line->send(
+                    '✨ *นัด '.$booking->booking_title."* \n".
+                    '----------------------------'." \n".
+                    'หมายเลขการจอง : *'.$booking->bkid."* \n".
+                    'โครงการ : *'.$projects->name."* \n".
+                    'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                    'จน. โครงการ : *'.$booking->booking_emp_ref[0]->name_th ."* \n".
+                    '----------------------------'." \n".
+                'สถานะ :✅ *'.$textStatus."* \n"
+                );
+
 
             Log::addLog($request->session()->get('loginId'), 'Update Job Succress', $bookings->booking_title.", ".$request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
