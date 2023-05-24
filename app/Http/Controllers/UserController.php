@@ -23,9 +23,10 @@ class UserController extends Controller
 
 
        $countUser = Role_user::count();
-       $countUserAdmin = Role_user::where('role_type',"=",'Admin')->count();
+       $countUserAdmin = Role_user::whereIn('role_type',['Admin','SuperAdmin'])->count();
        $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
        $countUserSale= Role_user::where('role_type',"=",'Sale')->count();
+       $countUserOther= Role_user::where('role_type',"=",'User')->count();
        $users = Role_user::with('user_ref:id,code,name_th,active_vproject')->get();
 
         //dd($users);
@@ -71,6 +72,7 @@ class UserController extends Controller
         'countUserAdmin',
         'countUserStaff',
         'countUserSale',
+        'countUserOther',
         'users'));
    }
 

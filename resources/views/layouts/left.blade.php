@@ -19,7 +19,9 @@
         <li class="header">เมนูหลัก</li>
 
         <li class="{{ request()->routeIs('main') ? 'active' : '' }} {{ request()->routeIs('main.search') ? 'active' : '' }}"><a href="{{ route('main') }}"><i class="fa fa-dashboard"></i> <span>แดชบอร์ด </span></a></li>
+        @if ($dataRoleUser->role_type!="User")
         <li class="{{ request()->routeIs('calendar') ? 'active' : '' }}"><a href="{{ route('calendar') }}"><i class="fa fa-calendar"></i> <span>ปฏิทินงาน </span></a></li>
+        @endif
         @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Sale")
         <li class="{{ request()->routeIs('bookingProject') ? 'active' : '' }}{{ request()->routeIs('booking.edit') ? 'active' : '' }}"><a href="{{ route('bookingProject') }}">
             <i class="fa fa-calendar-plus-o"></i> <span>นัดหมาย </span></a></li>
@@ -36,7 +38,7 @@
         <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar-times-o"></i> <span>ปฏิทินวันหยุด</span></a></li>
         @endif
 
-        @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin")
+        @if ($dataRoleUser->role_type=="SuperAdmin" || $dataRoleUser->role_type=="Admin" || $dataRoleUser->role_type=="User")
         <li class="treeview {{ request()->routeIs('report.book.project') ? 'active' : '' }} {{ request()->routeIs('report.book.team') ? 'active' : '' }}">
             <a href="#">
               <i class="fa fa-files-o"></i> <span>รายงาน</span>

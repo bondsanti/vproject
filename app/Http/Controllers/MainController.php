@@ -41,7 +41,7 @@ class MainController extends Controller
         //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
         $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
 
-        if ($dataRoleUser->role_type== "SuperAdmin"){
+        if ($dataRoleUser->role_type== "SuperAdmin" || $dataRoleUser->role_type=="User"){
 
             $countAllBooking = Booking::count();
             $countSucessBooking = Booking::where('booking_status',3)->count();
@@ -49,9 +49,10 @@ class MainController extends Controller
             $countExitBooking = Booking::where('booking_status',5)->count();
 
             $countUser = Role_user::count();
-            $countUserAdmin = Role_user::where('role_type',"=",'Admin')->count();
+            $countUserAdmin = Role_user::whereIn('role_type',['Admin','SuperAdmin'])->count();
             $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
             $countUserSale= Role_user::where('role_type',"=",'Sale')->count();
+            $countUserOther= Role_user::where('role_type',"=",'User')->count();
 
              return view('index',compact('dataUserLogin',
              'dataRoleUser',
@@ -62,7 +63,8 @@ class MainController extends Controller
              'countUser',
              'countUserAdmin',
              'countUserStaff',
-             'countUserSale',));
+             'countUserSale',
+             'countUserOther'));
 
         }elseif ($dataRoleUser->role_type=="Admin") {
             $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')

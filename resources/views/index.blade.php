@@ -112,7 +112,7 @@
             </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-2 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-yellow">
                 <div class="inner">
@@ -127,7 +127,7 @@
             </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
+        <div class="col-lg-2 col-xs-6">
             <!-- small box -->
             <div class="small-box bg-blue">
                 <div class="inner">
@@ -142,6 +142,22 @@
             </div>
         </div>
         <!-- ./col -->
+        <div class="col-lg-2 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-black">
+                <div class="inner">
+                    <h3>{{ $countUserOther }}</h3>
+
+                    <p>ผู้ใช้งาน [User]</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                </div>
+
+            </div>
+        </div>
+        <!-- ./col -->
+
 
     </div>
 

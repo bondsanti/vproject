@@ -49,7 +49,7 @@
                 </div>
             </div>
             <!-- ./col -->
-            <div class="col-lg-3 col-xs-6">
+            <div class="col-lg-2 col-xs-6">
                 <!-- small box -->
                 <div class="small-box bg-yellow">
                     <div class="inner">
@@ -64,13 +64,28 @@
                 </div>
             </div>
             <!-- ./col -->
-            <div class="col-lg-3 col-xs-6">
+            <div class="col-lg-2 col-xs-6">
                 <!-- small box -->
                 <div class="small-box bg-blue">
                     <div class="inner">
                         <h3>{{ $countUserSale }}</h3>
 
                         <p>ผู้ใช้งาน [Sale]</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-2 col-xs-6">
+                <!-- small box -->
+                <div class="small-box bg-black">
+                    <div class="inner">
+                        <h3>{{ $countUserOther }}</h3>
+
+                        <p>ผู้ใช้งาน [User]</p>
                     </div>
                     <div class="icon">
                         <i class="fa fa-user-plus" aria-hidden="true"></i>
@@ -193,6 +208,7 @@
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
                                                 <option value="Sale">Sale</option>
+                                                <option value="User">User</option>
                                               </select>
                                               <small class="text-danger mt-1"></small>
                                         </div>
@@ -241,6 +257,7 @@
                                                 <option value="Admin">Admin</option>
                                                 <option value="Staff">Staff</option>
                                                 <option value="Sale">Sale</option>
+                                                <option value="User">User</option>
                                               </select>
                                               <small class="text-danger mt-1 role_err2"></small>
                                         </div>
