@@ -235,16 +235,15 @@ class MainController extends Controller
 
         $currentDate = Carbon::now();
         $currentTime = date('H:i:s');
-        $endTime = '17:30:00';
+        $nextDay = $currentDate->addDay()->toDateString(); // วันที่ปัจจุบัน +1 วัน
 
-        // if ($currentTime == $endTime) {
-
-            $bookings = Booking::where('booking_status', 1)
-            // ->whereDate('created_at', $currentDate->toDateString())
+        $bookings = Booking::where('booking_status', 1)
+            ->where('booking_start', '<', $nextDay)
             ->get();
 
+        if ($bookings) {
 
-             foreach ($bookings as $booking) {
+            foreach ($bookings as $booking) {
                 $bookingId = $booking->id;
 
                 DB::table('bookings')
@@ -276,9 +275,13 @@ class MainController extends Controller
 
              }
 
-
              return response()->json("OK", 200);
-        // }
+        }else{
+
+
+        }
+
+
 
     }
 
