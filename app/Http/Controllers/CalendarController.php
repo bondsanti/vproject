@@ -126,7 +126,7 @@ class CalendarController extends Controller
                             $start_time = Carbon::parse($booking->booking_start)->toIso8601String();
                             $end_time = Carbon::parse($booking->booking_end)->toIso8601String();
 
-                            if($booking->user_id==Session::get('loginId')){
+                            if($booking->teampro_id==Session::get('loginId')){
                                 $isTitle="📌";
                             }else{
                                 $isTitle="";

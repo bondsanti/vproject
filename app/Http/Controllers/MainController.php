@@ -166,7 +166,7 @@ class MainController extends Controller
        // dd($startTime1);
 
 
-        if($bookings){
+        if($bookings->count() > 0){
 
             foreach ($bookings as $booking) {
 
@@ -205,11 +205,11 @@ class MainController extends Controller
                         'หมายเลขการจอง : *'.$bookingId."* \n".
                         'เหตุผล : เจ้าหน้าที่โครงการ ❌ไม่กดรับจอง ภายในเวลาที่กำหนด 😥'
                     );
-                    return response()->json("OK", 200);
+                    return response()->json("OK! Sent Alert ".$bookings->count(), 200);
 
                 }else{
 
-                    return response()->json("Not Send Alert", 200);
+                    return response()->json("Notfound! Sent Alert ", 404);
                 }
 
             }
@@ -231,18 +231,21 @@ class MainController extends Controller
 
     }
 
+    //แจ้งเตือนยกเลิก กรณี Saleไม่กด confirm
     public function checkAlertBookingConfirmSale(){
 
         $currentDate = Carbon::now();
         $currentTime = date('H:i:s');
-        $nextDay = $currentDate->addDay()->toDateString(); // วันที่ปัจจุบัน +1 วัน
+        $nextDay = $currentDate->addDay(); // วันที่ปัจจุบัน +1 วัน
 
+       //dd($currentDate);
         $bookings = Booking::where('booking_status', 1)
-            ->where('booking_start', '<', $nextDay)
+            ->where('booking_start', '<=', $nextDay)
             ->get();
 
-        if ($bookings) {
-
+        //dd($bookings);
+        if ($bookings->count() > 0) {
+            //dd("ok");
             foreach ($bookings as $booking) {
                 $bookingId = $booking->id;
 
@@ -275,9 +278,52 @@ class MainController extends Controller
 
              }
 
-             return response()->json("OK", 200);
+             return response()->json("OK! Sent Alert ".$bookings->count(), 200);
         }else{
 
+            return response()->json("Notfound! Sent Alert ", 404);
+
+        }
+
+
+
+    }
+
+    //แจ้งเตือน Sale ให้กด confirm
+    public function alertBeforeBookingConfirmSale(){
+
+        $currentDate = Carbon::now();
+        $currentTime = date('H:i:s');
+        $nextDay = $currentDate->addDay();
+
+       //dd($currentDate);
+        $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
+        ->where('booking_status', 1)
+        ->where('booking_start', '<=', $nextDay)
+        ->get();
+
+        //dd($bookings);
+        if ($bookings->count() > 0) {
+            //dd("ok");
+            foreach ($bookings as $booking) {
+                $bookingId = $booking->id;
+
+                 $token_line1 = config('line-notify.access_token_sale');
+                 $line = new Line($token_line1);
+                 $line->send(
+                     '⚠️ *เตือน...* ❗️❗️'." \n".
+                     'หมายเลขการจอง : *'.$bookingId."* \n".
+                     'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                     '----------------------------'." \n".
+                     '❌ ยังไม่ได้กดคอนเฟริ์มนัด'." \n".
+                     '✨ กดคอนเฟริ์มนัด => '.route('main')
+                 );
+             }
+             Log::addLog('System', 'Alert', 'แจ้งเตือน Sale ให้กดคอนเฟริ์มนัด');
+             return response()->json("OK! Sent Alert ".$bookings->count(), 200);
+        }else{
+
+            return response()->json("Notfound! Sent Alert ", 404);
 
         }
 
