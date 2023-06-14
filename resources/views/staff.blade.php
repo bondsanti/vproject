@@ -389,7 +389,7 @@
                                                             <div class="form-group">
                                                                 <label>สถานะการจอง</label>
                                                                 <select class="form-control" name="booking_status"
-                                                                    id="my-dropdown" required>
+                                                                id="my-dropdown-{{$booking->bkid}}" required>
                                                                     <option value="">เลือก</option>
                                                                     @if ($booking->booking_status == 0)
                                                                         <option value="1">รับงาน</option>
@@ -402,29 +402,23 @@
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <div id="my-element" style="display:none">
+                                                                <div id="my-element-{{$booking->bkid}}" style="display:none">
                                                                     <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                                    <select class="form-control" id="my-dropdown2"
-                                                                        name="because_cancel_remark">
+                                                                    <select class="form-control" id="my-dropdown2-{{$booking->bkid}}" name="because_cancel_remark">
                                                                         <option value="">เลือก</option>
-                                                                        {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
-                                                                        <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">
-                                                                            ลูกค้าเลื่อนเข้าชมวันอื่น</option>
-                                                                        <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">
-                                                                            ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
-                                                                        <option value="อื่นๆ">อื่น ๆ</option>
+                                                                    {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
+                                                                    <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
+                                                                    <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
+                                                                    <option value="อื่นๆ">อื่น ๆ</option>
                                                                     </select>
                                                                 </div>
 
                                                             </div>
                                                             <div class="form-group">
-                                                                <div id="my-element-text" style="display:none">
-
+                                                                <div id="my-element-text-{{$booking->bkid}}" style="display:none">
                                                                     <label>ระบุเหตุผลอื่น ๆ</label>
 
-                                                                    <input type="text" class="form-control"
-                                                                        name="because_cancel_other"
-                                                                        id="because_cancel_other" value="">
+                                                                    <input type="text" name="because_cancel_other" id="because_cancel_other" value="">
                                                                 </div>
 
                                                             </div>
@@ -753,32 +747,31 @@
                 $('#table').DataTable().button('.buttons-excel').trigger();
             });
 
-            // if ยกเลิก
-            @foreach ( $ItemStatusHowCancel as $item)
+             // if ยกเลิก
+        @foreach ( $ItemStatusHowCancel as $item)
+        $("#my-dropdown-{{$item->id}}").change(function() {
 
-            $("#my-dropdown-{{$item->id}}").change(function() {
+        const result = $("#my-dropdown-{{$item->id}}").val();
+        //console.log(result);
+        if (result == '4') {
+            $("#my-element-{{$item->id}}").show();
 
-                const result = $("#my-dropdown-{{$item->id}}").val();
-                //console.log(result);
-                if (result == '4') {
-                    $("#my-element-{{$item->id}}").show();
+        } else {
 
-                } else {
+            $("#my-element-{{$item->id}}").hide();
+        }
+        });
+        $("#my-dropdown2-{{$item->id}}").change(function() {
+        const result2 = $("#my-dropdown2-{{$item->id}}").val();
+        //console.log(result2);
+        if (result2 == 'อื่นๆ') {
+            $("#my-element-text-{{$item->id}}").show();
 
-                    $("#my-element-{{$item->id}}").hide();
-                }
-            });
-            $("#my-dropdown2-{{$item->id}}").change(function() {
-                const result2 = $("#my-dropdown2-{{$item->id}}").val();
-                //console.log(result2);
-                if (result2 == 'อื่นๆ') {
-                    $("#my-element-text-{{$item->id}}").show();
+        } else {
 
-                } else {
-
-                    $("#my-element-text-{{$item->id}}").hide();
-                }
-            });
+            $("#my-element-text-{{$item->id}}").hide();
+        }
+        });
 
             @endforeach
 

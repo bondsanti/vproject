@@ -58,6 +58,7 @@ class BookingController extends Controller
                 ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
                 ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
                 ->where('user_id',Session::get('loginId'))
+                ->orderBy('bkid', 'desc')
                 ->get();
                 //dd($bookings);
 
@@ -203,8 +204,8 @@ class BookingController extends Controller
          //dd($CountBooking);
 
          //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
-        $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
-
+        //$ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
+        $ItemStatusHowCancel =  Booking::get();
 
          $bookings = Booking::with('booking_user_ref:id,code,name_th')
          ->with('booking_emp_ref:id,code,name_th,phone')
@@ -213,7 +214,7 @@ class BookingController extends Controller
         ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
         ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
         ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
-        ->get();
+        ->orderBy('bkid', 'desc')->get();
 
        return view("booking.list",compact('dataUserLogin',
        'dataRoleUser',
@@ -237,7 +238,7 @@ class BookingController extends Controller
     //สร้างนัดเยี่ยมโครงการ
     public function createBookingProject(Request $request)
     {
-
+    //    dd($request->user_id);
             //dd($request);
             // $dataUserLogin = array();
 
@@ -424,7 +425,8 @@ class BookingController extends Controller
 
                 $Strdate_start = date('d/m/Y',strtotime($request->date.' +543 year'));
 
-
+                $getSaleName = Role_user::with('user_ref:id,code,name_th as name_sale')->where('user_id',$request->user_id)->first();
+                //dd($getSaleName);
                 if ($res1 || $res2) {
 
                     // Alert::success('จองสำเร็จ!', '');
@@ -440,7 +442,7 @@ class BookingController extends Controller
                     // 'เบอร์ติดต่อ : *'.$request->customer_tel."* \n".
                     'ข้อมูลเข้าชม : *'.$customer_req.' '.$request->room_price.' ห้อง'.$request->room_no."* \n".
                     '----------------------------'." \n".
-                    'ชื่อ Sale : *'.$request->sale_name ."* \n".
+                    'ชื่อ Sale : *'.$getSaleName->user_ref[0]->name_sale ."* \n".
                     'ทีม/สายงาน : *'.$id_booking->team_name ."* - $id_booking->subteam_name \n".
                     'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                     'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
@@ -461,7 +463,7 @@ class BookingController extends Controller
                     // 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                     'ข้อมูลเข้าชม : *'.$customer_req.' '.$request->room_price.' ห้อง'.$request->room_no."* \n".
                     '---------------------------'." \n".
-                    'ชื่อ Sale : *'.$request->sale_name ."* \n".
+                    'ชื่อ Sale : *'.$getSaleName->user_ref[0]->name_sale ."* \n".
                     'ทีม/สายงาน : *'.$id_booking->team_name ."* - $id_booking->subteam_name \n".
                     'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                     'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
@@ -947,6 +949,7 @@ class BookingController extends Controller
             $res2 = $bookingdetail->save();
 
             $Strdate_start = date('d/m/Y',strtotime($request->date.' +543 year'));
+            $getSaleName = Role_user::with('user_ref:id,code,name_th as name_sale')->where('user_id',$request->user_id)->first();
 
             if ($res1 || $res2) {
 
@@ -964,7 +967,7 @@ class BookingController extends Controller
                 'เบอร์ติดต่อ : *'.$request->customer_tel."* \n".
                 'ข้อมูลเข้าชม : *'.$customer_req."* $request->room_price \n".
                 '----------------------------'." \n".
-                'ชื่อ Sale : *'.$request->sale_name ."* \n".
+                'ชื่อ Sale : *'.$getSaleName->user_ref[0]->name_sale ."* \n".
                 'ทีม/สายงาน : *'.$bookings->team_name ."* - $bookings->subteam_name \n".
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                 'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th ."* \n\n".
@@ -983,7 +986,7 @@ class BookingController extends Controller
                 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                 'ข้อมูลเข้าชม : *'.$customer_req."* $request->room_price \n".
                 '-----------------------------'." \n".
-                'ชื่อ Sale : *'.$request->sale_name ."* \n".
+                'ชื่อ Sale : *'.$getSaleName->user_ref[0]->name_sale ."* \n".
                 'ทีม/สายงาน : *'.$bookings->team_name ."* - $bookings->subteam_name \n".
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                 'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th."* \n\n".

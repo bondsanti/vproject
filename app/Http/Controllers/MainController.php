@@ -39,7 +39,8 @@ class MainController extends Controller
         $subTeams = Subteam::get();
 
         //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
-        $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
+        //$ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
+        $ItemStatusHowCancel =  Booking::get();
 
         if ($dataRoleUser->role_type== "SuperAdmin" || $dataRoleUser->role_type=="User"){
 
