@@ -13,6 +13,11 @@ class Booking extends Model
     //     'id','booking_title','booking_start','booking_end','booking_title','booking_status','project_id','booking_status_df','teampro_id','team_id'
     //     ,'subteam_id','user_id','user_tel','remark'
     // ];
+    protected $table = 'bookings';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $guarded = [];
+
 
     public function booking_user_ref()
     {
@@ -26,6 +31,16 @@ class Booking extends Model
     {
         return $this->hasMany(Project::class,'id','project_id');
     }
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($booking) {
+    //         $y = date('Y')+543;
+    //         $last_two_digits = substr($y, -2);
+    //         $booking->id = $last_two_digits. sprintf('%03d', static::count() + 1);
+    //     });
+    // }
     protected static function boot()
     {
         parent::boot();
@@ -33,7 +48,17 @@ class Booking extends Model
         static::creating(function ($booking) {
             $y = date('Y')+543;
             $last_two_digits = substr($y, -2);
-            $booking->id = $last_two_digits. sprintf('%03d', static::count() + 1);
+
+            $lastBooking = static::orderBy('id', 'desc')->first();
+
+            if ($lastBooking) {
+                $lastId = substr($lastBooking->id, 3);
+                $nextId = sprintf('%03d', $lastId + 1);
+            } else {
+                $nextId = '001';
+            }
+
+            $booking->id = $last_two_digits.$nextId;
         });
     }
 }

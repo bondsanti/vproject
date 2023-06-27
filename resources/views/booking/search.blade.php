@@ -175,7 +175,7 @@
                                         </p>
                                     </td>
                                     <td>
-                                        <a>{{$booking->booking_project_ref[0]->name}}</a>
+                                        <a>{{ optional($booking->booking_project_ref->first())->name }}</a>
                                         <br />
                                         <small>
                                             เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
@@ -194,8 +194,8 @@
 
                                     </td>
                                     {{-- <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td> --}}
-                                    <td>{{$booking->booking_user_ref[0]->name_th}}</td>
-                                    <td>{{$booking->booking_emp_ref[0]->name_th}}</td>
+                                    <td>{{ optional($booking->booking_user_ref->first())->name_th }}</td>
+                                    <td>{{ optional($booking->booking_emp_ref->first())->name_th }}</td>
 
                                     <td class="project-state">
                                         @php
@@ -220,25 +220,25 @@
                                         <a class="btn btn-success btn-sm" target="_blank" href="{{url('/booking/print/'.$booking->bkid)}}">
                                             <i class="fa fa-print">
                                             </i>
-                                            พิมพ์
+
                                         </a>
 
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-{{$booking->bkid}}">
                                             <i class="fa fa-folder">
                                             </i>
-                                            รายละเอียด
+
                                           </button>
                                           <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modal-status-{{$booking->bkid}}">
                                             <i class="fa fa-refresh">
                                             </i>
-                                            สถานะ
+
                                           </button>
                                           @if ($booking->booking_title=="เยี่ยมโครงการ")
 
                                             <a class="btn btn-info btn-sm" href="{{url('/booking/edit/'.$booking->bkid)}}">
                                                 <i class="fa fa-pencil">
                                                 </i>
-                                                แก้ไข
+
                                             </a>
 
 
@@ -261,7 +261,7 @@
                                         <button class="btn btn-danger btn-sm delete-item" data-id="{{$booking->bkid}}">
                                             <i class="fa fa-trash">
                                             </i>
-                                            ลบ
+
                                         </button>
 
 
@@ -338,7 +338,7 @@
                                         <div class="modal-body">
                                             <dl class="dl-horizontal">
                                                 <dt>โครงการ</dt>
-                                                <dd><span class="badge bg-blue">{{$booking->booking_project_ref[0]->name}}</span></dd>
+                                                <dd><span class="badge bg-blue">{{ optional($booking->booking_project_ref->first())->name }}</span></dd>
                                                 <dt>วัน / เวลา</dt>
                                                 <dd><span class="badge bg-yellow">{{date('d/m/Y',strtotime($booking->booking_start))}}</span>
                                                     <span class="badge bg-yellow">{{date('H:i',strtotime($booking->booking_start))}}
@@ -409,10 +409,10 @@
                                                 <dt>ทีม/สายงาน</dt>
                                                 <dd><strong class="text-primary">{{$booking->team_name}}</strong> - {{$booking->subteam_name}}</dd>
                                                 <dt>ชื่อ Sale</dt>
-                                                <dd>{{$booking->booking_user_ref[0]->name_th}}, {{$booking->user_tel}} </dd>
+                                                <dd>{{ optional($booking->booking_user_ref->first())->name_th }}, {{$booking->user_tel}} </dd>
 
                                                 <dt>ทีม หน้าโครงการ</dt>
-                                                <dd>{{$booking->booking_emp_ref[0]->name_th}}, {{$booking->booking_emp_ref[0]->phone}}</dd>
+                                                <dd>{{ optional($booking->booking_emp_ref->first())->name_th }}, {{ optional($booking->booking_emp_ref->first())->phone }}</dd>
 
                                             </dl>
                                         </div>

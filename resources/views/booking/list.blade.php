@@ -6,10 +6,7 @@
             จัดการข้อมูลการจอง
             <small>Bookings management</small>
         </h1>
-        {{-- <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
-    </ol> --}}
+
     </section>
 
 
@@ -175,7 +172,8 @@
                                         </p>
                                     </td>
                                     <td>
-                                        <a>{{$booking->booking_project_ref[0]->name}}</a>
+                                        <a>{{ optional($booking->booking_project_ref->first())->name }}
+                                        </a>
                                         <br />
                                         <small>
                                             เวลานัด :{{date('d/m/Y',strtotime($booking->booking_start))}}
@@ -194,8 +192,8 @@
 
                                     </td>
                                     {{-- <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td> --}}
-                                    <td>{{$booking->booking_user_ref[0]->name_th}}</td>
-                                    <td>{{$booking->booking_emp_ref[0]->name_th}}</td>
+                                    <td>{{ optional($booking->booking_user_ref->first())->name_th }}</td>
+                                    <td>{{ optional($booking->booking_emp_ref->first())->name_th }}</td>
 
                                     <td class="project-state">
                                         @php
@@ -321,7 +319,7 @@
                                                 <dl class="dl-horizontal">
                                                     <dt>โครงการ</dt>
                                                     <dd><span
-                                                            class="badge bg-blue">{{ $booking->booking_project_ref[0]->name }}</span>
+                                                            class="badge bg-blue">{{ optional($booking->booking_project_ref->first())->name }}</span>
                                                     </dd>
                                                     <dt>วัน / เวลา</dt>
                                                     <dd><span
@@ -398,11 +396,10 @@
                                                     <dd><strong class="text-primary">{{ $booking->team_name }}</strong> -
                                                         {{ $booking->subteam_name }}</dd>
                                                     <dt>ชื่อ Sale</dt>
-                                                    <dd>{{ $booking->booking_user_ref[0]->name_th }}, {{ $booking->user_tel }} </dd>
+                                                    <dd>{{ optional($booking->booking_user_ref->first())->name_th }}, {{ $booking->user_tel }} </dd>
 
                                                     <dt>ทีม หน้าโครงการ</dt>
-                                                    <dd>{{ $booking->booking_emp_ref[0]->name_th }},
-                                                        {{ $booking->booking_emp_ref[0]->phone }}</dd>
+                                                    <dd>{{ optional($booking->booking_emp_ref->first())->name_th }},{{ optional($booking->booking_emp_ref->first())->phone }}</dd>
 
                                                 </dl>
                                                 @if ($booking->job_detailsubmission != null && $booking->job_img != null)

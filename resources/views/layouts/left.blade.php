@@ -31,7 +31,7 @@
         <li class="{{ request()->routeIs('holiday') ? 'active' : '' }}"><a href="{{ route('holiday') }}"><i class="fa fa-calendar-times-o"></i> <span>ข้อมูลวันหยุด ทีม</span></a></li>
         @endif
         @if ($dataRoleUser->role_type=="SuperAdmin")
-        <li class="{{ request()->routeIs('listBooking') ? 'active' : '' }}"><a href="{{ route('listBooking') }}"><i class="fa fa-table"></i> <span>ตารางข้อมูลนัดหมาย </span></a></li>
+        <li class="{{ request()->routeIs('listBooking') ? 'active' : '' }} {{ request()->routeIs('booking.search') ? 'active' : '' }}"><a href="{{ route('listBooking') }}"><i class="fa fa-table"></i> <span>ตารางข้อมูลนัดหมาย </span></a></li>
         @endif
 
         @if ($dataRoleUser->role_type=="Staff")

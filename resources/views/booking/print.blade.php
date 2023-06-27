@@ -57,7 +57,7 @@
                 <div class="col-md-4 text-center">
                     <img src="{{url('/uploads/logo_vbeyond.png')}}" width="170px" alt="">
                     <h4>แจ้งขอนัดชมโครงการ</h4>
-                    <h5>ชื่อ <span class="under-line-dot"> {{$bookings->booking_project_ref[0]->name}} </span></h5>
+                    <h5>ชื่อ <span class="under-line-dot"> {{ optional($booking->booking_project_ref->first())->name }} </span></h5>
                     <h5>วันเวลา <span class="under-line-dot"> {{$Strdate_start = date('d/m/Y H:00', strtotime($bookings->booking_start . ' +543 years'))}} -
                         {{$Strdate_end = date('H:00', strtotime($bookings->booking_end))}} น.</span></h5>
                 </div>
@@ -106,12 +106,12 @@
                             </tr>
                             <tr>
                                 <td class="text-right">ชื่อ Sale :</td>
-                                <td class="text-left"> {{$bookings->booking_user_ref[0]->name_th}}, {{$bookings->user_tel}}
+                                <td class="text-left"> {{ optional($booking->booking_user_ref->first())->name_th }}, {{$bookings->user_tel}}
                                 </td>
                             </tr>
                             <tr>
                                 <td class="text-right">เจ้าหน้าที่โครงการ :</td>
-                                <td class="text-left">คุณ {{$bookings->booking_emp_ref[0]->name_th}}, {{$bookings->booking_emp_ref[0]->phone}} </td>
+                                <td class="text-left">คุณ {{ optional($booking->booking_emp_ref->first())->name_th }}, {{ optional($booking->booking_emp_ref->first())->phone }}</td>
                             </tr>
                             <tr>
                                 <td class="text-right">เอกสารขอกู้ธนาคาร :</td>
