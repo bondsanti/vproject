@@ -14,7 +14,7 @@ class Role_user extends Model
     protected $table = 'role_users';
 
     //public $timestamps = false;
-
+    protected $fillable = ['active']; // เพิ่มฟิลด์ 'active' ใน $fillable
     public function user_ref()
     {
         return $this->hasMany(User::class,'id','user_id');

@@ -298,7 +298,7 @@ class BookingController extends Controller
             // ->orderBy('role_users.id')
             // ->get();
 
-            $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th')
+            $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th,active')
             ->whereNotIn('role_users.user_id', function($query) use ($booking_date) {
                 $query->select('holiday_users.user_id')
                       ->from('holiday_users')
@@ -314,6 +314,7 @@ class BookingController extends Controller
 
              //dd($employees_not_on_holiday);
              foreach ($employees_not_on_holiday as $employee) {
+                if (optional($employee->user_ref->first())->active == "1"){
                 //dd($employee);
                 // $booking_count = Booking::where('booking_start','<=', $booking_start)
                 // ->where('booking_end','>=', $booking_end)
@@ -345,6 +346,7 @@ class BookingController extends Controller
                     session()->save();
                     reset($employees_not_on_holiday); // ให้วน loop จากตัวแรกอีกครั้ง
                     break; // หลังจาก reset ให้ break การวน loop เพื่อให้เลือกพนักงานคนต่อไป
+                }
                 }
              }
 
@@ -493,6 +495,7 @@ class BookingController extends Controller
                 Alert::error('ไม่สามารถจองได้', ' เนื่องจาก ช่วงเวลาที่คุณเลือก เจ้าหน้าที่โครงการรับคิวเต็มแล้ว');
                 return redirect()->back();
             }
+
 
     }
 
@@ -1088,6 +1091,8 @@ class BookingController extends Controller
         return response()->json($bookings, 200);
     }
 
+
+
     public function updateScore(Request $request)
     {
 
@@ -1147,30 +1152,61 @@ class BookingController extends Controller
         if ($request->hasFile('job_img')) {
             // รับไฟล์รูปภาพ
             $image = $request->file('job_img');
+            $image_1 = $request->file('job_img_1');
+            $image_2 = $request->file('job_img_2');
+            $image_3 = $request->file('job_img_3');
 
             // กำหนดชื่อไฟล์รูปภาพใหม่
             $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $imageName_1 = time().'1' . '.' . $image_1->getClientOriginalExtension();
+            $imageName_2 = time().'2' . '.' . $image_2->getClientOriginalExtension();
+            $imageName_3 = time().'3' . '.' . $image_3->getClientOriginalExtension();
 
             // บันทึกไฟล์รูปภาพในโฟลเดอร์ public/images
             $image->move(public_path('images/jobs'), $imageName);
+            $image_1->move(public_path('images/jobs'), $imageName_1);
+            $image_2->move(public_path('images/jobs'), $imageName_2);
+            $image_3->move(public_path('images/jobs'), $imageName_3);
 
             // อ่านขนาดของรูปภาพ
-            list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName));
+            // list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName));
+            // list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName_1));
+            // list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName_2));
+            // list($width, $height) = getimagesize(public_path('images/jobs/' . $imageName_3));
 
             // กำหนดขนาดใหม่ของรูปภาพเมื่อย่อขนาดให้เหลือ 350x450
-            $newWidth = 350;
-            $newHeight = 450;
+            // $newWidth = 450;
+            // $newHeight = 450;
 
             // สร้างรูปภาพใหม่โดยใช้ฟังก์ชัน imagecreatefromjpeg() หรือ imagecreatefrompng() ขึ้นอยู่กับประเภทของไฟล์รูปภาพ
-            $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
-            $source = imagecreatefromjpeg(public_path('images/jobs/' . $imageName));
+            // $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+            // $thumbnail_1 = imagecreatetruecolor($newWidth, $newHeight);
+            // $thumbnail_2 = imagecreatetruecolor($newWidth, $newHeight);
+            // $thumbnail_3 = imagecreatetruecolor($newWidth, $newHeight);
+
+            // $source = imagecreatefromjpeg(public_path('images/jobs/' . $imageName));
+            // $source_1 = imagecreatefromjpeg(public_path('images/jobs/' . $imageName_1));
+            // $source_2 = imagecreatefromjpeg(public_path('images/jobs/' . $imageName_2));
+            // $source_3 = imagecreatefromjpeg(public_path('images/jobs/' . $imageName_3));
 
             // ย่อขนาดรูปภาพ
-            imagecopyresized($thumbnail, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            // imagecopyresized($thumbnail, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            // imagecopyresized($thumbnail_1, $source_1, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            // imagecopyresized($thumbnail_2, $source_2, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            // imagecopyresized($thumbnail_3, $source_3, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
             // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
             $thumbnailPath = 'images/jobs/' . $imageName;
-            imagejpeg($thumbnail, $thumbnailPath);
+            //($thumbnail, $thumbnailPath);
+
+            $thumbnailPath_1 = 'images/jobs/' . $imageName_1;
+            //imagejpeg($thumbnail_1, $thumbnailPath_1);
+
+            $thumbnailPath_2 = 'images/jobs/' . $imageName_2;
+            //imagejpeg($thumbnail_2, $thumbnailPath_2);
+
+            $thumbnailPath_3 = 'images/jobs/' . $imageName_3;
+            //imagejpeg($thumbnail_3, $thumbnailPath_3);
 
             // ลบไฟล์รูปภาพเดิม
             //unlink(public_path('images/jobs/' . $imageName));
@@ -1179,6 +1215,9 @@ class BookingController extends Controller
             $bookings->booking_status = $request->booking_status;
             $bookings->job_detailsubmission = $request->job_detailsubmission;
             $bookings->job_img = $thumbnailPath;
+            $bookings->job_img_1 = $thumbnailPath_1;
+            $bookings->job_img_2 = $thumbnailPath_2;
+            $bookings->job_img_3 = $thumbnailPath_3;
             $bookings->save();
 
 
@@ -1218,13 +1257,181 @@ class BookingController extends Controller
         }
 
 
+
+
+        // Alert::error('Error', 'ไม่พบรูปภาพที่จะอัพโหลด');
+        // return redirect()->back();
+    }
+
+    public function updateeditJob(Request $request)
+    {
+
+        //dd($request);
+        $bookings = Booking::where('id', '=', $request->id)->first();
+
+
+        if(!$bookings){
+            return response()->json([
+                'errors' => [
+                    'message'=>'ไม่สามารถอัพเดทข้อมูลได้ ID ไม่ถูกต้อง..'
+                    ]
+            ],400);
+        }
+
+
+        // ตรวจสอบว่ามีการอัพโหลดไฟล์รูปภาพหรือไม่
+        if ($request->hasFile('job_img')) {
+
+            unlink(public_path($bookings->job_img)); // ลบภาพเก่า
+
+            $image = $request->file('job_img');
+
+
+            // กำหนดชื่อไฟล์รูปภาพใหม่
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+
+            // บันทึกไฟล์รูปภาพในโฟลเดอร์ public/images
+            $image->move(public_path('images/jobs'), $imageName);
+
+
+            // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
+            $thumbnailPath = 'images/jobs/' . $imageName;
+            //($thumbnail, $thumbnailPath);
+
+
+
+            // ลบไฟล์รูปภาพเดิม
+            //unlink(public_path('images/jobs/' . $imageName));
+
+
+            $bookings->job_detailsubmission = $request->job_detailsubmission;
+            $bookings->job_img = $thumbnailPath;
+            $bookings->save();
+
+
+            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title.", ".$request->id);
+            Alert::success('Success', 'ส่งงานสำเร็จ!');
+            return redirect()->back();
+        }elseif($request->hasFile('job_img_1')){
+            unlink(public_path($bookings->job_img_1)); // ลบภาพเก่า
+
+            $image = $request->file('job_img_1');
+
+
+            // กำหนดชื่อไฟล์รูปภาพใหม่
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+
+            // บันทึกไฟล์รูปภาพในโฟลเดอร์ public/images
+            $image->move(public_path('images/jobs'), $imageName);
+
+
+            // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
+            $thumbnailPath = 'images/jobs/' . $imageName;
+            //($thumbnail, $thumbnailPath);
+
+
+
+            // ลบไฟล์รูปภาพเดิม
+            //unlink(public_path('images/jobs/' . $imageName));
+
+
+            $bookings->job_detailsubmission = $request->job_detailsubmission;
+            $bookings->job_img_1 = $thumbnailPath;
+            $bookings->save();
+
+            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title.", ".$request->id);
+            Alert::success('Success', 'ส่งงานสำเร็จ!');
+            return redirect()->back();
+        }elseif($request->hasFile('job_img_2')){
+            unlink(public_path($bookings->job_img_2)); // ลบภาพเก่า
+
+            $image = $request->file('job_img_2');
+
+
+            // กำหนดชื่อไฟล์รูปภาพใหม่
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+
+            // บันทึกไฟล์รูปภาพในโฟลเดอร์ public/images
+            $image->move(public_path('images/jobs'), $imageName);
+
+
+            // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
+            $thumbnailPath = 'images/jobs/' . $imageName;
+            //($thumbnail, $thumbnailPath);
+
+
+
+            // ลบไฟล์รูปภาพเดิม
+            //unlink(public_path('images/jobs/' . $imageName));
+
+
+            $bookings->job_detailsubmission = $request->job_detailsubmission;
+            $bookings->job_img_2 = $thumbnailPath;
+            $bookings->save();
+
+            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title.", ".$request->id);
+            Alert::success('Success', 'ส่งงานสำเร็จ!');
+            return redirect()->back();
+
+        }elseif($request->hasFile('job_img_3')){
+            unlink(public_path($bookings->job_img_3)); // ลบภาพเก่า
+
+            $image = $request->file('job_img_3');
+
+
+            // กำหนดชื่อไฟล์รูปภาพใหม่
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+
+
+            // บันทึกไฟล์รูปภาพในโฟลเดอร์ public/images
+            $image->move(public_path('images/jobs'), $imageName);
+
+
+            // บันทึกรูปภาพที่ย่อขนาดแล้วในโฟลเดอร์ public/images
+            $thumbnailPath = 'images/jobs/' . $imageName;
+            //($thumbnail, $thumbnailPath);
+
+
+
+            // ลบไฟล์รูปภาพเดิม
+            //unlink(public_path('images/jobs/' . $imageName));
+
+
+            $bookings->job_detailsubmission = $request->job_detailsubmission;
+            $bookings->job_img_3 = $thumbnailPath;
+            $bookings->save();
+
+            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title.", ".$request->id);
+            Alert::success('Success', 'ส่งงานสำเร็จ!');
+            return redirect()->back();
+        }else{
+
+
+            $bookings->job_detailsubmission = $request->job_detailsubmission;
+            $bookings->save();
+
+            Log::addLog($request->session()->get('loginId'), 'EditJ ob Success', $bookings->booking_title.", ".$request->id);
+            Alert::success('Success', 'แก้ไขสำเร็จ!');
+            return redirect()->back();
+        }
+
+
+
+
+
+
+
         // Alert::error('Error', 'ไม่พบรูปภาพที่จะอัพโหลด');
         // return redirect()->back();
     }
 
 
 
-    public function testUser(){
+    public function testUser()
+    {
 
 
 

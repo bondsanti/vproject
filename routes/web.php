@@ -105,6 +105,7 @@ Route::get('/booking/edit/{id}',[BookingController::class,'editBooking'])->name(
 Route::get('/booking/print/{id}',[BookingController::class,'printBooking'])->middleware('isLogin');
 Route::get('/booking/showJob/{id}',[BookingController::class,'showJob'])->middleware('isLogin');
 Route::post('/booking/update-job',[BookingController::class,'updateshowJob'])->name('booking.update.job')->middleware('isLogin');
+Route::post('/booking/edit-job',[BookingController::class,'updateeditJob'])->name('booking.edit.job')->middleware('isLogin');
 Route::post('/booking/list/search',[BookingController::class,'search'])->name('booking.search')->middleware('isLogin');
 
 Route::get('/user/test',[BookingController::class,'testUser']);

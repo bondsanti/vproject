@@ -47,9 +47,9 @@
                                         <select class="form-control" style="width: 100%;" id="user_id" name="user_id">
                                             <option value="">เลือก</option>
                                             @foreach ($userSelected as  $userSelect)
-
+                                            @if (optional($userSelect->user_ref->first())->active == "1")
                                             <option value="{{$userSelect->user_ref[0]->id}}"  {{ $userSelect->user_ref[0]->id == $dataRoleUser->user_id ? 'selected' : '' }}>{{$userSelect->user_ref[0]->name_th}}</option>
-
+                                            @endif
                                             @endforeach
                                           </select>
                                           <small class="text-danger mt-1 user_err"></small>

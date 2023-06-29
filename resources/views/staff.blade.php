@@ -30,6 +30,15 @@
             border: 3px dotted #06a013;
             /* เส้นขอบเป็นจุด ๆ สีเหลือง */
         }
+        .image-container {
+        display: flex;
+        gap: 10px;
+        }
+
+        .image-container img {
+            width: 125px;
+            height: auto;
+        }
     </style>
     <section class="content-header">
         <h1>
@@ -340,14 +349,15 @@
                                             @endif
 
 
-                                            {{-- @if ($booking->booking_status == 3)
-                                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal"
-                                                    data-target="#modal-successjobs-{{ $booking->bkid }}">
-                                                    <i class="fa fa-picture-o">
+                                            @if ($booking->booking_status == 3)
+                                                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                                    data-target="#modal-editjob-{{ $booking->bkid }}">
+                                                    <i class="fa fa-edit">
                                                     </i>
-                                                    รายละเอียดส่งงาน
+                                                    แก้ไขข้อมูลส่งงาน
                                                 </button>
-                                            @endif --}}
+                                            @endif
+
                                             {{-- <button  data-id="{{$booking->bkid}}" data-original-title="Edit" class="btn btn-success btn-sm closejob"><i class="fa fa-picture-o"></i> ส่งงาน</button> --}}
                                             @if ($booking->booking_status == 3 && $booking->job_score == null)
                                                 <button type="button" class="btn bg-maroon btn-sm" data-toggle="modal"
@@ -569,9 +579,25 @@
                                             </dd>
 
                                             <dt>รูปภาพประกอบ</dt>
-                                            <dd><img class="img-responsive" src="{{ $booking->job_img }}"
-                                                    width="150px"></dd>
 
+                                            <dd class="image-container">
+                                                @if ($booking->job_img)
+                                                <img class="img-responsive" src="{{$booking->job_img }}" alt="Image 1">
+                                                @endif
+                                                @if ($booking->job_img_1)
+                                                <img class="img-responsive" src="{{$booking->job_img_1 }}" alt="Image 2">
+                                                @endif
+                                            </dd>
+
+                                            <dd class="image-container">
+                                                @if ($booking->job_img_2)
+                                                <img class="img-responsive" src="{{$booking->job_img_2 }}" alt="Image 3">
+                                                @endif
+                                                @if ($booking->job_img_3)
+                                                <img class="img-responsive" src="{{$booking->job_img_3 }}" alt="Image 4">
+                                                @endif
+                                            </dd>
+                                            <br>
                                         </dl>
                                     @endif
                                 </div>
@@ -631,9 +657,126 @@
                                                         accept="image/jpeg" required>
 
                                                     <img id="preview" src="#" alt="Image preview"
-                                                        style="display:none;" width="150px">
+                                                        style="display:none;" width="125px">
+                                                    <br>
+                                                    <input type="file" class="form-control" name="job_img_1"
+                                                        id="job_img_1" onchange="previewImage1(this);"
+                                                        accept="image/jpeg" required>
+
+                                                    <img id="preview1" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
+
+                                                        <br>
+                                                    <input type="file" class="form-control" name="job_img_2"
+                                                        id="job_img_2" onchange="previewImage2(this);"
+                                                        accept="image/jpeg" required>
+
+                                                    <img id="preview2" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
+
+                                                        <br>
+                                                    <input type="file" class="form-control" name="job_img_3"
+                                                        id="job_img_3" onchange="previewImage3(this);"
+                                                        accept="image/jpeg" required>
+
+                                                    <img id="preview3" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
 
                                                 </div>
+
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success btn-block">ตกลง</button>
+                                    </div>
+                                    </form>
+                                </div>
+                                <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+
+                        </div>
+                    @endif
+
+                    @if ($booking->booking_status == 3)
+                        <!-- /.modal editjob -->
+                        <div class="modal fade" id="modal-editjob-{{ $booking->bkid }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="">แก้ไขข้อมูลส่งงาน</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- form start -->
+                                        <form id="" name="" action="{{ route('booking.edit.job') }}"
+                                            method="post" class="form-horizontal" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('post')
+                                            <input type="hidden" name="id" id="id"
+                                                value="{{ $booking->bkid }}">
+                                            <div class="box-body">
+
+
+                                                <div class="form-group">
+                                                    <label>รายละเอียดรับลูกค้า</label>
+                                                    <textarea class="form-control" rows="3" id="job_detailsubmission" name="job_detailsubmission" placeholder=""
+                                                        autocomplete="off" required>{{ $booking->job_detailsubmission }}</textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="image">เลือกรูป</label>
+                                                    <input type="file" class="form-control" name="job_img"
+                                                        id="job_img" onchange="previewImage(this);"
+                                                        accept="image/jpeg">
+
+                                                    <img id="preview" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
+                                                    <br>
+                                                    <input type="file" class="form-control" name="job_img_1"
+                                                        id="job_img_1" onchange="previewImage1(this);"
+                                                        accept="image/jpeg">
+
+                                                    <img id="preview1" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
+
+                                                        <br>
+                                                    <input type="file" class="form-control" name="job_img_2"
+                                                        id="job_img_2" onchange="previewImage2(this);"
+                                                        accept="image/jpeg" >
+
+                                                    <img id="preview2" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
+
+                                                        <br>
+                                                    <input type="file" class="form-control" name="job_img_3"
+                                                        id="job_img_3" onchange="previewImage3(this);"
+                                                        accept="image/jpeg">
+
+                                                    <img id="preview3" src="#" alt="Image preview"
+                                                        style="display:none;" width="125px">
+
+                                                </div>
+
+                                                <label for="image">รูปเก่า</label>
+                                                <dd class="image-container">
+                                                    @if ($booking->job_img)
+                                                    <img class="img-responsive" src="{{$booking->job_img }}" alt="Image 1">
+                                                    @endif
+                                                    @if ($booking->job_img_1)
+                                                    <img class="img-responsive" src="{{$booking->job_img_1 }}" alt="Image 2">
+                                                    @endif
+                                                    @if ($booking->job_img_2)
+                                                    <img class="img-responsive" src="{{$booking->job_img_2 }}" alt="Image 3">
+                                                    @endif
+                                                    @if ($booking->job_img_3)
+                                                    <img class="img-responsive" src="{{$booking->job_img_3 }}" alt="Image 4">
+                                                    @endif
+                                                </dd>
+
+
+                                                <br>
 
                                             </div>
                                     </div>
@@ -842,5 +985,52 @@
         $('#image').change(function() {
             previewImage(this);
         });
+
+        function previewImage1(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#preview1').attr('src', e.target.result);
+                    $('#preview1').show();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $('#image').change(function() {
+            previewImage1(this);
+        });
+
+        function previewImage2(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#preview2').attr('src', e.target.result);
+                    $('#preview2').show();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $('#image').change(function() {
+            previewImage2(this);
+        });
+
+
+        function previewImage3(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#preview3').attr('src', e.target.result);
+                    $('#preview3').show();
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $('#image').change(function() {
+            previewImage3(this);
+        });
+
+
+
+
     </script>
 @endpush

@@ -27,9 +27,11 @@ class UserController extends Controller
        $countUserStaff= Role_user::where('role_type',"=",'Staff')->count();
        $countUserSale= Role_user::where('role_type',"=",'Sale')->count();
        $countUserOther= Role_user::where('role_type',"=",'User')->count();
-       $users = Role_user::with('user_ref:id,code,name_th,active_vproject')->get();
+       $users = Role_user::with('user_ref:id,code,name_th,active_vproject,active')->get();
 
-        //dd($users);
+
+
+       // dd($users);
 
         // if ($request->ajax()) {
         //    $allData = DataTables::of($users)

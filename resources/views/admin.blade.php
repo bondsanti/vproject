@@ -609,9 +609,13 @@
                                             <select class="form-control" name="teampro_id" id="my-dropdown" required>
 
                                                 @foreach ($dataEmps as $dataEmp)
-                                                    <option value="{{ $dataEmp->user_ref[0]->id }}"
-                                                        {{ $booking->booking_emp_ref[0]->id == $dataEmp->user_ref[0]->id ? 'selected' : '' }}>
-                                                        {{ $dataEmp->user_ref[0]->name_emp }}</option>
+
+                                                @if (optional($dataEmp->user_ref->first())->active == "1")
+                                                    <option value="{{ optional($dataEmp->user_ref->first())->id}}"
+                                                        {{ optional($booking->booking_emp_ref->first())->id ==optional($dataEmp->user_ref->first())->id ? 'selected' : '' }}>
+                                                        {{ optional($dataEmp->user_ref->first())->name_emp }}</option>
+                                                @endif
+
                                                 @endforeach
                                             </select>
                                         </div>

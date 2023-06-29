@@ -132,13 +132,13 @@
                             <tbody class="text-center">
                                 @foreach ( $users as  $user)
 
-
+                                @if (optional($user->user_ref->first())->active == "1")
                                 <tr>
                                     <td> {{ $loop->index+1 }}</td>
-                                    <td>{{ $user->user_ref[0]->code }}</td>
-                                    <td>{{ $user->user_ref[0]->name_th }}</td>
+                                    <td>{{ optional($user->user_ref->first())->code }}</td>
+                                    <td>{{ optional($user->user_ref->first())->name_th }}</td>
                                     <td>{{$user->role_type}}</td>
-                                    <td>{{($user->user_ref[0]->active_vproject=="0") ? "Disable":"Enable"}}</td>
+                                    <td>{{ optional($user->user_ref->first())->active_vproject=="0" ? "Disable":"Enable" }}</td>
 
                                     <td>
 
@@ -156,6 +156,8 @@
                                         @endif
                                     </td>
                                 </tr>
+                                @endif
+
 
                                 @endforeach
 

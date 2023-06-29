@@ -31,7 +31,7 @@ class MainController extends Controller
 
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
 
-        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
+        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp,active')->where('role_type','Staff')->get();
        // dd($dataEmps);
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
         //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
