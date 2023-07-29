@@ -30,9 +30,10 @@
             border: 3px dotted #06a013;
             /* เส้นขอบเป็นจุด ๆ สีเหลือง */
         }
+
         .image-container {
-        display: flex;
-        gap: 10px;
+            display: flex;
+            gap: 10px;
         }
 
         .image-container img {
@@ -399,7 +400,7 @@
                                                             <div class="form-group">
                                                                 <label>สถานะการจอง</label>
                                                                 <select class="form-control" name="booking_status"
-                                                                id="my-dropdown-{{$booking->bkid}}" required>
+                                                                    id="my-dropdown-{{ $booking->bkid }}" required>
                                                                     <option value="">เลือก</option>
                                                                     @if ($booking->booking_status == 0)
                                                                         <option value="1">รับงาน</option>
@@ -412,23 +413,30 @@
                                                             </div>
 
                                                             <div class="form-group">
-                                                                <div id="my-element-{{$booking->bkid}}" style="display:none">
+                                                                <div id="my-element-{{ $booking->bkid }}"
+                                                                    style="display:none">
                                                                     <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                                    <select class="form-control" id="my-dropdown2-{{$booking->bkid}}" name="because_cancel_remark">
+                                                                    <select class="form-control"
+                                                                        id="my-dropdown2-{{ $booking->bkid }}"
+                                                                        name="because_cancel_remark">
                                                                         <option value="">เลือก</option>
-                                                                    {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
-                                                                    <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">ลูกค้าเลื่อนเข้าชมวันอื่น</option>
-                                                                    <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
-                                                                    <option value="อื่นๆ">อื่น ๆ</option>
+                                                                        {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
+                                                                        <option value="ลูกค้าเลื่อนเข้าชมวันอื่น">
+                                                                            ลูกค้าเลื่อนเข้าชมวันอื่น</option>
+                                                                        <option value="ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว">
+                                                                            ลูกค้าแจ้งไม่สนใจโครงการนี้แล้ว</option>
+                                                                        <option value="อื่นๆ">อื่น ๆ</option>
                                                                     </select>
                                                                 </div>
 
                                                             </div>
                                                             <div class="form-group">
-                                                                <div id="my-element-text-{{$booking->bkid}}" style="display:none">
+                                                                <div id="my-element-text-{{ $booking->bkid }}"
+                                                                    style="display:none">
                                                                     <label>ระบุเหตุผลอื่น ๆ</label>
 
-                                                                    <input type="text" name="because_cancel_other" id="because_cancel_other" value="">
+                                                                    <input type="text" name="because_cancel_other"
+                                                                        id="because_cancel_other" value="">
                                                                 </div>
 
                                                             </div>
@@ -541,10 +549,12 @@
                                         <dd><strong class="text-primary">{{ $booking->team_name }}</strong> -
                                             {{ $booking->subteam_name }}</dd>
                                         <dt>ชื่อ Sale</dt>
-                                        <dd>{{ optional($booking->booking_user_ref->first())->name_th }}, {{ $booking->user_tel }} </dd>
+                                        <dd>{{ optional($booking->booking_user_ref->first())->name_th }},
+                                            {{ $booking->user_tel }} </dd>
 
                                         <dt>ทีม หน้าโครงการ</dt>
-                                        <dd>{{ optional($booking->booking_emp_ref->first())->name_th }},{{ optional($booking->booking_emp_ref->first())->phone }}</dd>
+                                        <dd>{{ optional($booking->booking_emp_ref->first())->name_th }},{{ optional($booking->booking_emp_ref->first())->phone }}
+                                        </dd>
 
                                     </dl>
                                     @if ($booking->job_detailsubmission != null && $booking->job_img != null)
@@ -582,19 +592,23 @@
 
                                             <dd class="image-container">
                                                 @if ($booking->job_img)
-                                                <img class="img-responsive" src="{{$booking->job_img }}" alt="Image 1">
+                                                    <img class="img-responsive" src="{{ $booking->job_img }}"
+                                                        alt="Image 1">
                                                 @endif
                                                 @if ($booking->job_img_1)
-                                                <img class="img-responsive" src="{{$booking->job_img_1 }}" alt="Image 2">
+                                                    <img class="img-responsive" src="{{ $booking->job_img_1 }}"
+                                                        alt="Image 2">
                                                 @endif
                                             </dd>
 
                                             <dd class="image-container">
                                                 @if ($booking->job_img_2)
-                                                <img class="img-responsive" src="{{$booking->job_img_2 }}" alt="Image 3">
+                                                    <img class="img-responsive" src="{{ $booking->job_img_2 }}"
+                                                        alt="Image 3">
                                                 @endif
                                                 @if ($booking->job_img_3)
-                                                <img class="img-responsive" src="{{$booking->job_img_3 }}" alt="Image 4">
+                                                    <img class="img-responsive" src="{{ $booking->job_img_3 }}"
+                                                        alt="Image 4">
                                                 @endif
                                             </dd>
                                             <br>
@@ -653,8 +667,8 @@
                                                 <div class="form-group">
                                                     <label for="image">เลือกรูป</label>
                                                     <input type="file" class="form-control" name="job_img"
-                                                        id="job_img" onchange="previewImage(this);"
-                                                        accept="image/jpeg" required>
+                                                        id="job_img" onchange="previewImage(this);" accept="image/jpeg"
+                                                        required>
 
                                                     <img id="preview" src="#" alt="Image preview"
                                                         style="display:none;" width="125px">
@@ -666,7 +680,7 @@
                                                     <img id="preview1" src="#" alt="Image preview"
                                                         style="display:none;" width="125px">
 
-                                                        <br>
+                                                    <br>
                                                     <input type="file" class="form-control" name="job_img_2"
                                                         id="job_img_2" onchange="previewImage2(this);"
                                                         accept="image/jpeg" required>
@@ -674,7 +688,7 @@
                                                     <img id="preview2" src="#" alt="Image preview"
                                                         style="display:none;" width="125px">
 
-                                                        <br>
+                                                    <br>
                                                     <input type="file" class="form-control" name="job_img_3"
                                                         id="job_img_3" onchange="previewImage3(this);"
                                                         accept="image/jpeg" required>
@@ -741,15 +755,15 @@
                                                     <img id="preview1" src="#" alt="Image preview"
                                                         style="display:none;" width="125px">
 
-                                                        <br>
+                                                    <br>
                                                     <input type="file" class="form-control" name="job_img_2"
                                                         id="job_img_2" onchange="previewImage2(this);"
-                                                        accept="image/jpeg" >
+                                                        accept="image/jpeg">
 
                                                     <img id="preview2" src="#" alt="Image preview"
                                                         style="display:none;" width="125px">
 
-                                                        <br>
+                                                    <br>
                                                     <input type="file" class="form-control" name="job_img_3"
                                                         id="job_img_3" onchange="previewImage3(this);"
                                                         accept="image/jpeg">
@@ -762,16 +776,20 @@
                                                 <label for="image">รูปเก่า</label>
                                                 <dd class="image-container">
                                                     @if ($booking->job_img)
-                                                    <img class="img-responsive" src="{{$booking->job_img }}" alt="Image 1">
+                                                        <img class="img-responsive" src="{{ $booking->job_img }}"
+                                                            alt="Image 1">
                                                     @endif
                                                     @if ($booking->job_img_1)
-                                                    <img class="img-responsive" src="{{$booking->job_img_1 }}" alt="Image 2">
+                                                        <img class="img-responsive" src="{{ $booking->job_img_1 }}"
+                                                            alt="Image 2">
                                                     @endif
                                                     @if ($booking->job_img_2)
-                                                    <img class="img-responsive" src="{{$booking->job_img_2 }}" alt="Image 3">
+                                                        <img class="img-responsive" src="{{ $booking->job_img_2 }}"
+                                                            alt="Image 3">
                                                     @endif
                                                     @if ($booking->job_img_3)
-                                                    <img class="img-responsive" src="{{$booking->job_img_3 }}" alt="Image 4">
+                                                        <img class="img-responsive" src="{{ $booking->job_img_3 }}"
+                                                            alt="Image 4">
                                                     @endif
                                                 </dd>
 
@@ -811,7 +829,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-group">
-                                                <label>เลือก ระดับความพึ่งพอใจ</label>
+                                                {{-- <label>เลือก ระดับความพึ่งพอใจ</label> --}}
 
                                                 <div class="rating text-center">
 
@@ -821,6 +839,7 @@
                                                     <span class="star" data-value="4">&#9733;</span>
                                                     <span class="star" data-value="5">&#9733;</span>
                                                 </div>
+                                                <input type="hidden" name="rating" value="">
                                                 <h4 class="text-center">1 &nbsp;&nbsp; &nbsp; 2 &nbsp;&nbsp; &nbsp; 3&nbsp;
                                                     &nbsp; &nbsp; 4&nbsp; &nbsp; &nbsp; 5</h4>
                                                 <h5 class="text-center">คะแนน</h5>
@@ -889,84 +908,50 @@
                 $('#table').DataTable().button('.buttons-excel').trigger();
             });
 
-             // if ยกเลิก
-        @foreach ( $ItemStatusHowCancel as $item)
-        $("#my-dropdown-{{$item->id}}").change(function() {
+            // if ยกเลิก
+            @foreach ($ItemStatusHowCancel as $item)
+                $("#my-dropdown-{{ $item->id }}").change(function() {
 
-        const result = $("#my-dropdown-{{$item->id}}").val();
-        //console.log(result);
-        if (result == '4') {
-            $("#my-element-{{$item->id}}").show();
+                    const result = $("#my-dropdown-{{ $item->id }}").val();
+                    //console.log(result);
+                    if (result == '4') {
+                        $("#my-element-{{ $item->id }}").show();
 
-        } else {
+                    } else {
 
-            $("#my-element-{{$item->id}}").hide();
-        }
-        });
-        $("#my-dropdown2-{{$item->id}}").change(function() {
-        const result2 = $("#my-dropdown2-{{$item->id}}").val();
-        //console.log(result2);
-        if (result2 == 'อื่นๆ') {
-            $("#my-element-text-{{$item->id}}").show();
-
-        } else {
-
-            $("#my-element-text-{{$item->id}}").hide();
-        }
-        });
-
-            @endforeach
-
-            $('#updateScoreForm').submit(function(e) {
-                e.preventDefault();
-                let formData = $(this).serialize();
-                let url = $(this).attr('action');
-                let rating = $('.rating .star.active').last().data('value');
-                formData += '&rating=' + rating;
-
-                //console.log(formData);
-                $.ajax({
-                    url: url,
-                    data: formData,
-                    type: 'POST',
-                    dataType: 'json',
-                    success: function(data) {
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: data.message,
-                            showConfirmButton: true,
-                            timer: 2500
-                        });
-                        // Close the modal
-                        $('#modal-score-' + data.data_id).modal('hide');
-                        setTimeout(function() {
-                            window.location.href = '{{ route('main') }}';
-                        }, 2300);
-
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: data.message,
-                            showConfirmButton: true,
-                            timer: 2500
-                        });
-                        // Close the modal
-                        $('#modal-score-' + data.data_id).modal('hide');
-                        window.location.href = '{{ route('main') }}';
-                        setTimeout(function() {
-                            window.location.href = '{{ route('main') }}';
-                        }, 2300);
+                        $("#my-element-{{ $item->id }}").hide();
                     }
                 });
-            });
+                $("#my-dropdown2-{{ $item->id }}").change(function() {
+                    const result2 = $("#my-dropdown2-{{ $item->id }}").val();
+                    //console.log(result2);
+                    if (result2 == 'อื่นๆ') {
+                        $("#my-element-text-{{ $item->id }}").show();
+
+                    } else {
+
+                        $("#my-element-text-{{ $item->id }}").hide();
+                    }
+                });
+            @endforeach
+
 
             $('.rating .star').click(function() {
-                $(this).addClass('active').prevAll('.star').addClass(
-                    'active'); // เพิ่ม class active ให้กับคะแนนที่ถูกคลิกและคะแนนก่อนหน้านั้น
-                $(this).nextAll('.star').removeClass('active'); // ลบ class active ออกจากคะแนนถัดไป
+                // เอา class 'active' ทั้งหมดออกก่อน
+                $('.rating .star').removeClass('active');
+
+                // เพิ่ม class 'active' ให้กับ star ที่ถูกคลิกและ star ก่อนหน้านั้น
+                $(this).addClass('active').prevAll('.star').addClass('active');
+
+                // ใส่ค่า data-value ลงใน input hidden
+                let value = $(this).data('value');
+                //console.log('ค่า =', value);
+                $('input[name="rating"]').val(value);
             });
+
+
+
+
 
 
 
@@ -1028,9 +1013,5 @@
         $('#image').change(function() {
             previewImage3(this);
         });
-
-
-
-
     </script>
 @endpush

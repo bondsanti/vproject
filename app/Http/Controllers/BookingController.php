@@ -98,21 +98,6 @@ class BookingController extends Controller
                         $textStatus="ยกเลิกอัตโนมัติ";
                     }
 
-                    // $event = [
-                    //     'title' => $booking->booking_title,
-                    //     'project' => $booking->booking_project_ref[0]->name,
-                    //     'status' => $textStatus,
-                    //     'customer' => $booking->customer_name." ".$booking->customer_tel,
-                    //     'employee'=> $booking->booking_emp_ref[0]->name_th." ".$booking->booking_emp_ref[0]->phone,
-                    //     'room_no'=>$booking->room_no,
-                    //     'room_price'=> number_format($booking->room_price),
-                    //     'cus_req'=>$booking->customer_req,
-                    //     'start' => $start_time,
-                    //     'end' => $end_time,
-                    //     'allDay' => false,
-                    //     'backgroundColor' => $backgroundColor,
-                    //     'borderColor' => $borderColor,
-                    // ];
                     $event = [
                         'id' => $booking->id,
                         'title' => $booking->booking_title,
@@ -238,15 +223,6 @@ class BookingController extends Controller
     //สร้างนัดเยี่ยมโครงการ
     public function createBookingProject(Request $request)
     {
-    //    dd($request->user_id);
-            //dd($request);
-            // $dataUserLogin = array();
-
-            // $dataUserLogin = DB::connection('mysql_user')->table('users')
-            // ->where('id', '=', Session::get('loginId'))
-            // ->first();
-
-
 
              $request->validate([
                 'date' => 'required',
@@ -279,25 +255,6 @@ class BookingController extends Controller
             $booking_end = $request->date." ".$end_time;
 
 
-
-            // $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th')
-            // ->leftJoin('holiday_users', function ($join) use ($booking_date) {
-            //     $join->on('role_users.user_id', '=', 'holiday_users.user_id')
-            //         ->where(function($query) use ($booking_date) {
-            //             $query->where('start_date', '<=', $booking_date)
-            //                 ->where('end_date', '>=', $booking_date);
-            //         })
-            //         ->where(function($query) {
-            //             $query->whereIn('holiday_users.status', [2, 3]);
-            //         });
-            // })
-            // ->where(function ($query) use ($booking_date) {
-            //     $query->whereNull('holiday_users.user_id');
-            // })->where('role_type', 'Staff')
-            // ->select('role_users.*')
-            // ->orderBy('role_users.id')
-            // ->get();
-
             $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th,active')
             ->whereNotIn('role_users.user_id', function($query) use ($booking_date) {
                 $query->select('holiday_users.user_id')
@@ -311,16 +268,10 @@ class BookingController extends Controller
             ->orderBy('role_users.id')
             ->get();
 
-
+            $booking_count=[];
              //dd($employees_not_on_holiday);
              foreach ($employees_not_on_holiday as $employee) {
                 if (optional($employee->user_ref->first())->active == "1"){
-                //dd($employee);
-                // $booking_count = Booking::where('booking_start','<=', $booking_start)
-                // ->where('booking_end','>=', $booking_end)
-                // ->where('project_id', $request->project_id)
-                //     ->where('teampro_id', $employee->user_id)
-                //     ->count();
                 $teampro_id = $employee->user_id;
                 $booking_count = Booking::where(function ($query) use ($booking_start, $booking_end, $teampro_id) {
                     $query->where(function ($subquery) use ($booking_start, $booking_end) {
@@ -332,7 +283,7 @@ class BookingController extends Controller
                     });
                 })->where('teampro_id', $teampro_id)->count();
 
-                    //dd($booking_count);
+
                 if ($booking_count == 0 && !in_array($employee->user_id, session()->get('booked_employee_ids', []))) {
                     //เรียกค่าของ session ของ booked_employee_ids หากไม่มีข้อมูล จะ return ค่าว่างไว้ก่อน
                     session()->push('booked_employee_ids', $employee->user_id);
@@ -350,14 +301,6 @@ class BookingController extends Controller
                 }
              }
 
-
-
-            // $checkDuplicate = Booking::where('booking_start',$booking_start)->where('teampro_id',$employee->user_id)->count();
-
-            // if ($checkDuplicate>0) {
-            //     Alert::error('Error', '');
-            //     return redirect()->back();
-            // }
 
 
             if ($booking_count == 0) {
@@ -431,7 +374,7 @@ class BookingController extends Controller
                 //dd($getSaleName);
                 if ($res1 || $res2) {
 
-                    // Alert::success('จองสำเร็จ!', '');
+                    Alert::success('จองสำเร็จ!', '');
                     $token_line1 = config('line-notify.access_token_project');
                     $line = new Line($token_line1);
                     $line->send(
@@ -454,6 +397,8 @@ class BookingController extends Controller
 
 
 
+
+
                     $token_line2 = config('line-notify.access_token_sale');
                     $line = new Line($token_line2);
                     $line->send(
@@ -471,11 +416,6 @@ class BookingController extends Controller
                     'จน. โครงการ : *'.$employee->user_ref[0]->name_th ."* \n\n".
                     '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
 
-                    // return response()->json([
-                    //     'message' => 'เพิ่มข้อมูลสำเร็จ'
-                    // ], 201);
-
-                    // return back();
                     Log::addLog($request->session()->get('loginId'), 'Create', $request->booking_title.", ".$id_booking->bkID );
 
                     Alert::success('Success', 'จองสำเร็จ!');
@@ -485,14 +425,11 @@ class BookingController extends Controller
                 }else{
 
                     Alert::error('Error', 'เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูล');
-                    // return response()->json([
-                    //     'message' => 'เกิดข้อผิดพลาด'
-                    // ], 404);
                     return redirect()->back();
 
                 }
             }else{
-                Alert::error('ไม่สามารถจองได้', ' เนื่องจาก ช่วงเวลาที่คุณเลือก เจ้าหน้าที่โครงการรับคิวเต็มแล้ว');
+                Alert::error('ไม่สามารถจองได้', 'เนื่องจาก ช่วงเวลาที่คุณเลือก เจ้าหน้าที่โครงการรับคิวเต็มแล้ว',2000);
                 return redirect()->back();
             }
 
@@ -1097,25 +1034,19 @@ class BookingController extends Controller
     {
 
         $bookings = Booking::where('bookings.id',$request->booking_id)->first();
-
+        //dd($request->rating);
         if ($bookings) {
             $bookings->job_score = $request->rating;
             $bookings->save();
 
             Log::addLog($request->session()->get('loginId'), 'Update Score', $bookings->booking_title.", ".$request->booking_id);
 
-            return response()->json([
-                'message' => 'ให้คะแนนความพึ่งพอใจเรียบร้อย',
-                'data_id' => $bookings->id
-            ], 201);
-
-
+            Alert::success('Success', 'ให้คะแนนความพึ่งพอใจเรียบร้อย');
+            return redirect()->back();
 
         }else{
-            return response()->json([
-                'message' => 'Error',
-                'data_id' => $bookings->id
-            ], 404);
+
+            Alert::success('Error', 'เกิดข้อผิดพลาด');
             return redirect()->back();
 
         }
