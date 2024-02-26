@@ -150,7 +150,7 @@ class CustomAuthController extends Controller
 
             //$user = User::where('id', $request->session()->get('loginId'))->first();
             //dd($user);
-            Log::addLog($request->session()->get('loginId'), 'Logout');
+            Log::addLog($request->session()->get('loginId'), 'Logout','');
 
             $request->session()->pull('loginId');
 
