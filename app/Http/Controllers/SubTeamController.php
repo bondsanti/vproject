@@ -8,7 +8,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role_user;
 use App\Models\Team;
-use App\Models\SubTeam;
+use App\Models\Subteam;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 
@@ -54,7 +54,7 @@ class SubTeamController extends Controller
 
         if ($validator->passes()) {
 
-            $subteam = New SubTeam();
+            $subteam = New Subteam();
             $subteam->team_id = $request->team_id;
             $subteam->subteam_name = $request->subteam_name;
             $subteam->save();
@@ -82,7 +82,7 @@ class SubTeamController extends Controller
 
         }else{
 
-        $subteam = SubTeam::where('id',"=",$id)->delete($id);
+        $subteam = Subteam::where('id',"=",$id)->delete($id);
          //Role_user::find($id)->delete($id);
 
         return response()->json([
@@ -95,7 +95,7 @@ class SubTeamController extends Controller
 
     public function edit($id){
 
-        $subteam = SubTeam::where('id', '=', $id)->first();
+        $subteam = Subteam::where('id', '=', $id)->first();
 
         return response()->json($subteam, 200);
     }
@@ -103,7 +103,7 @@ class SubTeamController extends Controller
     public function update(Request $request,$id){
 
 
-        $subteam = SubTeam::where('id', '=', $id)->first();
+        $subteam = Subteam::where('id', '=', $id)->first();
 
 
         if(!$subteam){

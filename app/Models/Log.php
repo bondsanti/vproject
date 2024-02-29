@@ -9,14 +9,14 @@ class Log extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'old', 'new'];
+    protected $fillable = ['user_id', 'action', 'description'];
 
-    public static function addLog($user, $old, $new)
+    public static function addLog($user, $action, $description)
     {
         self::create([
             'user_id' => $user,
-            'old' => $old,
-            'new' => $new
+            'action' => $action,
+            'description' => $description
         ]);
     }
 }

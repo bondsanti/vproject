@@ -15,7 +15,8 @@ class CustomAuthController extends Controller
 {
 
    public function login(){
-        return view('auth.login');
+       // return view('auth.login');
+       return redirect('https://vbis.vbeyond.co.th/main');
    }
 
    public function regis(){
@@ -156,6 +157,7 @@ class CustomAuthController extends Controller
 
             Alert::success('ออกจากระบบเรียบร้อย');
             return redirect('login');
+
         }
 
    }
