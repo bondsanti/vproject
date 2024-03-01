@@ -17,6 +17,7 @@ class CustomAuthController extends Controller
    public function login(){
        // return view('auth.login');
        return redirect('https://vbis.vbeyond.co.th/main');
+       // return redirect('http://127.0.0.1:8000/main');
    }
 
    public function regis(){
