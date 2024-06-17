@@ -16,8 +16,8 @@ class SubTeamController extends Controller
 {
     public function index(Request $request){
         $dataUserLogin = array();
-        $dataUserLogin = DB::connection('mysql_user')->table('users')->where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = DB::connection('mysql_user')->table('users')->where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         $teams = Team::get();
 

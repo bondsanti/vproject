@@ -22,9 +22,9 @@ class CalendarController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
 
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $events = [];
 
@@ -205,7 +205,7 @@ class CalendarController extends Controller
                             $start_time = Carbon::parse($booking->booking_start)->toIso8601String();
                             $end_time = Carbon::parse($booking->booking_end)->toIso8601String();
 
-                            if($booking->user_id==Session::get('loginId')){
+                            if($booking->user_id==Session::get('loginId')['user_id']){
                                 $isTitle="📌";
                             }else{
                                 $isTitle="";

@@ -17,8 +17,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
         $events = [];
 
         if($request->ajax())
@@ -44,8 +44,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         if($request->ajax())
     	{
@@ -72,8 +72,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
         if($request->ajax())
@@ -99,8 +99,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
 
@@ -129,8 +129,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
         if($request->ajax())
@@ -158,8 +158,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
 
@@ -188,8 +188,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
         if($request->ajax())
@@ -217,8 +217,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         //ทีมไหน โปรเจคไหนบ้าง
 

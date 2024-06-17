@@ -17,9 +17,9 @@ class UserController extends Controller
 {
    public function index(Request $request){
 
-    $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+    $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
 
-    $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+    $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
        $countUser = Role_user::count();
@@ -209,7 +209,7 @@ class UserController extends Controller
         $dataUserLogin = array();
 
         if (Session::has('loginId')) {
-           $dataUserLogin = User::where('id',"=", Session::get('loginId'))->first();
+           $dataUserLogin = User::where('user_id',"=", Session::get('loginId')['user_id'])->first();
            $data = DB::table('teams')
            ->leftJoin('subteams', 'teams.id', '=', 'subteams.team_id')
            ->select('teams.id', 'teams.team_name', 'subteams.subteam_name')

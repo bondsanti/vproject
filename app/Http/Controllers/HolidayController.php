@@ -20,10 +20,10 @@ class HolidayController extends Controller
     {
         $dataUserLogin = array();
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
         $userSelected = Role_user::with('user_ref:id,code,name_th,active')->whereIn('role_type',['Admin','Staff'])->get();
 
-        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         $events = [];
 
@@ -98,7 +98,7 @@ class HolidayController extends Controller
 
         }else{
 
-            $holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId'))->get();
+            $holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId')['user_id'])->get();
             //dd($holidays);
             if($request->ajax())
             {

@@ -32,8 +32,8 @@ class BookingController extends Controller
 
         $events = [];
 
-        $dataUserLogin = User::where('id', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
         //โครงการ
         $projects = Project::where('active',1)->get();
@@ -57,7 +57,7 @@ class BookingController extends Controller
                 ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
                 ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
                 ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
-                ->where('user_id',Session::get('loginId'))
+                ->where('user_id',Session::get('loginId')['user_id'])
                 ->orderBy('bkid', 'desc')
                 ->get();
                 //dd($bookings);
@@ -146,8 +146,8 @@ class BookingController extends Controller
     public function editBooking(Request $request,$id)
     {
 
-        $dataUserLogin = User::where('id', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
 
         //โครงการ
@@ -174,8 +174,8 @@ class BookingController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $projects = Project::where('active',1)->get();
 
@@ -790,7 +790,7 @@ class BookingController extends Controller
                     'จน. โครงการ : * ['.$bookings->booking_emp_ref[0]->name_th ."] * \n\n".
                     '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
 
-                    Log::addLog($request->session()->get('loginId'), 'Update Employee Project', $bookings->booking_title.", ".$request->booking_id.", ".$bookings->booking_emp_ref[0]->name_th );
+                    Log::addLog(Session::get('loginId')['user_id'], 'Update Employee Project', $bookings->booking_title.", ".$request->booking_id.", ".$bookings->booking_emp_ref[0]->name_th );
 
                 Alert::success('Success', 'อัปเดตข้อมูลสำเร็จแล้ว!');
                 return redirect()->back();
@@ -805,12 +805,12 @@ class BookingController extends Controller
 
             //dd($request);
 
-            $dataUserLogin = User::where('id', Session::get('loginId'))->first();
+            $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
 
             // $dataUserLogin = DB::connection('mysql_user')->table('users')
             // ->where('id', '=', Session::get('loginId'))
             // ->first();
-            $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId'))->first();
+            $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
             $booking = Booking::where('bookings.id',"=",$request->booking_id)->first();
 
@@ -912,7 +912,7 @@ class BookingController extends Controller
                 'เบอร์สายงาน : *'.$request->user_tel ."* \n".
                 'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th ."* \n\n".
                 '⚠️ กรุณากดรับจองภายใน 1 ชม. '." \n".'หากไม่รับจองภายในเวลาที่กำหนด'." \n".'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                ." \n กดรับจอง => ".'https://www.google.co.th');
+                ." \n กดรับจอง => ".'http://vbproject.co.th');
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
@@ -932,7 +932,7 @@ class BookingController extends Controller
                 'เจ้าหน้าที่โครงการ : *'.$bookings->booking_emp_ref[0]->name_th."* \n\n".
                 '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' ."* \n".' กดรับงานภายใน 1 ชม.');
 
-                Log::addLog($request->session()->get('loginId'), 'Update Booking', $request->booking_title.", ".$request->booking_id);
+                Log::addLog(Session::get('loginId')['user_id'], 'Update Booking', $request->booking_title.", ".$request->booking_id);
                 // return response()->json([
                 //     'message' => 'เพิ่มข้อมูลสำเร็จ'
                 // ], 201);
@@ -1015,7 +1015,7 @@ class BookingController extends Controller
        ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
         ->where('bookings.id',"=",$id)->first();
         //dd($bookings);
-        Log::addLog($request->session()->get('loginId'), 'Print Booking', $bookings->booking_title.", ".$bookings->booking_id);
+        Log::addLog(Session::get('loginId')['user_id'], 'Print Booking', $bookings->booking_title.", ".$bookings->booking_id);
 
         return view("booking.print",compact('bookings'));
     }
@@ -1039,7 +1039,7 @@ class BookingController extends Controller
             $bookings->job_score = $request->rating;
             $bookings->save();
 
-            Log::addLog($request->session()->get('loginId'), 'Update Score', $bookings->booking_title.", ".$request->booking_id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Update Score', $bookings->booking_title.", ".$request->booking_id);
 
             Alert::success('Success', 'ให้คะแนนความพึ่งพอใจเรียบร้อย');
             return redirect()->back();
@@ -1241,7 +1241,7 @@ class BookingController extends Controller
             $bookings->save();
 
 
-            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title.", ".$request->id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Update Job Success', $bookings->booking_title.", ".$request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
             return redirect()->back();
         }elseif($request->hasFile('job_img_1')){
@@ -1408,8 +1408,8 @@ class BookingController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $projects = Project::where('active',1)->get();
 
@@ -1477,7 +1477,8 @@ class BookingController extends Controller
               'teams',
               'subTeams',
                'dataEmps',
-               'dataSales','ItemStatusHowCancel'));
+               'dataSales',
+               'ItemStatusHowCancel'));
 
 
 

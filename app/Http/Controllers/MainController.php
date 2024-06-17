@@ -30,7 +30,7 @@ class MainController extends Controller
 
         $projects = Project::where('active',1)->get();
 
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['id'])->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $dataEmps = Role_user::where('role_type','Staff')->get();
         //$dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp,active')->where('role_type','Staff')->get();
@@ -344,12 +344,12 @@ class MainController extends Controller
     {
 
 
-        $dataUserLogin = User::where('id', Session::get('loginId'))->first();
+        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $projects = Project::where('active',1)->get();
         $subTeams = Subteam::get();
 
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
         $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
         $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
         $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
@@ -478,13 +478,13 @@ class MainController extends Controller
                 $bookings->where('subteam_id', $request->subteam_id);
             }
 
-            $bookings = $bookings->where('teampro_id',Session::get('loginId'))->get();
+            $bookings = $bookings->where('teampro_id',Session::get('loginId')['user_id'])->get();
               //dd($bookings);
 
-           $countAllBooking = Booking::where('teampro_id', Session::get('loginId'))->count();
-           $countSucessBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',3)->count();
-           $countCancelBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',4)->count();
-           $countExitBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',5)->count();
+           $countAllBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->count();
+           $countSucessBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',3)->count();
+           $countCancelBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',4)->count();
+           $countExitBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',5)->count();
 
             return view('search.staff',compact('dataUserLogin',
             'dataRoleUser',
@@ -543,13 +543,13 @@ class MainController extends Controller
                 $bookings->where('subteam_id', $request->subteam_id);
             }
 
-            $bookings = $bookings->where('user_id',Session::get('loginId'))->get();
+            $bookings = $bookings->where('user_id',Session::get('loginId')['user_id'])->get();
               //dd($bookings);
 
-           $countAllBooking = Booking::where('user_id', Session::get('loginId'))->count();
-           $countSucessBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',3)->count();
-           $countCancelBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',4)->count();
-           $countExitBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',5)->count();
+           $countAllBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->count();
+           $countSucessBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->where('booking_status',3)->count();
+           $countCancelBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->where('booking_status',4)->count();
+           $countExitBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->where('booking_status',5)->count();
             //dd($countAllBooking);
             return view('search.sale',compact('dataUserLogin',
             'dataRoleUser',
