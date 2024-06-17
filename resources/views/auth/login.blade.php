@@ -38,7 +38,7 @@
 
         <div class="login-box-body">
 
-            <p class="login-box-msg login-logo"><b>vBis</b>Project</p>
+            <p class="login-box-msg login-logo"><b>Project</b></p>
 
             <form action="{{route('loginUser')}}" method="post">
                 @csrf

@@ -137,12 +137,12 @@ class MainController extends Controller
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
-           ->where('user_id',Session::get('loginId'))->get();
+           ->where('user_id',Session::get('loginId')['user_id'])->get();
 
-           $countAllBooking = Booking::where('user_id', Session::get('loginId'))->count();
-           $countSucessBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',3)->count();
-           $countCancelBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',4)->count();
-           $countExitBooking = Booking::where('user_id', Session::get('loginId'))->where('booking_status',5)->count();
+           $countAllBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->count();
+           $countSucessBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->where('booking_status',3)->count();
+           $countCancelBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->where('booking_status',4)->count();
+           $countExitBooking = Booking::where('user_id',Session::get('loginId')['user_id'])->where('booking_status',5)->count();
             //dd($countAllBooking);
             return view('sale',compact('dataUserLogin',
             'dataRoleUser',
