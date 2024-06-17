@@ -24,16 +24,19 @@ class MainController extends Controller
     public function index()
     {
 
-
-        $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
+        $dataUserLogin = Session::get('loginId');
+        //dd($dataUserLogin);
+       // $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
 
         $projects = Project::where('active',1)->get();
 
-        $dataRoleUser = Role_user::where('user_id', Session::get('loginId'))->first();
+        $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['id'])->first();
 
-        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp,active')->where('role_type','Staff')->get();
+        $dataEmps = Role_user::where('role_type','Staff')->get();
+        //$dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp,active')->where('role_type','Staff')->get();
        // dd($dataEmps);
-        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+        //$dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+        $dataSales = Role_user::where('role_type','Sale')->get();
         //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
         //dd($CountBooking);
         $subTeams = Subteam::get();

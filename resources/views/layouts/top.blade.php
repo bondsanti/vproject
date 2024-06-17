@@ -3,9 +3,9 @@
         <!-- Logo -->
         <a href="{{ url('/') }}" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
-            <span class="logo-mini"><b>v</b>Bis</span>
+            <span class="logo-mini"><b>v</b>BNEXT</span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><b>vBis</b> Project</span>
+            <span class="logo-lg"><b>VBNEXT</b> Project</span>
           </a>
 
     <!-- Header Navbar: style can be found in header.less -->
@@ -21,7 +21,7 @@
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="{{ url('uploads/avatar.png') }}" class="user-image" alt="User Image">
-                        <span class="">{{$dataUserLogin->name_th}}</span>
+                        <span class="">{{$dataUserLogin['email']}}</span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
@@ -29,7 +29,7 @@
                             <img src="{{ url('uploads/avatar.png') }}" class="img-circle" alt="User Image">
 
                             <p>
-                                {{$dataUserLogin->name_th}}
+                                {{$dataUserLogin['email']}}
                                 <small>ประเภทผู้ใช้งาน {{$dataRoleUser->role_type}}</small>
                             </p>
                         </li>

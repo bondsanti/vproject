@@ -10,35 +10,39 @@ use App\Models\User;
 use App\Models\Role_user;
 use App\Models\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class CustomAuthController extends Controller
 {
 
-   public function login(){
-       // return view('auth.login');
-       return redirect('https://vbis.vbeyond.co.th/main');
-       // return redirect('http://127.0.0.1:8000/main');
-   }
+    public function login()
+    {
+        return view('auth.login');
+        //return redirect('https://vbis.vbeyond.co.th/main');
+        //return redirect('http://127.0.0.1:8000/main');
+    }
 
-   public function regis(){
+    public function regis()
+    {
         return view('auth.register');
-   }
+    }
 
-   public function insertRegis(Request $request){
+    public function insertRegis(Request $request)
+    {
 
         $request->validate([
-            'code' => ['required','unique:users'],
-            'fullname'=> 'required',
-            'password'=> ['required', 'min:8'],
-            'tel'=> ['required', 'min:10'],
+            'code' => ['required', 'unique:users'],
+            'fullname' => 'required',
+            'password' => ['required', 'min:8'],
+            'tel' => ['required', 'min:10'],
 
-        ],[
+        ], [
             'code.required' => 'ป้อนรหัสพนักงาน',
             'code.unique' => 'รหัสนี้มีผู้ใช้แล้ว',
             'fullname.required' => 'ป้อนชื่อ-นามสกุล',
             'password.required' => 'ป้อนชื่อรหัสผ่าน',
             'password.min' => 'รหัสผ่านต้องไม่ต่ำกว่า 8 ตัวอักษร',
-            'tel.required'=> 'ป้อนเบอร์โทร',
+            'tel.required' => 'ป้อนเบอร์โทร',
             'tel.min' => 'เบอร์โทรไม่ถูกต้อง',
         ]);
 
@@ -59,147 +63,240 @@ class CustomAuthController extends Controller
             $line = new Line($token_line);
             $line->send('มีผู้สมัครใช้งานระบบ vBisProject');
             return redirect('/login');
-        }else{
+        } else {
             Alert::error('Error Title', 'Error Message');
-            return back();
-        }
-
-
-
-
-
-
-   }
-
-   public function loginUser(Request $request){
-
-        $request->validate([
-            'code'=>'required',
-            'password'=>'required'
-        ],[
-            'code.required'=>'ป้อนรหัสพนักงาน',
-            'password.required'=>'ป้อนรหัสผ่าน'
-        ]);
-
-
-        //$user_hr = DB::connection('mysql_user')->table('users')
-        $user_hr = User::where('code', '=', $request->code)
-        ->orWhere('old_code', '=', $request->code)->first();
-
-    //dd($user_hr);
-    if (!$user_hr) {
-            Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-            return back();
-    }else{
-
-        if($user_hr->active_vproject!=0){
-
-            if($user_hr->active !=0 or $user_hr->resign_date==null){
-
-                $role_user = Role_user::where('user_id',"=",$user_hr->id)->first();
-
-                if(!$role_user){
-
-                    Alert::warning('คุณไม่มีสิทธิ์เข้าระบบ', 'กรุณาติดต่อ Admin!!');
-                    return back();
-
-                }else{
-
-                    if(Hash::check($request->password, $user_hr->password)){
-
-                        $request->session()->put('loginId',$user_hr->id);
-
-                        DB::table('vbeyond_report.log_login')->insert([
-                            'username' => $user_hr->code,
-                            'dates' => date('Y-m-d'),
-                            'timeStm' => date('Y-m-d H:i:s'),
-                            'page' => 'vProject'
-                        ]);
-
-                        Log::addLog($request->session()->get('loginId'), 'Login', 'By LoginPage');
-
-                        Alert::success('เข้าสู่ระบบสำเร็จ');
-                        return redirect('/');
-
-
-                        }else{
-
-                            Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-                            return back();
-
-                        }
-
-
-                        Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-                        return back();
-                }
-
-            }else{
-                Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-                return back();
-            }
-        }else{
-            Alert::question('คุณยังไม่เปิดใช้งานระบบ', 'กรุณาติดต่อ Admin!!');
             return back();
         }
     }
 
-   }
 
-   public function logoutUser(Request $request){
+    public function loginUser(Request $request)
+    {
 
-        if($request->session()->has('loginId')){
+        $request->validate([
+            'code' => 'required',
+            'password' => 'required'
+        ], [
+            'code.required' => 'ป้อนรหัสพนักงาน',
+            'password.required' => 'ป้อนรหัสผ่าน'
+        ]);
+
+        $code = $request->code;
+        $password = $request->password;
+
+        try {
+
+            $url = env('API_URL') . '/getAuth/' . $code;
+            $token = env('API_TOKEN_AUTH');
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.$token
+            ])->get($url);
+
+
+
+            if ($response->successful()) {
+                $userData = $response->json()['data'];
+
+                if (Hash::check($password, $userData['password'])) {
+                    $request->session()->put('loginId',$userData);
+                    Alert::success('เข้าสู่ระบบสำเร็จ');
+                    return redirect('/');
+                } else {
+                    Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+                    return back();
+                }
+            } else {
+
+            Alert::warning('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+            return back();
+
+            }
+        } catch (\Exception $e) {
+
+            Alert::error('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ API ภายนอก');
+            return back();
+        }
+
+    }
+
+    public function logoutUser(Request $request)
+    {
+
+        if ($request->session()->has('loginId')) {
 
             //$user = User::where('id', $request->session()->get('loginId'))->first();
             //dd($user);
-            Log::addLog($request->session()->get('loginId'), 'Logout','');
+            //Log::addLog($request->session()->get('loginId'), 'Logout', '');
 
             $request->session()->pull('loginId');
 
             Alert::success('ออกจากระบบเรียบร้อย');
             return redirect('login');
-
         }
+    }
 
-   }
+    public function AllowLoginConnect(Request $request, $id, $token)
+    {
 
-   public function AllowLoginConnect(Request $request,$id,$token){
+        $user = User::where('code', '=', $id)->orWhere('old_code', '=', $id)->first();
+        //dd($user);
+        if ($user) {
+            $request->session()->put('loginId', $user->id);
+            // Auth::login($user);
+            $user->last_login_at = date('Y-m-d H:i:s');
+            $user->save();
+            $checkToken = User::where('token', '=', $token)->first();
 
-    $user = User::where('code', '=', $id)->orWhere('old_code', '=', $id)->first();
-    //dd($user);
-    if($user){
-        $request->session()->put('loginId',$user->id);
-        // Auth::login($user);
-        $user->last_login_at = date('Y-m-d H:i:s');
-        $user->save();
-        $checkToken = User::where('token', '=', $token)->first();
+            if ($checkToken) {
+                DB::table('vbeyond_report.log_login')->insert([
+                    'username' => $user->code,
+                    'dates' => date('Y-m-d'),
+                    'timeStm' => date('Y-m-d H:i:s'),
+                    'page' => 'vProject'
+                ]);
 
-        if ($checkToken) {
-            DB::table('vbeyond_report.log_login')->insert([
-                'username' => $user->code,
-                'dates' => date('Y-m-d'),
-                'timeStm' => date('Y-m-d H:i:s'),
-                'page' => 'vProject'
-            ]);
-
-            Log::addLog($request->session()->get('loginId'), 'Login', 'AllowLoginConnect By vBisConnect');
-            return redirect('/');
-        }else{
+                Log::addLog($request->session()->get('loginId'), 'Login', 'AllowLoginConnect By vBisConnect');
+                return redirect('/');
+            } else {
+                $request->session()->pull('loginId');
+                return redirect('/');
+            }
+        } else if ($user->active == 0) {
             $request->session()->pull('loginId');
             return redirect('/');
-        }
-
-
-        }else if($user->active==0){
-            $request->session()->pull('loginId');
-            return redirect('/');
-        }else{
+        } else {
             return redirect('/');
         }
+    }
 
-   }
+
+    //    public function loginUser(Request $request){
+
+    //         $request->validate([
+    //             'code'=>'required',
+    //             'password'=>'required'
+    //         ],[
+    //             'code.required'=>'ป้อนรหัสพนักงาน',
+    //             'password.required'=>'ป้อนรหัสผ่าน'
+    //         ]);
+
+
+    //         //$user_hr = DB::connection('mysql_user')->table('users')
+    //         $user_hr = User::where('code', '=', $request->code)
+    //         ->orWhere('old_code', '=', $request->code)->first();
+
+    //     //dd($user_hr);
+    //     if (!$user_hr) {
+    //             Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+    //             return back();
+    //     }else{
+
+    //         if($user_hr->active_vproject!=0){
+
+    //             if($user_hr->active !=0 or $user_hr->resign_date==null){
+
+    //                 $role_user = Role_user::where('user_id',"=",$user_hr->id)->first();
+
+    //                 if(!$role_user){
+
+    //                     Alert::warning('คุณไม่มีสิทธิ์เข้าระบบ', 'กรุณาติดต่อ Admin!!');
+    //                     return back();
+
+    //                 }else{
+
+    //                     if(Hash::check($request->password, $user_hr->password)){
+
+    //                         $request->session()->put('loginId',$user_hr->id);
+
+    //                         DB::table('vbeyond_report.log_login')->insert([
+    //                             'username' => $user_hr->code,
+    //                             'dates' => date('Y-m-d'),
+    //                             'timeStm' => date('Y-m-d H:i:s'),
+    //                             'page' => 'vProject'
+    //                         ]);
+
+    //                         Log::addLog($request->session()->get('loginId'), 'Login', 'By LoginPage');
+
+    //                         Alert::success('เข้าสู่ระบบสำเร็จ');
+    //                         return redirect('/');
+
+
+    //                         }else{
+
+    //                             Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+    //                             return back();
+
+    //                         }
+
+
+    //                         Alert::warning('รหัสผ่านไม่ถูกต้อง', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+    //                         return back();
+    //                 }
+
+    //             }else{
+    //                 Alert::error('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+    //                 return back();
+    //             }
+    //         }else{
+    //             Alert::question('คุณยังไม่เปิดใช้งานระบบ', 'กรุณาติดต่อ Admin!!');
+    //             return back();
+    //         }
+    //     }
+
+    //    }
+
+    //    public function logoutUser(Request $request){
+
+    //         if($request->session()->has('loginId')){
+
+    //             //$user = User::where('id', $request->session()->get('loginId'))->first();
+    //             //dd($user);
+    //             Log::addLog($request->session()->get('loginId'), 'Logout','');
+
+    //             $request->session()->pull('loginId');
+
+    //             Alert::success('ออกจากระบบเรียบร้อย');
+    //             return redirect('login');
+
+    //         }
+
+    //    }
+
+    //    public function AllowLoginConnect(Request $request,$id,$token){
+
+    //     $user = User::where('code', '=', $id)->orWhere('old_code', '=', $id)->first();
+    //     //dd($user);
+    //     if($user){
+    //         $request->session()->put('loginId',$user->id);
+    //         // Auth::login($user);
+    //         $user->last_login_at = date('Y-m-d H:i:s');
+    //         $user->save();
+    //         $checkToken = User::where('token', '=', $token)->first();
+
+    //         if ($checkToken) {
+    //             DB::table('vbeyond_report.log_login')->insert([
+    //                 'username' => $user->code,
+    //                 'dates' => date('Y-m-d'),
+    //                 'timeStm' => date('Y-m-d H:i:s'),
+    //                 'page' => 'vProject'
+    //             ]);
+
+    //             Log::addLog($request->session()->get('loginId'), 'Login', 'AllowLoginConnect By vBisConnect');
+    //             return redirect('/');
+    //         }else{
+    //             $request->session()->pull('loginId');
+    //             return redirect('/');
+    //         }
+
+
+    //         }else if($user->active==0){
+    //             $request->session()->pull('loginId');
+    //             return redirect('/');
+    //         }else{
+    //             return redirect('/');
+    //         }
+
+    //    }
 
 }
-
-
-
