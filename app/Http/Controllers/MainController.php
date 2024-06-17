@@ -29,7 +29,7 @@ class MainController extends Controller
        // $dataUserLogin = User::where('id', '=', Session::get('loginId'))->first();
 
         $projects = Project::where('active',1)->get();
-        dd($projects);
+        //dd($projects);
 
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
