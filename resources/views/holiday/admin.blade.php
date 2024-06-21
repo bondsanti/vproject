@@ -1,40 +1,39 @@
 @extends('layouts.app')
 
 @section('content')
-@push('styles')
+    @push('styles')
 
-<style>
-.my-event {
-  padding: 5px;
-  cursor: pointer;
-}
-.fc-time {
-  display: none;
-}
+        <style>
+            .my-event {
+                padding: 5px;
+                cursor: pointer;
+            }
 
+            .fc-time {
+                display: none;
+            }
+        </style>
 
-</style>
+        <section class="content-header">
+            <h1>
+                ปฏิทินวันหยุด
+                <small>
+                    OFF Days</small>
+            </h1>
 
-    <section class="content-header">
-        <h1>
-            ปฏิทินวันหยุด
-            <small>
-                OFF Days</small>
-        </h1>
+        </section>
+        @include('sweetalert::alert')
 
-    </section>
-    @include('sweetalert::alert')
+        <!-- Main content -->
+        <section class="content">
 
-    <!-- Main content -->
-    <section class="content">
-
-        <!-- Info boxes -->
-        <div class="row">
-              <!-- /.col -->
-              <div class="col-md-4">
-                <div class="box box-primary">
+            <!-- Info boxes -->
+            <div class="row">
+                <!-- /.col -->
+                <div class="col-md-4">
+                    <div class="box box-primary">
                         <div class="box-header with-border">
-                        <h3 class="box-title">ลงวันหยุด</h3>
+                            <h3 class="box-title">ลงวันหยุด</h3>
                         </div>
                         <div class="box-body">
                             <form id="addForm">
@@ -43,29 +42,31 @@
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <div class="form-group">
-                                        <label><span class="text-danger">*</span> เลือกพนักงาน </label>
-                                        <select class="form-control" style="width: 100%;" id="user_id" name="user_id">
-                                            <option value="">เลือก</option>
-                                            @foreach ($userSelected as  $userSelect)
-                                            @if (optional($userSelect->user_ref->first())->active == "1")
-                                            <option value="{{$userSelect->user_ref[0]->id}}"  {{ $userSelect->user_ref[0]->id == $dataRoleUser->user_id ? 'selected' : '' }}>{{$userSelect->user_ref[0]->name_th}}</option>
-                                            @endif
-                                            @endforeach
-                                          </select>
-                                          <small class="text-danger mt-1 user_err"></small>
+                                            <label><span class="text-danger">*</span> เลือกพนักงาน </label>
+                                            <select class="form-control" style="width: 100%;" id="user_id" name="user_id">
+                                                <option value="">เลือก</option>
+                                                @foreach ($userSelected as $userSelect)
+                                                    @if (optional($userSelect->apiData)['active'] == '1')
+                                                        <option value="{{ $userSelect->user_id }}"
+                                                            {{ $userSelect->user_id == $dataRoleUser->user_id ? 'selected' : '' }}>
+                                                            {{ optional($userSelect->apiData)['name_th'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <small class="text-danger mt-1 user_err"></small>
 
                                         </div>
                                     </div>
                                     <div class="col-xs-6">
                                         <div class="form-group">
-                                        <label><span class="text-danger">*</span> สถานะการหยุด </label>
-                                        <select class="form-control" style="width: 100%;" id="status" name="status">
-                                            <option value="">เลือก</option>
-                                            <option value="0">หยุด</option>
-                                            <option value="1">เข้าสำนักงานใหญ่</option>
-                                            <option value="2">Stand By</option>
-                                          </select>
-                                          <small class="text-danger mt-1 status_err"></small>
+                                            <label><span class="text-danger">*</span> สถานะการหยุด </label>
+                                            <select class="form-control" style="width: 100%;" id="status" name="status">
+                                                <option value="">เลือก</option>
+                                                <option value="0">หยุด</option>
+                                                <option value="1">เข้าสำนักงานใหญ่</option>
+                                                <option value="2">Stand By</option>
+                                            </select>
+                                            <small class="text-danger mt-1 status_err"></small>
                                         </div>
 
                                     </div>
@@ -74,23 +75,25 @@
                                         <div class="form-group">
                                             <label><span class="text-danger">*</span> วันที่เริ่ม:</label>
                                             <div class="input-group date">
-                                            <div class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
-                                            </div>
-                                            <input type="text" class="form-control pull-right" id="datepicker1" name="start_date" autocomplete="off">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" class="form-control pull-right" id="datepicker1"
+                                                    name="start_date" autocomplete="off">
 
-                                        </div>
-                                        <small class="text-danger mt-1 start_date_err"></small>
+                                            </div>
+                                            <small class="text-danger mt-1 start_date_err"></small>
                                         </div>
                                     </div>
                                     <div class="col-xs-6">
                                         <div class="form-group">
                                             <label> <span class="text-danger">*</span> วันที่สิ้นสุด:</label>
                                             <div class="input-group date">
-                                            <div class="input-group-addon">
-                                            <i class="fa fa-calendar"></i>
-                                            </div>
-                                            <input type="text" class="form-control pull-right" id="datepicker2" name="end_date" autocomplete="off" >
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" class="form-control pull-right" id="datepicker2"
+                                                    name="end_date" autocomplete="off">
 
                                             </div>
                                             <small class="text-danger mt-1 end_date_err"></small>
@@ -104,11 +107,12 @@
                                     <label>หมายเหตุ</label>
                                     <textarea class="form-control" rows="3" id="remark" name="remark" placeholder="ถ้ามี ..." autocomplete="off"></textarea>
                                 </div>
-                               <div class="form-group" id="locationshow">
+                                <div class="form-group" id="locationshow">
 
                                     <div class="form-group">
-                                    <label><span class="text-danger"></span> สถานที่ </label>
-                                    <input type="text" placeholder="location" class="form-control" name="location" value="" autocomplete="off">
+                                        <label><span class="text-danger"></span> สถานที่ </label>
+                                        <input type="text" placeholder="location" class="form-control" name="location"
+                                            value="" autocomplete="off">
                                     </div>
 
 
@@ -120,365 +124,272 @@
                                 </div>
                             </form>
                         </div>
-                </div>
-
-                {{-- <div class="box box-primary">
-
-                    <div class="box-body">
-
-                        <table id="table" class="table table-condensed">
-                            <thead>
-                            <tr>
-                            <th>#</th>
-                            <th>ชื่อ-สกุล</th>
-                            <th>สถานะการหยุด</th>
-                            <th>Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach ( $holidays as $holiday)
-
-                                @php
-                                      if($holiday->status==0){
-                                // $backgroundColor="#a6a6a6";
-                                // $borderColor="#a6a6a6";
-                                $textStatus="หยุด";
-                            }elseif($holiday->status==1){
-                                // $backgroundColor="#00c0ef";
-                                // $borderColor="#00c0ef";
-                                $textStatus="เข้าสำนักงานใหญ่";
-                            }else{
-                                // $backgroundColor="#dd4b39";
-                                // $borderColor="#dd4b39";
-                                $textStatus="ยกเลิก";
-                            }
-                                @endphp
-                            <tr>
-                            <td>{{ $loop->index+1 }}</td>
-                            <td>{{$holiday->user_ref->name_th}}</td>
-                            <td>{{$textStatus}}</td>
-
-                            <td>
-
-                                <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
-                                    <i class="fa fa-refresh">
-                                    </i>
-                                    สถานะ
-                                  </button>
-
-                                <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
-
-                                @if ($dataRoleUser->role_type=="SuperAdmin")
-                                <button class="btn btn-danger btn-xs delete-item" data-id="{{$holiday->id}}">
-                                    <i class="fa fa-trash"></i> ลบ</button>
-                                @endif
-
-
-                            </td>
-                            </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
                     </div>
-                </div> --}}
 
-              </div>
-              <div class="col-md-8">
-                <div class="box box-primary">
-                  <div class="box-body no-padding">
-                    <h5>
-                        &nbsp;&nbsp;สถานะ <span class="label label-default">วันหยุด</span>
-                        &nbsp;<span class="label label-info">เข้าสำนักงานใหญ่</span>
-                        &nbsp;<span class="label label-success">Stand By</span>
-                        &nbsp;<span class="label label-danger">ยกเลิก</span>
-                    </h5>
-                    <div id="calendar"></div>
-                  </div>
-                  <!-- /.box-body -->
+
+
                 </div>
+                <div class="col-md-8">
+                    <div class="box box-primary">
+                        <div class="box-body no-padding">
+                            <h5>
+                                &nbsp;&nbsp;สถานะ <span class="label label-default">วันหยุด</span>
+                                &nbsp;<span class="label label-info">เข้าสำนักงานใหญ่</span>
+                                &nbsp;<span class="label label-success">Stand By</span>
+                                &nbsp;<span class="label label-danger">ยกเลิก</span>
+                            </h5>
+                            <div id="calendar"></div>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
 
-              </div>
-              <!-- /.col -->
-              <div class="col-md-12">
-                <div class="box box-primary">
+                </div>
+                <!-- /.col -->
+                <div class="col-md-12">
+                    <div class="box box-primary">
 
-                    <div class="box-body">
+                        <div class="box-body">
 
-                        <table id="table" class="table table-condensed">
-                            <thead>
-                            <tr>
-                            <th class="text-center">#</th>
-                            <th class="text-center">วันที่</th>
-                            <th class="text-center">ชื่อ-สกุล</th>
+                            <table id="table" class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">#</th>
+                                        <th class="text-center">วันที่</th>
+                                        <th class="text-center">ชื่อ-สกุล</th>
 
-                            <th class="text-center">สถานะ</th>
-                            <th class="text-center">หมายเหตุ</th>
-                            <th class="text-center">Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach ( $holidays as $holiday)
+                                        <th class="text-center">สถานะ</th>
+                                        <th class="text-center">หมายเหตุ</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($holidays as $holiday)
+                                        @php
+                                            if ($holiday->status == 0) {
+                                                // $backgroundColor="#a6a6a6";
+                                                // $borderColor="#a6a6a6";
+                                                $textStatus = 'หยุด';
+                                            } elseif ($holiday->status == 1) {
+                                                // $backgroundColor="#00c0ef";
+                                                // $borderColor="#00c0ef";
+                                                $textStatus = 'เข้าสำนักงานใหญ่';
+                                            } elseif ($holiday->status == 2) {
+                                                // $backgroundColor="#dd4b39";
+                                                // $borderColor="#dd4b39";
+                                                $textStatus = 'Stand By';
+                                            } else {
+                                                // $backgroundColor="#dd4b39";
+                                                // $borderColor="#dd4b39";
+                                                $textStatus = 'ยกเลิก';
+                                            }
+                                            $start_date = date('d/m/Y', strtotime($holiday->start_date . ' +543 year'));
+                                            $end_date = date('d/m/Y', strtotime($holiday->end_date . ' +543 year'));
+                                        @endphp
+                                        <tr class="text-center">
+                                            <td>{{ $loop->index + 1 }}</td>
+                                            <td>{{ $start_date . ' - ' . $end_date }}</td>
+                                            <td>{{ optional($holiday->apiData)['name_th'] }}</td>
+                                            <td>{{ $textStatus }}</td>
+                                            <td>{{ $holiday->remark }}</td>
 
-                                @php
-                                if($holiday->status==0){
-                                        // $backgroundColor="#a6a6a6";
-                                        // $borderColor="#a6a6a6";
-                                        $textStatus="หยุด";
-                                    }elseif($holiday->status==1){
-                                        // $backgroundColor="#00c0ef";
-                                        // $borderColor="#00c0ef";
-                                        $textStatus="เข้าสำนักงานใหญ่";
-                                    }elseif($holiday->status==2){
-                                        // $backgroundColor="#dd4b39";
-                                        // $borderColor="#dd4b39";
-                                        $textStatus="Stand By";
-                                    }else{
-                                        // $backgroundColor="#dd4b39";
-                                        // $borderColor="#dd4b39";
-                                        $textStatus="ยกเลิก";
-                                    }
-                                    $start_date = date('d/m/Y',strtotime($holiday->start_date.' +543 year'));
-                                    $end_date = date('d/m/Y',strtotime($holiday->end_date.' +543 year'));
-                                @endphp
-                            <tr class="text-center">
-                            <td>{{ $loop->index+1 }}</td>
-                            <td>{{ $start_date." - ".$end_date }}</td>
-                            <td>{{$holiday->user_ref->name_th}}</td>
-                            <td>{{$textStatus}}</td>
-                            <td>{{$holiday->remark}}</td>
 
+                                            <td>
 
-                            <td>
-
-                                {{-- <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
+                                                {{-- <button type="button" data-id="{{$holiday->id}}"  data-original-title="Update" class="btn btn-warning btn-xs updateStatus">
                                     <i class="fa fa-refresh">
                                     </i>
                                     สถานะ
                                   </button> --}}
 
-                                <button  data-id="{{$holiday->id}}" data-original-title="Edit" class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i> แก้ไข</button>
+                                                <button data-id="{{ $holiday->id }}" data-original-title="Edit"
+                                                    class="btn btn-primary btn-xs updateData"><i class="fa fa-pencil"></i>
+                                                    แก้ไข</button>
 
-                                @if ($dataRoleUser->role_type=="SuperAdmin")
-                                <button class="btn btn-danger btn-xs delete-item" data-id="{{$holiday->id}}">
-                                    <i class="fa fa-trash"></i> ลบ</button>
-                                @endif
+                                                @if ($dataRoleUser->role_type == 'SuperAdmin')
+                                                    <button class="btn btn-danger btn-xs delete-item"
+                                                        data-id="{{ $holiday->id }}">
+                                                        <i class="fa fa-trash"></i> ลบ</button>
+                                                @endif
 
 
-                            </td>
-                            </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-              </div>
-        </div>
-        <!-- /.row -->
-    </section>
-    <!-- /.content -->
-
-    {{-- <div class="modal fade" id="updateStatus">
-        <div class="modal-dialog modal-sm">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">แก้ไขสถานะ?</h4>
-            </div>
-            <form id="updateForm" name="updateForm" class="form-horizontal">
-                @csrf
-                <input type="hidden" name="id" id="id">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="" class="col-sm-3 control-label">สถานะ</label>
-                        <div class="col-sm-9">
-                        <select class="form-control"  id="status" name="status" autocomplete="off">
-                        <option value="">เลือก</option>
-
-                        <option value="0">หยุด</option>
-                        <option value="1">เข้าสำนักงานใหญ่</option>
-                        <option value="2">Stand By</option>
-                        <option value="3">ยกเลิก</option>
-                        </select>
-                        <small class="text-danger mt-1 status_err"></small>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
                 </div>
-                <div class="form-group" id="locationshow_edit">
-                    <div class="form-group">
-                        <label><span class="text-danger"></span> สถานที่ </label>
-                        <input type="text" placeholder="location" class="form-control" id="location_edit" name="location_edit" value="" autocomplete="off">
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+
+
+        <div class="modal fade" id="updateData">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">แก้ไขวันหยุด</h4>
                     </div>
-                </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button>
-              <button type="button" class="btn btn-primary" id="updatestatus">บันทึก</button>
-            </div>
-            </form>
-          </div>
-          <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div> --}}
+                    <form id="updateDataForm" name="updateDataForm">
+                        @csrf
+                        <input type="hidden" name="id_edit" id="id_edit">
+                        <div class="modal-body">
 
-    <div class="modal fade" id="updateData">
-        <div class="modal-dialog modal-md">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">แก้ไขวันหยุด</h4>
-            </div>
-            <form id="updateDataForm" name="updateDataForm">
-                @csrf
-                <input type="hidden" name="id_edit" id="id_edit">
-                <div class="modal-body">
-
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                            <label>เลือกหนักงาน</label>
-                            <select class="form-control" style="width: 100%;" id="user_id_edit" name="user_id_edit">
-                                @foreach ($userSelected as  $userSelect)
-
-                                <option value="{{$userSelect->user_ref[0]->id}}">{{$userSelect->user_ref[0]->name_th}}</option>
-
-                                @endforeach
-                              </select>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                            <label><span class="text-danger">*</span> สถานะการหยุด </label>
-                            <select class="form-control" style="width: 100%;" id="status_edit" name="status_edit">
-                                <option value="">เลือก</option>
-                                <option value="0">หยุด</option>
-                                <option value="1">เข้าสำนักงานใหญ่</option>
-                                <option value="2">Stand By</option>
-                              </select>
-                              <small class="text-danger mt-1 status_edit_err"></small>
-                            </div>
-
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                                <label>วันที่เริ่ม:</label>
-                                <div class="input-group date">
-                                <div class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <label>เลือกหนักงาน</label>
+                                        <select class="form-control" style="width: 100%;" id="user_id_edit"
+                                            name="user_id_edit">
+                                            @foreach ($userSelected as $userSelect)
+                                                    @if (optional($userSelect->apiData)['active'] == '1')
+                                                        <option value="{{ $userSelect->user_id }}"
+                                                            {{ $userSelect->user_id == $dataRoleUser->user_id ? 'selected' : '' }}>
+                                                            {{ optional($userSelect->apiData)['name_th'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-                                <input type="text" class="form-control pull-right" id="datepicker1_e" name="start_date_edit" autocomplete="off" required>
-
-                            </div>
-                            <small class="text-danger mt-1 start_dateedit_err"></small>
-                            </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                                <label>วันที่สิ้นสุด:</label>
-                                <div class="input-group date">
-                                <div class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
-                                </div>
-                                <input type="text" class="form-control pull-right" id="datepicker2_e" name="end_date_edit" autocomplete="off" required>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <label><span class="text-danger">*</span> สถานะการหยุด </label>
+                                        <select class="form-control" style="width: 100%;" id="status_edit"
+                                            name="status_edit">
+                                            <option value="">เลือก</option>
+                                            <option value="0">หยุด</option>
+                                            <option value="1">เข้าสำนักงานใหญ่</option>
+                                            <option value="2">Stand By</option>
+                                        </select>
+                                        <small class="text-danger mt-1 status_edit_err"></small>
+                                    </div>
 
                                 </div>
-                                <small class="text-danger mt-1 end_dateedit_err"></small>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <label>วันที่เริ่ม:</label>
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            <input type="text" class="form-control pull-right" id="datepicker1_e"
+                                                name="start_date_edit" autocomplete="off" required>
+
+                                        </div>
+                                        <small class="text-danger mt-1 start_dateedit_err"></small>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="form-group">
+                                        <label>วันที่สิ้นสุด:</label>
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            <input type="text" class="form-control pull-right" id="datepicker2_e"
+                                                name="end_date_edit" autocomplete="off" required>
+
+                                        </div>
+                                        <small class="text-danger mt-1 end_dateedit_err"></small>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label>หมายเหตุ</label>
+                                <textarea class="form-control" rows="3" id="remark_edit" name="remark_edit" placeholder="ถ้ามี ..."
+                                    autocomplete="off"></textarea>
+                            </div>
+                            <div class="form-group" id="locationshow_edit">
+
+                                <div class="form-group">
+                                    <label><span class="text-danger"></span> สถานที่ </label>
+                                    <input type="text" placeholder="location" class="form-control" id="location_edit"
+                                        name="location_edit" value="" autocomplete="off">
+                                </div>
+
+
                             </div>
                         </div>
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label>หมายเหตุ</label>
-                        <textarea class="form-control" rows="3" id="remark_edit" name="remark_edit" placeholder="ถ้ามี ..." autocomplete="off"></textarea>
-                    </div>
-                    <div class="form-group" id="locationshow_edit">
-
-                        <div class="form-group">
-                            <label><span class="text-danger"></span> สถานที่ </label>
-                            <input type="text" placeholder="location" class="form-control" id="location_edit" name="location_edit" value="" autocomplete="off">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button>
+                            <button type="button" class="btn btn-primary" id="updatedata">บันทึก</button>
                         </div>
-
-
-                    </div>
+                    </form>
                 </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">ออก</button>
-              <button type="button" class="btn btn-primary" id="updatedata">บันทึก</button>
+                <!-- /.modal-content -->
             </div>
-            </form>
-          </div>
-          <!-- /.modal-content -->
+            <!-- /.modal-dialog -->
         </div>
-        <!-- /.modal-dialog -->
-    </div>
-
-@endsection
-@push('script')
+    @endsection
+    @push('script')
 
 
-<script>
-    $('#table').DataTable({
-        'paging'      : true,
-        'lengthChange': true,
-        'searching'   : true,
-        'ordering'    : false,
-         'info'        : false,
-         'autoWidth'   : true
-    })
-    $('.select2').select2()
-    $('#datepicker1').datepicker({
-        format:'yyyy-mm-dd',
-        autoclose: true,
-        startDate: new Date(), // sets the minimum date to today
-        datesDisabled: [new Date()], // disables today's date in the datepicker
-        todayHighlight: true, // highlights today's date in the datepicker
-    }).on('changeDate', function(selected){
-        var minDate = new Date(selected.date.valueOf());
-        var maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()+3);
-        $('#datepicker2').datepicker('setStartDate', minDate);
-        $('#datepicker2').datepicker('setEndDate', maxDate);
-    });
+        <script>
+            $('#table').DataTable({
+                'paging': true,
+                'lengthChange': true,
+                'searching': true,
+                'ordering': false,
+                'info': false,
+                'autoWidth': true
+            })
+            $('.select2').select2()
+            $('#datepicker1').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                startDate: new Date(), // sets the minimum date to today
+                datesDisabled: [new Date()], // disables today's date in the datepicker
+                todayHighlight: true, // highlights today's date in the datepicker
+            }).on('changeDate', function(selected) {
+                var minDate = new Date(selected.date.valueOf());
+                var maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate() + 3);
+                $('#datepicker2').datepicker('setStartDate', minDate);
+                $('#datepicker2').datepicker('setEndDate', maxDate);
+            });
 
-    $('#datepicker1_e').datepicker({
-        format:'yyyy-mm-dd',
-        autoclose: true,
-        startDate: new Date(), // sets the minimum date to today
-        datesDisabled: [new Date()], // disables today's date in the datepicker
-        todayHighlight: true, // highlights today's date in the datepicker
-    });
+            $('#datepicker1_e').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                startDate: new Date(), // sets the minimum date to today
+                datesDisabled: [new Date()], // disables today's date in the datepicker
+                todayHighlight: true, // highlights today's date in the datepicker
+            });
 
 
-    $('#datepicker2').datepicker({
-        format:'yyyy-mm-dd',
-        autoclose: true,
-        startDate: new Date(), // sets the minimum date to today
-        datesDisabled: [new Date()], // disables today's date in the datepicker
-        todayHighlight: true, // highlights today's date in the datepicker
-    }).on('show', function(){
-        var minDate = $('#datepicker1').val();
-        if(minDate){
-            minDate = new Date(minDate);
-            var maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()+3);
-            $(this).datepicker('setStartDate', minDate);
-            $(this).datepicker('setEndDate', maxDate);
-        }
-    });
+            $('#datepicker2').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                startDate: new Date(), // sets the minimum date to today
+                datesDisabled: [new Date()], // disables today's date in the datepicker
+                todayHighlight: true, // highlights today's date in the datepicker
+            }).on('show', function() {
+                var minDate = $('#datepicker1').val();
+                if (minDate) {
+                    minDate = new Date(minDate);
+                    var maxDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate() + 3);
+                    $(this).datepicker('setStartDate', minDate);
+                    $(this).datepicker('setEndDate', maxDate);
+                }
+            });
 
-    $('#datepicker2_e').datepicker({
-        format:'yyyy-mm-dd',
-        autoclose: true,
-        startDate: new Date(), // sets the minimum date to today
-        datesDisabled: [new Date()], // disables today's date in the datepicker
-        todayHighlight: true, // highlights today's date in the datepicker
-    });
-</script>
+            $('#datepicker2_e').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                startDate: new Date(), // sets the minimum date to today
+                datesDisabled: [new Date()], // disables today's date in the datepicker
+                todayHighlight: true, // highlights today's date in the datepicker
+            });
+        </script>
 
-<script>
-        $(document).ready(function() {
+        <script>
+            $(document).ready(function() {
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -492,7 +403,7 @@
                     const end_date = $("#datepicker2").val();
                     const status = $("#status").val();
                     const remark = $("#remark").val();
-                    const user_id= $("#user_id").val();
+                    const user_id = $("#user_id").val();
 
                     $.ajax({
                         data: $('#addForm').serialize(),
@@ -514,7 +425,7 @@
 
                                     $('#addForm')[0].reset();
 
-                                    setTimeout("location.href = '{{ route("holiday") }}';",1500);
+                                    setTimeout("location.href = '{{ route('holiday') }}';", 1500);
 
                                 } else {
                                     printErrorMsg(data.error);
@@ -554,7 +465,7 @@
                 $("#locationshow").hide();
                 $("#status").change(function() {
                     const result = $("#status").val();
-                     //console.log(v);
+                    //console.log(v);
                     if (result == '2') {
                         $("#locationshow").show();
 
@@ -567,15 +478,15 @@
 
 
                 //updateStatus
-                $('body').on('click', '.updateStatus', function () {
+                $('body').on('click', '.updateStatus', function() {
 
                     const id = $(this).data('id');
                     $('#updateStatus').modal('show');
-                    $.get("holiday" +'/' + id , function (data) {
+                    $.get("holiday" + '/' + id, function(data) {
 
-                    //console.log(data);
-                    $('#id').val(data.id);
-                    $('#status option[value="'+data.status+'"]').prop('selected', true);
+                        //console.log(data);
+                        $('#id').val(data.id);
+                        $('#status option[value="' + data.status + '"]').prop('selected', true);
 
                     });
                 });
@@ -585,11 +496,11 @@
                     $(this).html('รอสักครู่..');
                     const _token = $("input[name='_token']").val();
                     const id = $("#id").val();
-                    const status= $("#status").val();
+                    const status = $("#status").val();
 
                     $.ajax({
                         data: $('#updateForm').serialize(),
-                        url: "/holiday/update_status"+'/'+id,
+                        url: "/holiday/update_status" + '/' + id,
                         type: "POST",
                         dataType: 'json',
 
@@ -608,7 +519,7 @@
                                     $('#updateForm').trigger("reset");
                                     $('#updateStatus').modal('hide');
                                     //tableUser.draw();
-                                    setTimeout("location.href = '{{ route("holiday") }}';",1500);
+                                    setTimeout("location.href = '{{ route('holiday') }}';", 1500);
                                 } else {
                                     printErrorMsg2(data.error);
                                     $('.status_err').text(data.error.status);
@@ -642,31 +553,31 @@
                 });
 
 
-                $('body').on('click', '.updateData', function () {
+                $('body').on('click', '.updateData', function() {
 
                     const id = $(this).data('id');
                     $('#updateData').modal('show');
-                    $.get("holiday" +'/' + id , function (data) {
+                    $.get("holiday" + '/' + id, function(data) {
 
-                    //console.log(data);
-                    $('#id_edit').val(data.id);
-                    $('#user_id_edit option[value="'+data.user_id+'"]').prop('selected', true);
-                    $('#datepicker1_e').val(data.start_date);
-                    $('#datepicker2_e').val(data.end_date);
-                    $('#status_edit option[value="'+data.status+'"]').prop('selected', true);
-                    if (data.status == '2') {
+                        //console.log(data);
+                        $('#id_edit').val(data.id);
+                        $('#user_id_edit option[value="' + data.user_id + '"]').prop('selected', true);
+                        $('#datepicker1_e').val(data.start_date);
+                        $('#datepicker2_e').val(data.end_date);
+                        $('#status_edit option[value="' + data.status + '"]').prop('selected', true);
+                        if (data.status == '2') {
                             $("#locationshow_edit").show();
 
                         } else {
 
                             $("#locationshow_edit").hide();
                         }
-                    $('#remark_edit').val(data.remark);
-                    $('#location_edit').val(data.location);
+                        $('#remark_edit').val(data.remark);
+                        $('#location_edit').val(data.location);
 
                     });
 
-                     //location_edit
+                    //location_edit
 
                     $("#status_edit").change(function() {
                         const result_edit = $("#status_edit").val();
@@ -693,66 +604,66 @@
                     //console.log(start_date_edit);
 
                     $.ajax({
-                    data: $('#updateDataForm').serialize(),
-                    url: "holiday/update"+'/'+id,
-                    type: "POST",
-                    dataType: 'json',
+                        data: $('#updateDataForm').serialize(),
+                        url: "holiday/update" + '/' + id,
+                        type: "POST",
+                        dataType: 'json',
 
-                    success: function(data) {
-                        //console.log(data);
-                        if (data.success = true) {
+                        success: function(data) {
+                            //console.log(data);
+                            if (data.success = true) {
 
-                            if ($.isEmptyObject(data.error)) {
-                                Swal.fire({
+                                if ($.isEmptyObject(data.error)) {
+                                    Swal.fire({
 
-                                    icon: 'success',
-                                    title: 'แก้ไขข้อมูลสำเร็จ!',
-                                    showConfirmButton: true,
-                                    timer: 1300
-                                });
-                                $('#updateData').trigger("reset");
-                                $('#updateData').modal('hide');
-                                //tableUser.draw();
-                                setTimeout("location.href = '{{ route("holiday") }}';",1300);
+                                        icon: 'success',
+                                        title: 'แก้ไขข้อมูลสำเร็จ!',
+                                        showConfirmButton: true,
+                                        timer: 1300
+                                    });
+                                    $('#updateData').trigger("reset");
+                                    $('#updateData').modal('hide');
+                                    //tableUser.draw();
+                                    setTimeout("location.href = '{{ route('holiday') }}';", 1300);
+                                } else {
+                                    printErrorMsg2(data.error);
+                                    $('.start_dateedit_err').text(data.error.start_date_edit);
+                                    $('.end_dateedit_err').text(data.error.end_date_edit);
+                                    $('.status_edit_err').text(data.error.end_status_edit);
+                                    $('#updateData').trigger("reset");
+                                    $('#updatedata').html('ลองอีกครั้ง');
+
+                                    //$('#userFormEdit').trigger("reset");
+                                    Swal.fire({
+                                        position: 'top-center',
+                                        icon: 'error',
+                                        title: 'เกิดข้อผิดพลาด',
+                                        showConfirmButton: true,
+                                        timer: 1300
+                                    });
+                                }
+
                             } else {
-                                printErrorMsg2(data.error);
-                                $('.start_dateedit_err').text(data.error.start_date_edit);
-                                $('.end_dateedit_err').text(data.error.end_date_edit);
-                                $('.status_edit_err').text(data.error.end_status_edit);
-                                $('#updateData').trigger("reset");
-                                $('#updatedata').html('ลองอีกครั้ง');
-
-                                //$('#userFormEdit').trigger("reset");
                                 Swal.fire({
                                     position: 'top-center',
                                     icon: 'error',
-                                    title: 'เกิดข้อผิดพลาด',
+                                    title: 'เพิ่มข้อมูลสำเร็จ!',
                                     showConfirmButton: true,
                                     timer: 1300
                                 });
+                                $('#userFormEdit').trigger("reset");
                             }
 
-                        } else {
-                            Swal.fire({
-                                position: 'top-center',
-                                icon: 'error',
-                                title: 'เพิ่มข้อมูลสำเร็จ!',
-                                showConfirmButton: true,
-                                timer: 1300
-                            });
-                            $('#userFormEdit').trigger("reset");
-                        }
 
+                        },
 
-                    },
-
-                });
+                    });
                 });
 
                 //del
                 $('body').on('click', '.delete-item', function() {
                     const holiday_id = $(this).data("id");
-                        //console.log(id);
+                    //console.log(id);
                     Swal.fire({
                         title: 'คุณแน่ใจไหม? ',
                         text: "หากต้องการลบข้อมูลนี้ โปรดยืนยัน การลบข้อมูล",
@@ -776,7 +687,8 @@
                                         data.message,
                                         'success'
                                     )
-                                    setTimeout("location.href = '{{ route("holiday") }}';",1000);
+                                    setTimeout("location.href = '{{ route('holiday') }}';",
+                                        1000);
 
                                 },
                                 error: function(data) {
@@ -794,70 +706,70 @@
                 });
 
                 function printErrorMsg(msg) {
-                        $.each(msg, function(key, value) {
-                            //console.log(key);
-                            $('.' + key + '_err').text(value);
-                        });
-                    }
-                    function printErrorMsg2(msg) {
-                            $.each(msg, function(key, value) {
-                                //console.log(key);
-                                $('.' + key + '_err2').text(value);
-                            });
-                    }
-        });
+                    $.each(msg, function(key, value) {
+                        //console.log(key);
+                        $('.' + key + '_err').text(value);
+                    });
+                }
 
-</script>
+                function printErrorMsg2(msg) {
+                    $.each(msg, function(key, value) {
+                        //console.log(key);
+                        $('.' + key + '_err2').text(value);
+                    });
+                }
+            });
+        </script>
 
-<script>
-    $(document).ready(function() {
-        $('#calendar').fullCalendar({
-            locale: 'th',
-            defaultView: 'month',
-            allDayDefault: true,
-            eventLimit: false,
-            timeZone: 'Asia/Bangkok',
-            header    : {
-                left  : 'prev,next today',
-                center: 'title',
-                right : 'month'
-            },
-            timeFormat: '',
-            slotDuration: '12:00:00',
-            slotLabelInterval: '1 day',
-            slotEventOverlap: false,
+        <script>
+            $(document).ready(function() {
+                $('#calendar').fullCalendar({
+                    locale: 'th',
+                    defaultView: 'month',
+                    allDayDefault: true,
+                    eventLimit: false,
+                    timeZone: 'Asia/Bangkok',
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month'
+                    },
+                    timeFormat: '',
+                    slotDuration: '12:00:00',
+                    slotLabelInterval: '1 day',
+                    slotEventOverlap: false,
 
-            events:'/holiday',
+                    events: '/holiday',
 
-                eventClick: function(event, jsEvent, view) {
+                    eventClick: function(event, jsEvent, view) {
 
-                    Swal.fire({
-                        title: 'คุณ '+ event.title,
-                        html: `
+                        Swal.fire({
+                            title: 'คุณ ' + event.title,
+                            html: `
                         <h5>สถานะ <strong class="text-success">${event.status}</strong></h5>
                         <h5><strong>วันที่ </strong> ${event.showStart} <strong> - </strong> ${event.showEnd}</h5>
                         <hr>
                         <h5>หมายเหตุ <strong> ${event.remark} </strong></h5>
                         <h5>สถานที่ Stand by <strong> ${event.location} </strong></h5>
                         `,
-                        icon: 'info',
-                        confirmButtonText: 'OK'
-                    });
-                },
+                            icon: 'info',
+                            confirmButtonText: 'OK'
+                        });
+                    },
 
 
-                eventRender: function(event, element) {
+                    eventRender: function(event, element) {
 
-                    element.addClass('my-event');
-
-
-                },
-                dayClick: function(date, jsEvent, view) {
-                // Handle day click here
-                }
-        });
+                        element.addClass('my-event');
 
 
-    });
-</script>
-@endpush
+                    },
+                    dayClick: function(date, jsEvent, view) {
+                        // Handle day click here
+                    }
+                });
+
+
+            });
+        </script>
+    @endpush

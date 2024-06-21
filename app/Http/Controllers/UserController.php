@@ -17,8 +17,8 @@ class UserController extends Controller
 {
    public function index(Request $request){
 
-    $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
-
+    //$dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+    $dataUserLogin = Session::get('loginId');
     $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
@@ -31,39 +31,6 @@ class UserController extends Controller
 
 
 
-       // dd($users);
-
-        // if ($request->ajax()) {
-        //    $allData = DataTables::of($users)
-        //    ->addIndexColumn()
-        //    ->addColumn('name' ,function($row){
-        //      $name = $row->user_ref->name_th;
-        //     return $name;
-        //     })
-        //    ->addColumn('role_type' ,function($row){
-        //     if ($row->role_type =="Admin") {
-        //         $role_type = '<span class="label label-success">Admin</span>';
-        //     }else if($row->role_type =="Staff"){
-        //         $role_type = '<span class="label label-warning">Staff</span>';
-        //     }else{
-        //         $role_type = '<span class="label label-primary">Sell</span>';
-        //     }
-        //     return $role_type;
-        //     })
-        //    ->addColumn('action' ,function($row){
-        //     if ($row->role_type =="Admin") {
-        //         $btn = '-';
-        //     }else{
-        //         $btn = '<button  data-id="'.$row->id.'" data-original-title="Edit" class="btn btn-primary btn-sm editUser"><i class="fa fa-pencil"></i> แก้ไข</button>';
-        //         $btn = $btn.' <button  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteUser"><i class="fa fa-trash"></i> ลบ</button>';
-        //     }
-        //     return $btn;
-        //     })
-        //     ->rawColumns(['name','role_type','action'])
-        //     ->make(true);
-
-        //     return $allData;
-        // }
 
 
 

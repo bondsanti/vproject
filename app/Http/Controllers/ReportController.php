@@ -17,7 +17,8 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        //$dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
         $events = [];
 
@@ -43,8 +44,8 @@ class ReportController extends Controller
     public function reportGroupByProject(Request $request)
     {
 
-
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
+        //$dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         if($request->ajax())
@@ -71,8 +72,8 @@ class ReportController extends Controller
     public function reportGroupByProjectPie(Request $request)
     {
 
-
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
+        //$dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 

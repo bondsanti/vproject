@@ -22,7 +22,8 @@ class CalendarController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        // $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
 
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 

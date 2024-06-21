@@ -1,33 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    .rating {
-        font-size: 40px;
-    }
+    <style>
+        .rating {
+            font-size: 40px;
+        }
 
-    .star {
-        color: #b7b59c;
-        cursor: pointer;
-    }
-    .starshow {
-        color: #f8e825;
-        /* cursor: pointer; */
-    }
+        .star {
+            color: #b7b59c;
+            cursor: pointer;
+        }
 
-    .star:hover,
-    .star:hover~.star {
-        color: #f8e825;
-    }
+        .starshow {
+            color: #f8e825;
+            /* cursor: pointer; */
+        }
 
-    .star.active {
-        color: #f8e825;
-    }
-    .bgshow{
+        .star:hover,
+        .star:hover~.star {
+            color: #f8e825;
+        }
 
-        border: 3px dotted #06a013; /* เส้นขอบเป็นจุด ๆ สีเหลือง */
-    }
-</style>
+        .star.active {
+            color: #f8e825;
+        }
+
+        .bgshow {
+
+            border: 3px dotted #06a013;
+            /* เส้นขอบเป็นจุด ๆ สีเหลือง */
+        }
+    </style>
     <section class="content-header">
         <h1>
             Dashboard
@@ -295,18 +298,24 @@
                                         <td class="project-state">
                                             @php
                                                 if ($booking->booking_status == 0) {
-                                                echo $textStatus = "<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
-                                            } elseif ($booking->booking_status == 1) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
-                                            } elseif ($booking->booking_status == 2) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
-                                            } elseif ($booking->booking_status == 3) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
-                                            } elseif ($booking->booking_status == 4) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
-                                            } else {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
-                                            }
+                                                    echo $textStatus =
+                                                        "<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
+                                                } elseif ($booking->booking_status == 1) {
+                                                    echo $textStatus =
+                                                        "<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
+                                                } elseif ($booking->booking_status == 2) {
+                                                    echo $textStatus =
+                                                        "<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
+                                                } elseif ($booking->booking_status == 3) {
+                                                    echo $textStatus =
+                                                        "<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
+                                                } elseif ($booking->booking_status == 4) {
+                                                    echo $textStatus =
+                                                        "<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
+                                                } else {
+                                                    echo $textStatus =
+                                                        "<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
+                                                }
 
                                             @endphp
 
@@ -399,7 +408,9 @@
 
                                                                 <option value="">เลือก</option>
                                                                 @if ($booking->booking_status < 1)
-                                                                <option value="1" {{ $booking->booking_status == 1 ? 'selected' : '' }}> รับงาน</option>
+                                                                    <option value="1"
+                                                                        {{ $booking->booking_status == 1 ? 'selected' : '' }}>
+                                                                        รับงาน</option>
                                                                 @endif
 
                                                                 <option value="4"
@@ -408,9 +419,11 @@
                                                             </select>
                                                         </div>
                                                         <div class="form-group">
-                                                            <div id="my-element-{{ $booking->bkid }}" style="display:none">
+                                                            <div id="my-element-{{ $booking->bkid }}"
+                                                                style="display:none">
                                                                 <label>เลือกเหตุผลที่ยกเลิกการจอง</label>
-                                                                <select class="form-control" id="my-dropdown2-{{ $booking->bkid }}"
+                                                                <select class="form-control"
+                                                                    id="my-dropdown2-{{ $booking->bkid }}"
                                                                     name="because_cancel_remark">
                                                                     <option value="">เลือก</option>
                                                                     {{-- <option value="ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย">ลูกค้าไม่สะดวกเข้าชมตามเวลานัดหมาย</option> --}}
@@ -424,11 +437,13 @@
 
                                                         </div>
                                                         <div class="form-group">
-                                                            <div id="my-element-text-{{ $booking->bkid }}" style="display:none">
+                                                            <div id="my-element-text-{{ $booking->bkid }}"
+                                                                style="display:none">
                                                                 <label>ระบุเหตุผลอื่น ๆ</label>
 
-                                                                <input type="text" class="form-control"  name="because_cancel_other"
-                                                                    id="because_cancel_other" value="">
+                                                                <input type="text" class="form-control"
+                                                                    name="because_cancel_other" id="because_cancel_other"
+                                                                    value="">
                                                             </div>
 
                                                         </div>
@@ -502,28 +517,36 @@
                                         <dd>
                                             @php
                                                 if ($booking->num_home > 0) {
-                                                    echo 'สำเนาทะเบียนบาน <strong>' . $booking->num_home . '</strong>ชุด';
+                                                    echo 'สำเนาทะเบียนบาน <strong>' .
+                                                        $booking->num_home .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
                                         <dd>
                                             @php
                                                 if ($booking->num_idcard > 0) {
-                                                    echo 'สำเนาบัตรประชาชน <strong>' . $booking->num_idcard . '</strong>ชุด';
+                                                    echo 'สำเนาบัตรประชาชน <strong>' .
+                                                        $booking->num_idcard .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
                                         <dd>
                                             @php
                                                 if ($booking->num_app_statement > 0) {
-                                                    echo 'หนังสือรับรองเงินเดือน <strong>' . $booking->num_app_statement . '</strong>ชุด';
+                                                    echo 'หนังสือรับรองเงินเดือน <strong>' .
+                                                        $booking->num_app_statement .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
                                         <dd>
                                             @php
                                                 if ($booking->num_statement > 0) {
-                                                    echo 'เอกสาร Statement <strong>' . $booking->num_statement . '</strong>ชุด';
+                                                    echo 'เอกสาร Statement <strong>' .
+                                                        $booking->num_statement .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
@@ -538,48 +561,50 @@
                                         <dd><strong class="text-primary">{{ $booking->team_name }}</strong> -
                                             {{ $booking->subteam_name }}</dd>
                                         <dt>ชื่อ Sale</dt>
-                                        <dd>{{ optional($booking->booking_user_ref->first())->name_th }}, {{ $booking->user_tel }} </dd>
+                                        <dd>{{ optional($booking->booking_user_ref->first())->name_th }},
+                                            {{ $booking->user_tel }} </dd>
 
                                         <dt>ทีม หน้าโครงการ</dt>
-                                        <dd>{{ optional($booking->booking_emp_ref->first())->name_th }},{{ optional($booking->booking_emp_ref->first())->phone }}</dd>
+                                        <dd>{{ optional($booking->booking_emp_ref->first())->name_th }},{{ optional($booking->booking_emp_ref->first())->phone }}
+                                        </dd>
 
                                     </dl>
                                     @if ($booking->job_detailsubmission != null && $booking->job_img != null)
+                                        <h4><u>รายละเอียดส่งงาน</u></h4>
+                                        <dl class="dl-horizontal bgshow">
+                                            <dt>ความเห็นลูกค้า</dt>
+                                            <dd>{{ $booking->job_detailsubmission }}</dd>
+                                            <dt>คะแนนพึงพอใจ</dt>
+                                            <dd>
+                                                @if ($booking->job_score <= 1)
+                                                    <span class="starshow">&#9733;</span>
+                                                @elseif ($booking->job_score <= 2)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @elseif ($booking->job_score <= 3)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @elseif ($booking->job_score <= 4)
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @else
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                    <span class="starshow">&#9733;</span>
+                                                @endif
+                                                {{ $booking->job_score }} ดาว
+                                            </dd>
 
-                                    <h4><u>รายละเอียดส่งงาน</u></h4>
-                                    <dl class="dl-horizontal bgshow">
-                                        <dt>ความเห็นลูกค้า</dt>
-                                        <dd>{{$booking->job_detailsubmission}}</dd>
-                                        <dt>คะแนนพึงพอใจ</dt>
-                                        <dd>
-                                            @if ($booking->job_score<=1)
-                                            <span class="starshow">&#9733;</span>
-                                            @elseif ($booking->job_score<=2)
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @elseif ($booking->job_score<=3)
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @elseif ($booking->job_score<=4)
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @else
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            <span class="starshow">&#9733;</span>
-                                            @endif
-                                            {{$booking->job_score}} ดาว
-                                       </dd>
+                                            <dt>รูปภาพประกอบ</dt>
+                                            <dd><img class="img-responsive" src="{{ $booking->job_img }}"
+                                                    width="150px"></dd>
 
-                                        <dt>รูปภาพประกอบ</dt>
-                                        <dd><img class="img-responsive" src="{{$booking->job_img}}" width="150px"></dd>
-
-                                    </dl>
+                                        </dl>
                                     @endif
                                 </div>
 
@@ -609,13 +634,11 @@
                                             <select class="form-control" name="teampro_id" id="my-dropdown" required>
 
                                                 @foreach ($dataEmps as $dataEmp)
-
-                                                @if (optional($dataEmp->user_ref->first())->active == "1")
-                                                    <option value="{{ optional($dataEmp->user_ref->first())->id}}"
-                                                        {{ optional($booking->booking_emp_ref->first())->id ==optional($dataEmp->user_ref->first())->id ? 'selected' : '' }}>
-                                                        {{ optional($dataEmp->user_ref->first())->name_emp }}</option>
-                                                @endif
-
+                                                    @if (optional($dataEmp->user_ref->first())->active == '1')
+                                                        <option value="{{ optional($dataEmp->user_ref->first())->id }}"
+                                                            {{ optional($booking->booking_emp_ref->first())->id == optional($dataEmp->user_ref->first())->id ? 'selected' : '' }}>
+                                                            {{ optional($dataEmp->user_ref->first())->name_emp }}</option>
+                                                    @endif
                                                 @endforeach
                                             </select>
                                         </div>
@@ -634,7 +657,6 @@
                     </div>
                     <!-- /.modal-dialog -->
                 </div>
-
                 @endforeach
 
                 </tbody>
@@ -691,32 +713,31 @@
 
         });
         // if ยกเลิก
-        @foreach ( $ItemStatusHowCancel as $item)
+        @foreach ($ItemStatusHowCancel as $item)
 
-        $("#my-dropdown-{{$item->id}}").change(function() {
+            $("#my-dropdown-{{ $item->id }}").change(function() {
 
-            const result = $("#my-dropdown-{{$item->id}}").val();
-            //console.log(v);
-            if (result == '4') {
-                $("#my-element-{{$item->id}}").show();
+                const result = $("#my-dropdown-{{ $item->id }}").val();
+                //console.log(v);
+                if (result == '4') {
+                    $("#my-element-{{ $item->id }}").show();
 
-            } else {
+                } else {
 
-                $("#my-element-{{$item->id}}").hide();
-            }
-        });
-        $("#my-dropdown2-{{$item->id}}").change(function() {
-            const result2 = $("#my-dropdown2-{{$item->id}}").val();
-            //console.log(result2);
-            if (result2 == 'อื่นๆ') {
-                $("#my-element-text-{{$item->id}}").show();
+                    $("#my-element-{{ $item->id }}").hide();
+                }
+            });
+            $("#my-dropdown2-{{ $item->id }}").change(function() {
+                const result2 = $("#my-dropdown2-{{ $item->id }}").val();
+                //console.log(result2);
+                if (result2 == 'อื่นๆ') {
+                    $("#my-element-text-{{ $item->id }}").show();
 
-            } else {
+                } else {
 
-                $("#my-element-text-{{$item->id}}").hide();
-            }
-        });
-
+                    $("#my-element-text-{{ $item->id }}").hide();
+                }
+            });
         @endforeach
 
         //Delete

@@ -347,14 +347,14 @@
                                         <select class="form-control select2" style="width: 100%;" name="user_id" autocomplete="off" >
                                             <option value="">เลือก</option>
                                             @foreach ($dataSales as $dataSale)
-                                            <option value="{{$dataSale->user_ref[0]->id}}">{{$dataSale->user_ref[0]->name_sale}}</option>
+                                            <option value="{{ optional($dataSale->apiData)['id'] }}">{{ optional($dataSale->apiData)['name_th'] }}</option>
                                            @endforeach
                                         </select>
                                     </div>
                                     @else
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
-                                        <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin->id}}" >
+                                        <input type="text" class="form-control" name="user_id" value="{{$dataUserLogin->user_id}}" >
                                         <input type="hidden" class="form-control" name="sale_name" value="{{$dataUserLogin->name_th}}" >
                                         <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
 

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use App\Models\Role_user;
 use App\Models\User;
 use App\Models\Holiday;
@@ -16,12 +18,138 @@ use Illuminate\Http\Request;
 
 class HolidayController extends Controller
 {
+
+    private function addApiDataToUsers($holidays)
+    {
+
+        $client = new Client();
+        $url = env('API_URL');
+        $token = env('API_TOKEN_AUTH');
+
+
+        $userIds = $holidays->pluck('user_id')->toArray();
+        $userIdsString = implode(',', $userIds);
+
+        try {
+
+            $response = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ]);
+            if ($response->getStatusCode() == 200) {
+
+                $apiResponse = json_decode($response->getBody()->getContents(), true);
+
+                if (isset($apiResponse['data']['data'])) {
+                    // ดึงข้อมูล user จาก $apiResponse['data']['data']
+                    $userData = $apiResponse['data']['data'];
+
+                    foreach ($holidays as $holiday) {
+
+                        $userApiData = collect($userData)->firstWhere('id', $holiday->user_id);
+
+                        if ($userApiData) {
+                            $holiday->apiData = [
+                                'id' => $userApiData['id'],
+                                'name_th' => $userApiData['name_th'],
+
+                            ];
+                        } else {
+
+                            $holiday->apiData = null;
+                        }
+                    }
+                } else {
+
+                    foreach ($holidays as $holiday) {
+                        $holiday->apiData = null;
+                    }
+                }
+            } else {
+
+                foreach ($holidays as $holiday) {
+                    $holiday->apiData = null;
+                }
+            }
+        } catch (\Exception $e) {
+
+            foreach ($holidays as $holiday) {
+                $holiday->apiData = null;
+            }
+        }
+    }
+
+    private function addApiDataToStaff($userSelected)
+    {
+
+        $client = new Client();
+        $url = env('API_URL');
+        $token = env('API_TOKEN_AUTH');
+
+
+        $userIds = $userSelected->pluck('user_id')->toArray();
+        $userIdsString = implode(',', $userIds);
+
+        try {
+
+            $response = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ]);
+            if ($response->getStatusCode() == 200) {
+
+                $apiResponse = json_decode($response->getBody()->getContents(), true);
+
+                if (isset($apiResponse['data']['data'])) {
+                    // ดึงข้อมูล user จาก $apiResponse['data']['data']
+                    $userData = $apiResponse['data']['data'];
+
+                    foreach ($userSelected as $userSelect) {
+
+                        $userApiData = collect($userData)->firstWhere('id', $userSelect->user_id);
+
+                        if ($userApiData) {
+                            $userSelect->apiData = [
+                                'id' => $userApiData['id'],
+                                'name_th' => $userApiData['name_th'],
+                                'active' => $userApiData['active'],
+
+                            ];
+                        } else {
+
+                            $userSelect->apiData = null;
+                        }
+                    }
+                } else {
+
+                    foreach ($userSelected as $userSelect) {
+                        $userSelect->apiData = null;
+                    }
+                }
+            } else {
+
+                foreach ($userSelected as $userSelect) {
+                    $userSelect->apiData = null;
+                }
+            }
+        } catch (\Exception $e) {
+
+            foreach ($userSelected as $userSelect) {
+                $userSelect->apiData = null;
+            }
+        }
+    }
+
     public function index(Request $request)
     {
-        $dataUserLogin = array();
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
-        $userSelected = Role_user::with('user_ref:id,code,name_th,active')->whereIn('role_type',['Admin','Staff'])->get();
+        $dataUserLogin = Session::get('loginId');
+        //$dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        //$userSelected = Role_user::with('user_ref:id,code,name_th,active')->whereIn('role_type',['Admin','Staff'])->get();
+        $userSelected = Role_user::whereIn('role_type',['Admin','Staff'])->get();
+        $this->addApiDataToStaff($userSelected);
 
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
@@ -31,13 +159,16 @@ class HolidayController extends Controller
 
         if (in_array($dataRoleUser->role_type, ["Admin", "SuperAdmin"])){
 
-            $holidays = Holiday::with('user_ref:id,name_th')->orderBy('id','desc')->get();
+            //$holidays = Holiday::with('user_ref:id,name_th')->orderBy('id','desc')->get();
+            $holidays = Holiday::orderBy('id','desc')->get();
+            $this->addApiDataToUsers($holidays);
 
             if($request->ajax())
                 {
 
                     foreach ($holidays as $holiday)
                         {
+
                                 // $start_time = Carbon::parse($holiday->start_date)->toIso8601String();
                                 // $end_time = Carbon::parse($holiday->end_date)->toIso8601String();
                                 $end_date = date('Y-m-d', strtotime($holiday->end_date. ' +1 day'));
@@ -66,11 +197,14 @@ class HolidayController extends Controller
 
 
                                 if($holiday->location){
-                                    $short_name = Str::limit($holiday->user_ref->name_th, 6);
+                                    //$short_name = Str::limit($holiday->user_ref->name_th, 6);
+                                    $short_name =  Str::limit($holiday->apiData['name_th'], 6);
+                                    //$short_name = '';
                                     $location = "@".$holiday->location;
                                 }else{
                                     $location = "";
-                                    $short_name = $holiday->user_ref->name_th;
+                                    $short_name = $holiday->apiData['name_th'];
+                                    //$short_name = '';
                                 }
 
                                 $event = [
@@ -89,7 +223,7 @@ class HolidayController extends Controller
                                 ];
                                 array_push($events, $event);
                         }
-
+                        //dd();
                     return response()->json($events);
                 }
 
@@ -98,7 +232,9 @@ class HolidayController extends Controller
 
         }else{
 
-            $holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId')['user_id'])->get();
+            //$holidays = Holiday::with('user_ref:id,name_th')->where('user_id',Session::get('loginId')['user_id'])->get();
+            $holidays = Holiday::where('user_id',Session::get('loginId')['user_id'])->get();
+            $this->addApiDataToUsers($holidays);
             //dd($holidays);
             if($request->ajax())
             {
@@ -126,11 +262,14 @@ class HolidayController extends Controller
                             }
 
                             if($holiday->location){
-                                $short_name = Str::limit($holiday->user_ref->name_th, 6);
+                                //$short_name = Str::limit($holiday->user_ref->name_th, 6);
+                                $short_name =  Str::limit($holiday->apiData['name_th'], 6);
+                                //$short_name = '';
                                 $location = "@".$holiday->location;
                             }else{
                                 $location = "";
-                                $short_name = $holiday->user_ref->name_th;
+                                $short_name = $holiday->apiData['name_th'];
+                                //$short_name = '';
                             }
 
 

@@ -97,7 +97,7 @@ class CustomAuthController extends Controller
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
-
+//dd($userData);
                 if (Hash::check($password, $userData['password'])) {
                     $request->session()->put('loginId',$userData);
                     Alert::success('เข้าสู่ระบบสำเร็จ');

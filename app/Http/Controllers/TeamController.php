@@ -14,8 +14,9 @@ use Illuminate\Http\Request;
 class TeamController extends Controller
 {
     public function index(Request $request){
-        $dataUserLogin = array();
-        $dataUserLogin = DB::connection('mysql_user')->table('users')->where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        //$dataUserLogin = array();
+        //$dataUserLogin = DB::connection('mysql_user')->table('users')->where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         $teams = Team::get();

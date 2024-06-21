@@ -3,9 +3,9 @@
         <!-- Logo -->
         <a href="{{ url('/') }}" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
-            <span class="logo-mini"><b>v</b>BNEXT</span>
+            <span class="logo-mini"><b>V</b>BNEXT</span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg"><b>VBNEXT</b> Project</span>
+            <span class="logo-lg">นัดเยี่ยมชมโครงการ</span>
           </a>
 
     <!-- Header Navbar: style can be found in header.less -->
@@ -20,16 +20,16 @@
                 <!-- User Account: style can be found in dropdown.less -->
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="{{ url('uploads/avatar.png') }}" class="user-image" alt="User Image">
-                        <span class="">{{$dataUserLogin['email']}}</span>
+                        {{-- <img src="{{ url('uploads/avatar.png') }}" class="user-image" alt="User Image"> --}}
+                        <span class="">คุณ {{ $dataUserLogin['apiData']['data'][0]['name_th'] }} </span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="{{ url('uploads/avatar.png') }}" class="img-circle" alt="User Image">
+                            <img src="{{ $dataUserLogin['fileExists'] ? $dataUserLogin['remoteFile'] : url('uploads/avatar.png') }}" class="img-circle" alt="">
 
                             <p>
-                                {{$dataUserLogin['email']}}
+                                {{ $dataUserLogin['apiData']['data'][0]['name_th'] }}
                                 <small>ประเภทผู้ใช้งาน {{$dataRoleUser->role_type}}</small>
                             </p>
                         </li>
