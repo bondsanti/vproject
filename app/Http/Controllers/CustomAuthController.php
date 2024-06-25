@@ -138,7 +138,7 @@ class CustomAuthController extends Controller
 
     public function AllowLoginConnect(Request $request,$code,$token)
     {
-
+        dd($token);
         try {
 
             $url = env('API_URL') . '/checktoken/out/' . $token;
@@ -148,7 +148,7 @@ class CustomAuthController extends Controller
                 'Authorization' => 'Bearer '.$tokenapi
             ])->get($url);
 
-            dd($response);
+
             if ($response->successful()) {
                 $userData = $response->json()['data'];
 
