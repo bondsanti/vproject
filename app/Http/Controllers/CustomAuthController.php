@@ -84,7 +84,7 @@ class CustomAuthController extends Controller
         $code = $request->code;
         $password = $request->password;
 
-        // try {
+       try {
 
             $url = env('API_URL') . '/getAuth/' . $code;
             $token = env('API_TOKEN_AUTH');
@@ -93,7 +93,6 @@ class CustomAuthController extends Controller
                 'Authorization' => 'Bearer '.$token
             ])->get($url);
 
-dd($response);
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
@@ -112,11 +111,11 @@ dd($response);
             return back();
 
             }
-        // } catch (\Exception $e) {
+        } catch (\Exception $e) {
 
-        //     Alert::error('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ API ภายนอก');
-        //     return back();
-        // }
+            Alert::error('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ API ภายนอก' .$e->getMessage());
+            return back();
+        }
 
     }
 
