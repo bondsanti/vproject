@@ -138,12 +138,12 @@ class CustomAuthController extends Controller
 
     public function AllowLoginConnect(Request $request,$code,$token)
     {
-        dd($token);
+
         try {
 
             $url = env('API_URL') . '/checktoken/out/' . $token;
             $tokenapi = env('API_TOKEN_AUTH');
-           //dd($url);
+           dd($url);
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer '.$tokenapi
             ])->get($url);
