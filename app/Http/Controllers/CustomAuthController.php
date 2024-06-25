@@ -93,7 +93,7 @@ class CustomAuthController extends Controller
                 'Authorization' => 'Bearer '.$token
             ])->get($url);
 
-
+dd($response);
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
