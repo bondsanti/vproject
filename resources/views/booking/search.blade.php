@@ -79,7 +79,7 @@
                                 <select class="form-control select2" style="width: 100%;" name="sale_id" autocomplete="off" >
                                     <option value="">เลือก</option>
                                     @foreach ($dataSales as $dataSale)
-                                    <option value="{{$dataSale->user_ref[0]->id}}">{{$dataSale->user_ref[0]->name_sale}}</option>
+                                    <option value="{{ optional($dataSale->apiData)['id'] }}">{{ optional($dataSale->apiData)['name_th'] }}</option>
                                    @endforeach
                                 </select>
                             </div>
@@ -89,7 +89,8 @@
                                     <option value="">เลือก</option>
 
                                     @foreach ($dataEmps as $dataEmp)
-                                     <option value="{{$dataEmp->user_ref[0]->id}}">{{$dataEmp->user_ref[0]->name_emp}}</option>
+                                    <option value="{{ optional($dataEmp->apiData)['id'] }}">{{ optional($dataEmp->apiData)['name_th'] }}</option>
+
                                     @endforeach
 
                                 </select>
@@ -194,8 +195,10 @@
 
                                     </td>
                                     {{-- <td>{{$booking->team_name}} / {{$booking->subteam_name}}</td> --}}
-                                    <td>{{ optional($booking->booking_user_ref->first())->name_th }}</td>
-                                    <td>{{ optional($booking->booking_emp_ref->first())->name_th }}</td>
+                                    {{-- <td>{{ optional($booking->booking_user_ref->first())->name_th }}</td>
+                                    <td>{{ optional($booking->booking_emp_ref->first())->name_th }}</td> --}}
+                                    <td>{{ $booking->apiDataSale['name_th']}} </td>
+                                    <td>{{ $booking->apiDataPro['name_th'] }}</td>
 
                                     <td class="project-state">
                                         @php
@@ -409,10 +412,12 @@
                                                 <dt>ทีม/สายงาน</dt>
                                                 <dd><strong class="text-primary">{{$booking->team_name}}</strong> - {{$booking->subteam_name}}</dd>
                                                 <dt>ชื่อ Sale</dt>
-                                                <dd>{{ optional($booking->booking_user_ref->first())->name_th }}, {{$booking->user_tel}} </dd>
+                                                <dd>{{ $booking->apiDataSale['name_th'] }} {{ $booking->user_tel }} </dd>
+                                                {{-- <dd>{{ optional($booking->booking_user_ref->first())->name_th }}, {{$booking->user_tel}} </dd> --}}
 
                                                 <dt>ทีม หน้าโครงการ</dt>
-                                                <dd>{{ optional($booking->booking_emp_ref->first())->name_th }}, {{ optional($booking->booking_emp_ref->first())->phone }}</dd>
+                                                <dd>{{ $booking->apiDataPro['name_th'] }} {{ $booking->apiDataPro['phone'] }}</dd>
+                                                {{-- <dd>{{ optional($booking->booking_emp_ref->first())->name_th }}, {{ optional($booking->booking_emp_ref->first())->phone }}</dd> --}}
 
                                             </dl>
                                         </div>

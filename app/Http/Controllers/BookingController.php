@@ -221,12 +221,206 @@ class BookingController extends Controller
         } catch (\Exception $e) {
             // Handle exception by setting apiData to null for all bookings
             foreach ($bookings as $booking) {
-                $booking->apiDataSale = null;
-                $booking->apiDataPro = null;
+                if (is_object($booking)) {
+                    $booking->apiDataSale = null;
+                    $booking->apiDataPro = null;
+                }
             }
         }
     }
 
+    private function addApiDataToEmps($dataEmps)
+    {
+        if (!$dataEmps) {
+            return; // or handle the null case as needed
+        }
+
+        $client = new Client();
+        $url = env('API_URL');
+        $token = env('API_TOKEN_AUTH');
+
+        $userIds = is_array($dataEmps) ? collect($dataEmps)->pluck('user_id')->toArray() : [$dataEmps->user_id];
+        $userIdsString = implode(',', $userIds);
+
+        try {
+            $response = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ]);
+
+            if ($response->getStatusCode() == 200) {
+                $apiResponse = json_decode($response->getBody()->getContents(), true);
+
+                if (isset($apiResponse['data']['data'])) {
+                    $userData = $apiResponse['data']['data'];
+
+                    $dataEmpsCollection = is_array($dataEmps) ? $dataEmps : [$dataEmps];
+                    foreach ($dataEmpsCollection as $dataEmp) {
+                        $userApiData = collect($userData)->firstWhere('id', $dataEmp->user_id);
+
+                        if ($userApiData) {
+                            $dataEmp->apiData = [
+                                'id' => $userApiData['id'],
+                                'name_th' => $userApiData['name_th'],
+                                'active' => $userApiData['active'],
+                            ];
+                        } else {
+                            $dataEmp->apiData = null;
+                        }
+                    }
+                } else {
+                    $this->clearApiData($dataEmps);
+                }
+            } else {
+                $this->clearApiData($dataEmps);
+            }
+        } catch (\Exception $e) {
+            $this->clearApiData($dataEmps);
+        }
+    }
+
+    private function addApiDataToSales($dataSales)
+    {
+        if (!$dataSales) {
+            return; // or handle the null case as needed
+        }
+
+        $client = new Client();
+        $url = env('API_URL');
+        $token = env('API_TOKEN_AUTH');
+
+        $userIds = is_array($dataSales) ? collect($dataSales)->pluck('user_id')->toArray() : [$dataSales->user_id];
+        $userIdsString = implode(',', $userIds);
+
+        try {
+            $response = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ]);
+
+            if ($response->getStatusCode() == 200) {
+                $apiResponse = json_decode($response->getBody()->getContents(), true);
+
+                if (isset($apiResponse['data']['data'])) {
+                    $userData = $apiResponse['data']['data'];
+
+                    $dataSalesCollection = is_array($dataSales) ? $dataSales : [$dataSales];
+                    foreach ($dataSalesCollection as $sale) {
+                        $userApiData = collect($userData)->firstWhere('id', $sale->user_id);
+
+                        if ($userApiData) {
+                            $sale->apiData = [
+                                'id' => $userApiData['id'],
+                                'name_th' => $userApiData['name_th'],
+                            ];
+                        } else {
+                            $sale->apiData = null;
+                        }
+                    }
+                } else {
+                    $this->clearApiData($dataSales);
+                }
+            } else {
+                $this->clearApiData($dataSales);
+            }
+        } catch (\Exception $e) {
+            $this->clearApiData($dataSales);
+        }
+    }
+
+    private function clearApiData($data)
+    {
+        if (is_array($data) || $data instanceof \Illuminate\Support\Collection) {
+            foreach ($data as $item) {
+                $item->apiData = null;
+            }
+        } else {
+            $data->apiData = null;
+        }
+    }
+
+    private function addApiDataToUsers($booking)
+    {
+        $client = new Client();
+        $url = env('API_URL');
+        $token = env('API_TOKEN_AUTH');
+
+        // Extract user_ids and teampro_ids from bookings
+        $userIds = $booking->pluck('user_id')->toArray();
+        $userIdsString = implode(',', $userIds);
+
+        $tProIds = $booking->pluck('teampro_id')->toArray();
+        $tProIdsString = implode(',', $tProIds);
+
+        try {
+            // First API call to get user data
+            $userResponse = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ]);
+
+            if ($userResponse->getStatusCode() == 200) {
+                $userApiResponse = json_decode($userResponse->getBody()->getContents(), true);
+
+                if (isset($userApiResponse['data']['data'])) {
+                    $userData = $userApiResponse['data']['data'];
+                } else {
+                    $userData = [];
+                }
+            } else {
+                $userData = [];
+            }
+
+            // Second API call to get teampro data
+            $teamProResponse = $client->request('GET', $url . '/get-users/' . $tProIdsString, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
+            ]);
+
+            if ($teamProResponse->getStatusCode() == 200) {
+                $teamProApiResponse = json_decode($teamProResponse->getBody()->getContents(), true);
+
+                if (isset($teamProApiResponse['data']['data'])) {
+                    $teamProData = $teamProApiResponse['data']['data'];
+                } else {
+                    $teamProData = [];
+                }
+            } else {
+                $teamProData = [];
+            }
+
+            // Attach apiData to bookings
+            foreach ($booking as $book) {
+                $userApiData = collect($userData)->firstWhere('id', $book->user_id);
+                $teamProApiData = collect($teamProData)->firstWhere('id', $book->teampro_id);
+
+                $book->apiDataSale = $userApiData ? [
+                    'id' => $userApiData['id'],
+                    'name_th' => $userApiData['name_th'],
+                    'active' => $userApiData['active'],
+                ] : null;
+
+                $book->apiDataPro = $teamProApiData ? [
+                    'id' => $teamProApiData['id'],
+                    'name_th' => $teamProApiData['name_th'],
+                    'active' => $teamProApiData['active'],
+                    'phone' => $teamProApiData['phone'],
+                ] : null;
+            }
+        } catch (\Exception $e) {
+
+            foreach ($booking as $book) {
+                if (is_object($book)) {
+                    $book->apiDataSale = null;
+                    $book->apiDataPro = null;
+                }
+            }
+        }
+    }
 
     //นัดเยี่ยมโครงการ
     public function bookingProject(Request $request)
@@ -241,7 +435,7 @@ class BookingController extends Controller
         // $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
         $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
-
+        //dd($dataUserLogin['apiData']['data']['name_th']);
         // $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
 
         $dataSales = Role_user::where('role_type', 'Sale')->get();
@@ -264,8 +458,8 @@ class BookingController extends Controller
             // ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
 
             $bookings = Booking::with('booking_project_ref:id,name')
-                ->with('booking_emp_ref:id,code,name_th,phone') //จน. โครงการ
-                ->with('booking_user_ref:id,code,name_th') //ชื่อ Sale
+                // ->with('booking_emp_ref:id,code,name_th,phone') //จน. โครงการ
+                // ->with('booking_user_ref:id,code,name_th') //ชื่อ Sale
                 ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
                 ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
                 ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
@@ -273,6 +467,7 @@ class BookingController extends Controller
                 ->where('user_id', Session::get('loginId')['user_id'])
                 ->orderBy('bkid', 'desc')
                 ->get();
+                $this->addApiDataToUser($bookings);
             //dd($bookings);
 
             foreach ($bookings as $booking) {
@@ -336,12 +531,12 @@ class BookingController extends Controller
         //check time booking for sale
         if ($dataRoleUser->role_type == "Sale") {
 
-            if ($currentTime >= $startTime && $currentTime <= $endTime) {
+            // if ($currentTime >= $startTime && $currentTime <= $endTime) {
                 return view("booking.index", compact('dataUserLogin', 'dataRoleUser', 'projects', 'teams', 'dataSales'));
                 //return view("booking.close",compact('dataUserLogin','dataRoleUser'));
-            } else {
-                return view("booking.close", compact('dataUserLogin', 'dataRoleUser'));
-            }
+            // } else {
+            //     return view("booking.close", compact('dataUserLogin', 'dataRoleUser'));
+            // }
         } else {
             return view("booking.index", compact('dataUserLogin', 'dataRoleUser', 'projects', 'teams', 'dataSales'));
         }
@@ -350,25 +545,34 @@ class BookingController extends Controller
     public function editBooking(Request $request, $id)
     {
 
-        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        // $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
-        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type', 'Sale')->get();
-
+        // $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type', 'Sale')->get();
+        $dataSales = Role_user::where('role_type', 'Sale')->get();
+        $this->addApiDataToSale($dataSales);
         //โครงการ
         $projects = Project::where('active', 1)->get();
 
         //ทีมสายงาน
         $teams = Team::get();
 
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')
+        // $bookings = Booking::with('booking_user_ref:id,code,name_th')
+        //     ->with('booking_emp_ref:id,code,name_th,phone')
+        //     ->with('booking_project_ref:id,name')
+        //     ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        //     ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+        //     ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        //     ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
+        //     ->where('bookings.id', "=", $id)->first();
+            $bookings = Booking::with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
             ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
-            ->where('bookings.id', "=", $id)->first();
-        // dd($bookings);
+            ->where('bookings.id', "=", $id)->get();
+            $this->addApiDataToUser($bookings);
+        //dd($bookings[0]->apiDataSale['name_th']);
 
         return view("booking.edit", compact('dataUserLogin', 'dataRoleUser', 'bookings', 'projects', 'teams', 'dataSales'));
     }
@@ -474,23 +678,36 @@ class BookingController extends Controller
         $booking_end = $request->date . " " . $end_time;
 
 
-        $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th,active')
-            ->whereNotIn('role_users.user_id', function ($query) use ($booking_date) {
-                $query->select('holiday_users.user_id')
-                    ->from('holiday_users')
-                    ->where('holiday_users.start_date', '<=', $booking_date)
-                    ->where('holiday_users.end_date', '>=', $booking_date)
-                    ->whereIn('holiday_users.status', [0, 1]);
-            })
-            ->whereIn('role_type', ['Staff'])
-            ->select('role_users.*')
-            ->orderBy('role_users.id')
-            ->get();
+        // $employees_not_on_holiday = Role_user::with('user_ref:id,code,name_th,active')
+        //     ->whereNotIn('role_users.user_id', function ($query) use ($booking_date) {
+        //         $query->select('holiday_users.user_id')
+        //             ->from('holiday_users')
+        //             ->where('holiday_users.start_date', '<=', $booking_date)
+        //             ->where('holiday_users.end_date', '>=', $booking_date)
+        //             ->whereIn('holiday_users.status', [0, 1]);
+        //     })
+        //     ->whereIn('role_type', ['Staff'])
+        //     ->select('role_users.*')
+        //     ->orderBy('role_users.id')
+        //     ->get();
+        $employees_not_on_holiday = Role_user::whereNotIn('role_users.user_id', function ($query) use ($booking_date) {
+            $query->select('holiday_users.user_id')
+                ->from('holiday_users')
+                ->where('holiday_users.start_date', '<=', $booking_date)
+                ->where('holiday_users.end_date', '>=', $booking_date)
+                ->whereIn('holiday_users.status', [0, 1]);
+        })
+        ->whereIn('role_type', ['Staff'])
+        ->select('role_users.*')
+        ->orderBy('role_users.id')
+        ->get();
+
 
         $booking_count = [];
-        //dd($employees_not_on_holiday);
+
         foreach ($employees_not_on_holiday as $employee) {
-            if (optional($employee->user_ref->first())->active == "1") {
+            // if (optional($employee->user_ref->first())->active == "1") {
+            //dd($employee);
                 $teampro_id = $employee->user_id;
                 $booking_count = Booking::where(function ($query) use ($booking_start, $booking_end, $teampro_id) {
                     $query->where(function ($subquery) use ($booking_start, $booking_end) {
@@ -517,7 +734,7 @@ class BookingController extends Controller
                     reset($employees_not_on_holiday); // ให้วน loop จากตัวแรกอีกครั้ง
                     break; // หลังจาก reset ให้ break การวน loop เพื่อให้เลือกพนักงานคนต่อไป
                 }
-            }
+            // }
         }
 
 
@@ -540,13 +757,18 @@ class BookingController extends Controller
             $res1 = $booking->save();
 
 
-            $id_booking = Booking::with('booking_user_ref:id,code,name_th')
-                ->with('booking_emp_ref:id,code,name_th,phone')
-                ->with('booking_project_ref:id,name')
+            $id_booking = Booking::with('booking_project_ref:id,name')
                 ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
                 ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
                 ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
                 ->select('bookings.*', 'bookingdetails.*', 'teams.id', 'teams.team_name', 'subteams.subteam_name', 'bookings.id as bkID')->latest()->first();
+            // $id_booking = Booking::with('booking_user_ref:id,code,name_th')
+            //     ->with('booking_emp_ref:id,code,name_th,phone')
+            //     ->with('booking_project_ref:id,name')
+            //     ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            //     ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+            //     ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            //     ->select('bookings.*', 'bookingdetails.*', 'teams.id', 'teams.team_name', 'subteams.subteam_name', 'bookings.id as bkID')->latest()->first();
 
             $projects = Project::where('id', $request->project_id)->first();
 
@@ -589,8 +811,17 @@ class BookingController extends Controller
 
             $Strdate_start = date('d/m/Y', strtotime($request->date . ' +543 year'));
 
-            $getSaleName = Role_user::with('user_ref:id,code,name_th as name_sale')->where('user_id', $request->user_id)->first();
-            //dd($getSaleName);
+            // $getSaleName = Role_user::with('user_ref:id,code,name_th as name_sale')->where('user_id', $request->user_id)->first();
+            $dataSales = Role_user::where('role_type', 'Sale')->where('user_id', $request->user_id)->first();
+
+            $this->addApiDataToSales($dataSales);
+
+            $dataEmps = Role_user::where('role_type', 'Staff')->where('user_id', $employee->user_id)->first();
+            $this->addApiDataToEmps($dataEmps);
+
+           // dd($dataEmps->apiData['name_th']);
+
+
             if ($res1 || $res2) {
 
                 Alert::success('จองสำเร็จ!', '');
@@ -606,10 +837,10 @@ class BookingController extends Controller
                         // 'เบอร์ติดต่อ : *'.$request->customer_tel."* \n".
                         'ข้อมูลเข้าชม : *' . $customer_req . ' ' . $request->room_price . ' ห้อง' . $request->room_no . "* \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $getSaleName->user_ref[0]->name_sale . "* \n" .
+                        'ชื่อ Sale : *' .$dataSales->apiData['name_th']. "* \n" .
                         'ทีม/สายงาน : *' . $id_booking->team_name . "* - $id_booking->subteam_name \n" .
                         'เบอร์สายงาน : *' . $request->user_tel . "* \n" .
-                        'จน. โครงการ : *' . $employee->user_ref[0]->name_th . "* \n\n" .
+                        'จน. โครงการ : *' . $dataEmps->apiData['name_th'] . "* \n\n" .
                         '⚠️ กรุณากดรับจองภายใน 1 ชม. ' . " \n" . 'หากไม่รับจองภายในเวลาที่กำหนด' . " \n" . 'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
                         // ." \n ✅กดรับจอง => ".'https://bit.ly/3AUARP0');
                         . " \n ✅กดรับจอง => " . route('main')
@@ -630,14 +861,14 @@ class BookingController extends Controller
                         // 'ลูกค้าชื่อ : *'.$request->customer_name."* \n".
                         'ข้อมูลเข้าชม : *' . $customer_req . ' ' . $request->room_price . ' ห้อง' . $request->room_no . "* \n" .
                         '---------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $getSaleName->user_ref[0]->name_sale . "* \n" .
+                        'ชื่อ Sale : *' . $dataSales->apiData['name_th']. "* \n" .
                         'ทีม/สายงาน : *' . $id_booking->team_name . "* - $id_booking->subteam_name \n" .
                         'เบอร์สายงาน : *' . $request->user_tel . "* \n" .
-                        'จน. โครงการ : *' . $employee->user_ref[0]->name_th . "* \n\n" .
+                        'จน. โครงการ : *' . $dataEmps->apiData['name_th'] . "* \n\n" .
                         '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' . "* \n" . ' กดรับงานภายใน 1 ชม.'
                 );
 
-                Log::addLog($request->session()->get('loginId'), 'Create', $request->booking_title . ", " . $id_booking->bkID);
+                Log::addLog(Session::get('loginId')['user_id'], 'Create', $request->booking_title . ", " . $id_booking->bkID);
 
                 Alert::success('Success', 'จองสำเร็จ!');
                 return redirect()->back();
@@ -660,15 +891,13 @@ class BookingController extends Controller
 
         $bookingdetail = Bookingdetail::where('booking_id', $id);
 
-
-
         if (!$booking || !$bookingdetail) {
             return response()->json([
                 'message' => 'เกิดข้อผิดพลาด'
             ], 404);
         } else {
 
-            Log::addLog($request->session()->get('loginId'), 'Delete', $booking->booking_title . ", " . $id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Delete', $booking->booking_title . ", " . $id);
 
             $booking->delete();
             $bookingdetail->delete();
@@ -699,16 +928,19 @@ class BookingController extends Controller
     {
         $bookings = Booking::where('bookings.id', $request->booking_id)->first();
 
-        $booking = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-            ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid')->where('bookings.id', $request->booking_id)->first();
+        // $booking = Booking::with('booking_user_ref:id,code,name_th')
+        //     ->with('booking_emp_ref:id,code,name_th,phone')
+        //     ->with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        //     ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid')->where('bookings.id', $request->booking_id)->first();
+            $booking = Booking::with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid')->where('bookings.id', $request->booking_id)->get();
+            $this->addApiDataToUsers($booking);
 
-        $projects = Project::where('id', $booking->project_id)->first();
+        $projects = Project::where('id', $booking[0]->project_id)->first();
         //$projects = DB::connection('mysql_project')->table('projects')->where('id', $booking->project_id)->first();
         //dd($request);
 
-        if (!$booking) {
+        if (!$booking[0]) {
             Alert::error('Error', 'Not found ID');
             return redirect()->back();
         } else {
@@ -735,27 +967,27 @@ class BookingController extends Controller
                 //$oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
                 // $oneDayBeforeBookingDateTHg = date('d/m/Y', strtotime($oneDayBeforeBookingDate.' +543 year'));
 
-                $oneDayBeforeBookingDate = Carbon::parse($booking->booking_start)->subDay();
+                $oneDayBeforeBookingDate = Carbon::parse($booking[0]->booking_start)->subDay();
                 $oneDayBeforeBookingDateTH = $oneDayBeforeBookingDate->addYears(543)->format('d/m/Y');
 
                 //dd($oneDayBeforeBookingDateTH);
 
 
-                $Strdate_start = date('d/m/Y', strtotime($booking->booking_start . ' +543 year'));
-                $Strtime_start = date('H:i', strtotime($booking->booking_start));
-                $Strtime_end = date('H:i', strtotime($booking->booking_end));
+                $Strdate_start = date('d/m/Y', strtotime($booking[0]->booking_start . ' +543 year'));
+                $Strtime_start = date('H:i', strtotime($booking[0]->booking_start));
+                $Strtime_end = date('H:i', strtotime($booking[0]->booking_end));
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th'] . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :✅ *' . $textStatus . "* \n" .
                         '⏰ โปรดรอ Sale คอนเฟริ์มการนัดหมาย หาก Sale ไม่ *คอนเฟิร์ม*' . " \n" . 'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
                 );
@@ -763,14 +995,14 @@ class BookingController extends Controller
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataSale['name_th']. "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataPro['name_th']. "* \n" .
                         'สถานะจอง :✅ *' . $textStatus . "* \n" .
                         '⚠️ ผู้รับผิดชอบ กรุณากดคอนเฟริ์มนัด ในวันที่ `' . $oneDayBeforeBookingDateTH . '` ภายในเวลา 16.00-17.30 น.' . " \n" .
                         '🚫 หากไม่ *คอนเฟิร์ม* ระบบจะยกเลิกการจองอัตโนมัติ'
@@ -778,103 +1010,103 @@ class BookingController extends Controller
                         . " \n กดคอนเฟริ์ม => " . route('main')
                 );
 
-                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title . ", " . $booking->bkid . ", " . $textStatus);
+                Log::addLog(Session::get('loginId')['user_id'], 'Update Status', $booking[0]->booking_title . ", " . $booking[0]->bkid . ", " . $textStatus);
 
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             } elseif ($request->booking_status == 2) {
                 $textStatus = "จองสำเร็จ";
 
-                $Strdate_start = date('d/m/Y', strtotime($booking->booking_start . ' +543 year'));
-                $Strtime_start = date('H:i', strtotime($booking->booking_start));
-                $Strtime_end = date('H:i', strtotime($booking->booking_end));
+                $Strdate_start = date('d/m/Y', strtotime($booking[0]->booking_start . ' +543 year'));
+                $Strtime_start = date('H:i', strtotime($booking[0]->booking_start));
+                $Strtime_end = date('H:i', strtotime($booking[0]->booking_end));
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th']. "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :✅ *' . $textStatus . "* \n"
                 );
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th'] . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :✅ *' . $textStatus . "* \n"
                 );
 
-                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title . ", " . $booking->bkid . ", " . $textStatus);
+                Log::addLog(Session::get('loginId')['user_id'], 'Update Status', $booking[0]->booking_title . ", " . $booking[0]->bkid . ", " . $textStatus);
 
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             } elseif ($request->booking_status == 3) {
                 $textStatus = "เยี่ยมชมเรียบร้อย";
-                $Strdate_start = date('d/m/Y', strtotime($booking->booking_start . ' +543 year'));
-                $Strtime_start = date('H:i', strtotime($booking->booking_start));
-                $Strtime_end = date('H:i', strtotime($booking->booking_end));
+                $Strdate_start = date('d/m/Y', strtotime($booking[0]->booking_start . ' +543 year'));
+                $Strtime_start = date('H:i', strtotime($booking[0]->booking_start));
+                $Strtime_end = date('H:i', strtotime($booking[0]->booking_end));
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
                 $line->send(
-                    '✨ *นัด ' . $booking->booking_title . "* \n" .
+                    '✨ *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th'] . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะ :✅ *' . $textStatus . "* \n"
                 );
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
                 $line->send(
-                    '✨ *นัด ' . $booking->booking_title . "* \n" .
+                    '✨ *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th']  . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะ :✅ *' . $textStatus . "* \n"
                 );
-                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title . ", " . $booking->bkid . ", " . $textStatus);
+                Log::addLog(Session::get('loginId')['user_id'], 'Update Status', $booking[0]->booking_title . ", " . $booking[0]->bkid . ", " . $textStatus);
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             } elseif ($request->booking_status == 4) {
 
                 $textStatus = "ยกเลิก";
-                $Strdate_start = date('d/m/Y', strtotime($booking->booking_start . ' +543 year'));
-                $Strtime_start = date('H:i', strtotime($booking->booking_start));
-                $Strtime_end = date('H:i', strtotime($booking->booking_end));
+                $Strdate_start = date('d/m/Y', strtotime($booking[0]->booking_start . ' +543 year'));
+                $Strtime_start = date('H:i', strtotime($booking[0]->booking_start));
+                $Strtime_end = date('H:i', strtotime($booking[0]->booking_end));
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th']  . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :❌ *' . $textStatus . "* \n" .
                         'เหตุผล : ' . $becaseText
                 );
@@ -882,54 +1114,54 @@ class BookingController extends Controller
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th']  . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :❌ *' . $textStatus . "* \n" .
                         'เหตุผล : ' . $becaseText
                 );
-                Log::addLog($request->session()->get('loginId'), 'Update Status', $booking->booking_title . ", " . $booking->bkid . ", " . $textStatus . ", " . $becaseText);
+                Log::addLog(Session::get('loginId')['user_id'], 'Update Status', $booking[0]->booking_title . ", " . $booking[0]->bkid . ", " . $textStatus . ", " . $becaseText);
                 Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 return redirect()->back();
             } else {
                 $textStatus = "ยกเลิกอัตโนมัติ";
-                $Strdate_start = date('d/m/Y', strtotime($booking->booking_start . ' +543 year'));
-                $Strtime_start = date('H:i', strtotime($booking->booking_start));
-                $Strtime_end = date('H:i', strtotime($booking->booking_end));
+                $Strdate_start = date('d/m/Y', strtotime($booking[0]->booking_start . ' +543 year'));
+                $Strtime_start = date('H:i', strtotime($booking[0]->booking_start));
+                $Strtime_end = date('H:i', strtotime($booking[0]->booking_end));
 
                 $token_line1 = config('line-notify.access_token_project');
                 $line = new Line($token_line1);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th']  . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :❌ *' . $textStatus . "* \n"
                 );
 
                 $token_line2 = config('line-notify.access_token_sale');
                 $line = new Line($token_line2);
                 $line->send(
-                    '🔔 *นัด ' . $booking->booking_title . "* \n" .
+                    '🔔 *นัด ' . $booking[0]->booking_title . "* \n" .
                         '----------------------------' . " \n" .
-                        'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                        'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                         'โครงการ : *' . $projects->name . "* \n" .
                         'วัน/เวลา : `' . $Strdate_start . ' ' . $Strtime_start . '-' . $Strtime_end . "` \n" .
                         '----------------------------' . " \n" .
-                        'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                        'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th'] . "* \n" .
                         'สถานะจอง :❌ *' . $textStatus . "* \n"
                 );
 
-                Log::addLog('System', 'Update Status', $booking->booking_title . ", " . $booking->bkid . ", " . $textStatus);
+                Log::addLog('System', 'Update Status', $booking[0]->booking_title . ", " . $booking[0]->bkid . ", " . $textStatus);
                 // Alert::success('Success', 'อัปเดตสถานะการจองสำเร็จแล้ว!');
                 // return redirect()->back();
             }
@@ -943,14 +1175,22 @@ class BookingController extends Controller
         $booking->teampro_id = $request->teampro_id;
         $booking->save();
 
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')
+        // $bookings = Booking::with('booking_user_ref:id,code,name_th')
+        //     ->with('booking_emp_ref:id,code,name_th,phone')
+        //     ->with('booking_project_ref:id,name')
+        //     ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        //     ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+        //     ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        //     ->select('bookings.*', 'bookingdetails.*', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
+        //     ->where('bookings.id', "=", $request->booking_id)->first();
+            $bookings = Booking::with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
             ->select('bookings.*', 'bookingdetails.*', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
-            ->where('bookings.id', "=", $request->booking_id)->first();
+            ->where('bookings.id', "=", $request->booking_id)->get();
+
+            $this->addApiDataToUser($bookings);
 
         $projects = Project::where('id', $bookings->project_id)->first();
         //$projects = DB::connection('mysql_project')->table('projects')->where('id', $bookings->project_id)->first();
@@ -981,10 +1221,10 @@ class BookingController extends Controller
                     // 'เบอร์ติดต่อ : *'.$bookings->customer_tel."* \n".
                     'ข้อมูลเข้าชม : *' . $bookings->customer_req . ' ' . $bookings->room_price . ' ห้อง' . $bookings->room_no . "* \n" .
                     '----------------------------' . " \n" .
-                    'ชื่อ Sale : *' . $bookings->booking_user_ref[0]->name_th . "* \n" .
+                    'ชื่อ Sale : *' . $bookings->apiDataSale['name_th'] . "* \n" .
                     'ทีม/สายงาน : *' . $bookings->team_name . "* - $bookings->subteam_name \n" .
                     'เบอร์สายงาน : *' . $bookings->user_tel . "* \n" .
-                    'จน. โครงการ : * [' . $bookings->booking_emp_ref[0]->name_th . "] * \n\n" .
+                    'จน. โครงการ : * [' . $bookings->apiDataPro['name_th'] . "] * \n\n" .
                     '⚠️ กรุณากดรับจองภายใน 1 ชม. ' . " \n" . 'หากไม่รับจองภายในเวลาที่กำหนด' . " \n" . 'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
                     . " \n ✅กดรับจอง => " . route('main')
             );
@@ -1003,10 +1243,10 @@ class BookingController extends Controller
                     // 'เบอร์ติดต่อ : *'.$bookings->customer_tel."* \n".
                     'ข้อมูลเข้าชม : *' . $bookings->customer_req . ' ' . $bookings->room_price . ' ห้อง' . $bookings->room_no . "* \n" .
                     '----------------------------' . " \n" .
-                    'ชื่อ Sale : *' . $bookings->booking_user_ref[0]->name_th . "* \n" .
+                    'ชื่อ Sale : *' . $bookings->apiDataSale['name_th'] . "* \n" .
                     'ทีม/สายงาน : *' . $bookings->team_name . "* - $bookings->subteam_name \n" .
                     'เบอร์สายงาน : *' . $bookings->user_tel . "* \n" .
-                    'จน. โครงการ : * [' . $bookings->booking_emp_ref[0]->name_th . "] * \n\n" .
+                    'จน. โครงการ : * [' . $bookings->apiDataPro['name_th'] . "] * \n\n" .
                     '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' . "* \n" . ' กดรับงานภายใน 1 ชม.'
             );
 
@@ -1023,8 +1263,8 @@ class BookingController extends Controller
 
         //dd($request);
 
-        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
-
+        //$dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         // $dataUserLogin = DB::connection('mysql_user')->table('users')
         // ->where('id', '=', Session::get('loginId'))
         // ->first();
@@ -1032,14 +1272,21 @@ class BookingController extends Controller
 
         $booking = Booking::where('bookings.id', "=", $request->booking_id)->first();
 
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')
+        // $bookings = Booking::with('booking_user_ref:id,code,name_th')
+        //     ->with('booking_emp_ref:id,code,name_th,phone')
+        //     ->with('booking_project_ref:id,name')
+        //     ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        //     ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+        //     ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        //     ->select('bookings.*', 'bookingdetails.*', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
+        //     ->where('bookings.id', "=", $request->booking_id)->first();
+            $bookings = Booking::with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
             ->select('bookings.*', 'bookingdetails.*', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
-            ->where('bookings.id', "=", $request->booking_id)->first();
+            ->where('bookings.id', "=", $request->booking_id)->get();
+            $this->addApiDataToUsers($bookings);
 
 
         //dd($booking);
@@ -1107,7 +1354,15 @@ class BookingController extends Controller
         $res2 = $bookingdetail->save();
 
         $Strdate_start = date('d/m/Y', strtotime($request->date . ' +543 year'));
-        $getSaleName = Role_user::with('user_ref:id,code,name_th as name_sale')->where('user_id', $request->user_id)->first();
+       // $getSaleName = Role_user::with('user_ref:id,code,name_th as name_sale')->where('user_id', $request->user_id)->first();
+       $dataSales = Role_user::where('role_type', 'Sale')->where('user_id', $request->user_id)->first();
+       $this->addApiDataToSales($dataSales);
+       //dd($request->user_id);
+       $dataEmps = Role_user::where('role_type', 'Staff')->where('user_id', $booking->teampro_id)->first();
+       $this->addApiDataToEmps($dataEmps);
+
+       $team_name =$bookings[0]->team_name;
+       $subteam_name =$bookings[0]->subteam_name;
 
         if ($res1 || $res2) {
 
@@ -1125,12 +1380,12 @@ class BookingController extends Controller
                     'เบอร์ติดต่อ : *' . $request->customer_tel . "* \n" .
                     'ข้อมูลเข้าชม : *' . $customer_req . "* $request->room_price \n" .
                     '----------------------------' . " \n" .
-                    'ชื่อ Sale : *' . $getSaleName->user_ref[0]->name_sale . "* \n" .
-                    'ทีม/สายงาน : *' . $bookings->team_name . "* - $bookings->subteam_name \n" .
+                    'ชื่อ Sale : *' . $dataSales->apiData['name_th'] . "* \n" .
+                    'ทีม/สายงาน : *' . $team_name . "* -  $subteam_name \n" .
                     'เบอร์สายงาน : *' . $request->user_tel . "* \n" .
-                    'เจ้าหน้าที่โครงการ : *' . $bookings->booking_emp_ref[0]->name_th . "* \n\n" .
+                    'เจ้าหน้าที่โครงการ : *' . $dataEmps->apiData['name_th'] . "* \n\n" .
                     '⚠️ กรุณากดรับจองภายใน 1 ชม. ' . " \n" . 'หากไม่รับจองภายในเวลาที่กำหนด' . " \n" . 'ระบบจะยกเลิกการจองอัตโนมัติ❗️'
-                    . " \n กดรับจอง => " . 'http://vbproject.co.th'
+                    . " \n กดรับจอง => " . route('main')
             );
 
             $token_line2 = config('line-notify.access_token_sale');
@@ -1145,10 +1400,10 @@ class BookingController extends Controller
                     'ลูกค้าชื่อ : *' . $request->customer_name . "* \n" .
                     'ข้อมูลเข้าชม : *' . $customer_req . "* $request->room_price \n" .
                     '-----------------------------' . " \n" .
-                    'ชื่อ Sale : *' . $getSaleName->user_ref[0]->name_sale . "* \n" .
-                    'ทีม/สายงาน : *' . $bookings->team_name . "* - $bookings->subteam_name \n" .
+                    'ชื่อ Sale : *' . $dataSales->apiData['name_th'] . "* \n" .
+                    'ทีม/สายงาน : *' . $team_name . "* -  $subteam_name \n" .
                     'เบอร์สายงาน : *' . $request->user_tel . "* \n" .
-                    'เจ้าหน้าที่โครงการ : *' . $bookings->booking_emp_ref[0]->name_th . "* \n\n" .
+                    'เจ้าหน้าที่โครงการ : *' . $dataEmps->apiData['name_th'] . "* \n\n" .
                     '⏰ โปรดรอ *เจ้าหน้าที่โครงการ' . "* \n" . ' กดรับงานภายใน 1 ชม.'
             );
 
@@ -1221,16 +1476,26 @@ class BookingController extends Controller
 
     public function printBooking(Request $request, $id)
     {
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')
+        // $bookings = Booking::with('booking_user_ref:id,code,name_th')
+        //     ->with('booking_emp_ref:id,code,name_th,phone')
+        //     ->with('booking_project_ref:id,name')
+        //     ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        //     ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+        //     ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+        //     ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
+        //     ->where('bookings.id', "=", $id)->first();
+
+            $bookings = Booking::with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
             ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
-            ->where('bookings.id', "=", $id)->first();
-        //dd($bookings);
-        Log::addLog(Session::get('loginId')['user_id'], 'Print Booking', $bookings->booking_title . ", " . $bookings->booking_id);
+            ->where('bookings.id', "=", $id)->get();
+            // dd($bookings);
+            $this->addApiDataToUser($bookings);
+            //dd($bookings);
+
+        Log::addLog(Session::get('loginId')['user_id'], 'Print Booking', $bookings[0]->booking_title . ", " . $bookings[0]->booking_id);
 
         return view("booking.print", compact('bookings'));
     }
@@ -1271,12 +1536,15 @@ class BookingController extends Controller
         //dd($request);
         $bookings = Booking::where('id', '=', $request->id)->first();
 
-        $booking = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-            ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid')->where('bookings.id', $request->id)->first();
+        // $booking = Booking::with('booking_user_ref:id,code,name_th')
+        //     ->with('booking_emp_ref:id,code,name_th,phone')
+        //     ->with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+        //     ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid')->where('bookings.id', $request->id)->first();
+            $booking = Booking::with('booking_project_ref:id,name')->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid')->where('bookings.id', $request->id)->get();
+           $this->addApiDataToUser($booking);
 
-        $projects = Project::where('id', $booking->project_id)->first();
+        $projects = Project::where('id', $booking[0]->project_id)->first();
 
 
         //dd($user);
@@ -1367,12 +1635,12 @@ class BookingController extends Controller
             $token_line1 = config('line-notify.access_token_project');
             $line = new Line($token_line1);
             $line->send(
-                '✨ *นัด ' . $booking->booking_title . "* \n" .
+                '✨ *นัด ' . $booking[0]->booking_title . "* \n" .
                     '----------------------------' . " \n" .
-                    'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                    'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                     'โครงการ : *' . $projects->name . "* \n" .
-                    'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                    'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                    'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th'] . "* \n" .
+                    'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th']. "* \n" .
                     '----------------------------' . " \n" .
                     'สถานะ :✅ *' . $textStatus . "* \n"
             );
@@ -1380,18 +1648,18 @@ class BookingController extends Controller
             $token_line2 = config('line-notify.access_token_sale');
             $line = new Line($token_line2);
             $line->send(
-                '✨ *นัด ' . $booking->booking_title . "* \n" .
+                '✨ *นัด ' . $booking[0]->booking_title . "* \n" .
                     '----------------------------' . " \n" .
-                    'หมายเลขการจอง : *' . $booking->bkid . "* \n" .
+                    'หมายเลขการจอง : *' . $booking[0]->bkid . "* \n" .
                     'โครงการ : *' . $projects->name . "* \n" .
-                    'ชื่อ Sale : *' . $booking->booking_user_ref[0]->name_th . "* \n" .
-                    'จน. โครงการ : *' . $booking->booking_emp_ref[0]->name_th . "* \n" .
+                    'ชื่อ Sale : *' . $booking[0]->apiDataSale['name_th']. "* \n" .
+                    'จน. โครงการ : *' . $booking[0]->apiDataPro['name_th']. "* \n" .
                     '----------------------------' . " \n" .
                     'สถานะ :✅ *' . $textStatus . "* \n"
             );
 
 
-            Log::addLog($request->session()->get('loginId'), 'Update Job Succress', $bookings->booking_title . ", " . $request->id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Update Job Succress', $bookings->booking_title . ", " . $request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
             return redirect()->back();
         }
@@ -1481,7 +1749,7 @@ class BookingController extends Controller
             $bookings->job_img_1 = $thumbnailPath;
             $bookings->save();
 
-            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title . ", " . $request->id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Update Job Success', $bookings->booking_title . ", " . $request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
             return redirect()->back();
         } elseif ($request->hasFile('job_img_2')) {
@@ -1512,7 +1780,7 @@ class BookingController extends Controller
             $bookings->job_img_2 = $thumbnailPath;
             $bookings->save();
 
-            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title . ", " . $request->id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Update Job Success', $bookings->booking_title . ", " . $request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
             return redirect()->back();
         } elseif ($request->hasFile('job_img_3')) {
@@ -1543,7 +1811,7 @@ class BookingController extends Controller
             $bookings->job_img_3 = $thumbnailPath;
             $bookings->save();
 
-            Log::addLog($request->session()->get('loginId'), 'Update Job Success', $bookings->booking_title . ", " . $request->id);
+            Log::addLog(Session::get('loginId')['user_id'], 'Update Job Success', $bookings->booking_title . ", " . $request->id);
             Alert::success('Success', 'ส่งงานสำเร็จ!');
             return redirect()->back();
         } else {
@@ -1552,7 +1820,7 @@ class BookingController extends Controller
             $bookings->job_detailsubmission = $request->job_detailsubmission;
             $bookings->save();
 
-            Log::addLog($request->session()->get('loginId'), 'EditJ ob Success', $bookings->booking_title . ", " . $request->id);
+            Log::addLog(Session::get('loginId')['user_id'], 'EditJ ob Success', $bookings->booking_title . ", " . $request->id);
             Alert::success('Success', 'แก้ไขสำเร็จ!');
             return redirect()->back();
         }
@@ -1568,54 +1836,11 @@ class BookingController extends Controller
     }
 
 
-
-    public function testUser()
-    {
-
-
-
-        $date = '2023-04-20';
-
-        $employees_not_on_holiday = DB::table('role_users')
-            ->leftJoin('holiday_users', function ($join) use ($date) {
-                $join->on('role_users.user_id', '=', 'holiday_users.user_id')
-                    ->where('start_date', '<=', $date)
-                    ->where('end_date', '>=', $date)
-                    ->whereIn('status', [0, 2]); // สถานะเป็น 0 หรือ 2 เท่านั้น
-            })
-            ->where(function ($query) use ($date) {
-                $query->whereNull('holiday_users.user_id')->whereIn('role_type', ['HeadStaff', 'Staff']);
-                //->orWhere('holiday_users.status', '<>', 1); // ไม่ได้อนุมัติหยุดหรืออนุมัติแล้ว
-            })
-            ->select('role_users.*')
-            ->get();
-
-        // เก็บ ID ของพนักงานที่เลือกแล้ว
-        $selected_employee_ids = [];
-
-        // loop พนักงานที่ไม่หยุดและ status เป็น 0 หรือ 2 ในวันที่กำหนด
-        foreach ($employees_not_on_holiday as $employee) {
-            // ถ้า ID ของพนักงานนี้ยังไม่ถูกเลือก ก็ insert เข้าตาราง booking และเก็บ ID ของพนักงานนี้
-            if (!in_array($employee->id, $selected_employee_ids)) {
-                DB::table('booking')->insert([
-                    'employee_id' => $employee->id,
-                    'booking_date' => $date,
-                ]);
-                $selected_employee_ids[] = $employee->id;
-            }
-        }
-
-
-
-
-        return response()->json($employees_not_on_holiday, 200);
-    }
-
     public function search(Request $request)
     {
 
-
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
+        //$dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $projects = Project::where('active', 1)->get();
@@ -1623,31 +1848,53 @@ class BookingController extends Controller
         $teams = Team::get();
         $subTeams = Subteam::get();
 
-        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type', 'Staff')->get();
+        //$dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type', 'Staff')->get();
         // dd($dataEmps);
-        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type', 'Sale')->get();
+        //$dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type', 'Sale')->get();
+        $dataEmps = Role_user::where('role_type', 'Staff')->get();
+        $this->addApiDataToEmp($dataEmps);
+
+        $dataSales = Role_user::where('role_type', 'Sale')->get();
+        $this->addApiDataToSale($dataSales);
+
         //ดึงข้อมูลเฉพาะที่ยังเปลี่ยนสถานะยกเลิกได้
         $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3", "4", "5"])->get();
 
         if ($dataRoleUser->role_type == "SuperAdmin") {
 
 
+            // $bookings = Booking::query()
+            //     ->with('booking_user_ref:id,code,name_th')
+            //     ->with('booking_emp_ref:id,code,name_th')
+            //     ->with('booking_project_ref:id,name')
+            //     ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            //     ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+            //     ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            //     ->select(
+            //         'bookings.*',
+            //         'bookingdetails.*',
+            //         'bookings.id as bkid',
+            //         'teams.id',
+            //         'teams.team_name',
+            //         'subteams.subteam_name'
+            //     )
+            //     ->orderBy('bookings.id','desc');
             $bookings = Booking::query()
-                ->with('booking_user_ref:id,code,name_th')
-                ->with('booking_emp_ref:id,code,name_th')
-                ->with('booking_project_ref:id,name')
-                ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
-                ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
-                ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-                ->select(
-                    'bookings.*',
-                    'bookingdetails.*',
-                    'bookings.id as bkid',
-                    'teams.id',
-                    'teams.team_name',
-                    'subteams.subteam_name'
-                )
-                ->orderBy('bookings.id');
+            // ->with('booking_user_ref:id,code,name_th')
+            // ->with('booking_emp_ref:id,code,name_th')
+            ->with('booking_project_ref:id,name')
+            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            ->leftJoin('teams', 'teams.id', '=', 'bookings.team_id')
+            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            ->select(
+                'bookings.*',
+                'bookingdetails.*',
+                'bookings.id as bkid',
+                'teams.id',
+                'teams.team_name',
+                'subteams.subteam_name'
+            )
+            ->orderBy('bkid', 'desc');
 
             if ($request->project_id) {
 
@@ -1682,6 +1929,7 @@ class BookingController extends Controller
 
             $bookings = $bookings->get();
             //dd($bookings);
+            $this->addApiDataToUser($bookings);
 
             return view("booking.search", compact(
                 'dataUserLogin',

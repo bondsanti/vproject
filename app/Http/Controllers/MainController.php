@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Subteam;
 use App\Models\Log;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Phattarachai\LineNotify\Line;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -21,6 +22,211 @@ class MainController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     private function addApiDataToSale($dataSales)
+     {
+
+         $client = new Client();
+         $url = env('API_URL');
+         $token = env('API_TOKEN_AUTH');
+
+
+         $userIds = $dataSales->pluck('user_id')->toArray();
+         $userIdsString = implode(',', $userIds);
+
+         try {
+             // ส่ง request ไปยัง System B เพื่อดึงข้อมูลผู้ใช้
+             $response = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                 'headers' => [
+                     'Authorization' => 'Bearer ' . $token
+                 ]
+             ]);
+             if ($response->getStatusCode() == 200) {
+
+                 $apiResponse = json_decode($response->getBody()->getContents(), true);
+
+                 if (isset($apiResponse['data']['data'])) {
+                     // ดึงข้อมูล user จาก $apiResponse['data']['data']
+                     $userData = $apiResponse['data']['data'];
+
+                     foreach ($dataSales as $sale) {
+
+                         $userApiData = collect($userData)->firstWhere('id', $sale->user_id);
+
+                         if ($userApiData) {
+                             $sale->apiData = [
+                                 'id' => $userApiData['id'],
+                                 'name_th' => $userApiData['name_th'],
+
+                             ];
+                         } else {
+
+                             $sale->apiData = null;
+                         }
+                     }
+                 } else {
+
+                     foreach ($dataSales as $sale) {
+                         $sale->apiData = null;
+                     }
+                 }
+             } else {
+
+                 foreach ($dataSales as $sale) {
+                     $sale->apiData = null;
+                 }
+             }
+         } catch (\Exception $e) {
+
+             foreach ($dataSales as $sale) {
+                 $sale->apiData = null;
+             }
+         }
+     }
+
+     private function addApiDataToEmp($dataEmps)
+     {
+
+         $client = new Client();
+         $url = env('API_URL');
+         $token = env('API_TOKEN_AUTH');
+
+
+         $userIds = $dataEmps->pluck('user_id')->toArray();
+         $userIdsString = implode(',', $userIds);
+
+         try {
+
+             $response = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                 'headers' => [
+                     'Authorization' => 'Bearer ' . $token
+                 ]
+             ]);
+             if ($response->getStatusCode() == 200) {
+
+                 $apiResponse = json_decode($response->getBody()->getContents(), true);
+
+                 if (isset($apiResponse['data']['data'])) {
+                     // ดึงข้อมูล user จาก $apiResponse['data']['data']
+                     $userData = $apiResponse['data']['data'];
+
+                     foreach ($dataEmps as $dataEmp) {
+
+                         $userApiData = collect($userData)->firstWhere('id', $dataEmp->user_id);
+
+                         if ($userApiData) {
+                             $dataEmp->apiData = [
+                                 'id' => $userApiData['id'],
+                                 'name_th' => $userApiData['name_th'],
+                                 'active' => $userApiData['active'],
+
+                             ];
+                         } else {
+
+                             $userSelect->apiData = null;
+                         }
+                     }
+                 } else {
+
+                     foreach ($dataEmps as $dataEmp) {
+                         $dataEmp->apiData = null;
+                     }
+                 }
+             } else {
+
+                 foreach ($dataEmps as $dataEmp) {
+                     $dataEmp->apiData = null;
+                 }
+             }
+         } catch (\Exception $e) {
+
+             foreach ($dataEmps as $dataEmp) {
+                 $dataEmp->apiData = null;
+             }
+         }
+     }
+
+     private function addApiDataToUser($bookings)
+     {
+         $client = new Client();
+         $url = env('API_URL');
+         $token = env('API_TOKEN_AUTH');
+
+         // Extract user_ids and teampro_ids from bookings
+         $userIds = $bookings->pluck('user_id')->toArray();
+         $userIdsString = implode(',', $userIds);
+
+         $tProIds = $bookings->pluck('teampro_id')->toArray();
+         $tProIdsString = implode(',', $tProIds);
+
+         try {
+             // First API call to get user data
+             $userResponse = $client->request('GET', $url . '/get-users/' . $userIdsString, [
+                 'headers' => [
+                     'Authorization' => 'Bearer ' . $token
+                 ]
+             ]);
+
+             if ($userResponse->getStatusCode() == 200) {
+                 $userApiResponse = json_decode($userResponse->getBody()->getContents(), true);
+
+                 if (isset($userApiResponse['data']['data'])) {
+                     $userData = $userApiResponse['data']['data'];
+                 } else {
+                     $userData = [];
+                 }
+             } else {
+                 $userData = [];
+             }
+
+             // Second API call to get teampro data
+             $teamProResponse = $client->request('GET', $url . '/get-users/' . $tProIdsString, [
+                 'headers' => [
+                     'Authorization' => 'Bearer ' . $token
+                 ]
+             ]);
+
+             if ($teamProResponse->getStatusCode() == 200) {
+                 $teamProApiResponse = json_decode($teamProResponse->getBody()->getContents(), true);
+
+                 if (isset($teamProApiResponse['data']['data'])) {
+                     $teamProData = $teamProApiResponse['data']['data'];
+                 } else {
+                     $teamProData = [];
+                 }
+             } else {
+                 $teamProData = [];
+             }
+
+             // Attach apiData to bookings
+             foreach ($bookings as $booking) {
+                 $userApiData = collect($userData)->firstWhere('id', $booking->user_id);
+                 $teamProApiData = collect($teamProData)->firstWhere('id', $booking->teampro_id);
+
+                 $booking->apiDataSale = $userApiData ? [
+                     'id' => $userApiData['id'],
+                     'name_th' => $userApiData['name_th'],
+                     'active' => $userApiData['active'],
+                 ] : null;
+
+                 $booking->apiDataPro = $teamProApiData ? [
+                     'id' => $teamProApiData['id'],
+                     'name_th' => $teamProApiData['name_th'],
+                     'active' => $teamProApiData['active'],
+                     'phone' => $teamProApiData['phone'],
+                 ] : null;
+             }
+         } catch (\Exception $e) {
+             // Handle exception by setting apiData to null for all bookings
+             foreach ($bookings as $booking) {
+                 if (is_object($booking)) {
+                     $booking->apiDataSale = null;
+                     $booking->apiDataPro = null;
+                 }
+             }
+         }
+     }
+
     public function index()
     {
 
@@ -34,10 +240,12 @@ class MainController extends Controller
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
 
         $dataEmps = Role_user::where('role_type','Staff')->get();
+        $this->addApiDataToEmp($dataEmps);
         //$dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp,active')->where('role_type','Staff')->get();
        // dd($dataEmps);
         //$dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
         $dataSales = Role_user::where('role_type','Sale')->get();
+        $this->addApiDataToSale($dataSales);
         //$countBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status', 0)->count();
         //dd($CountBooking);
         $subTeams = Subteam::get();
@@ -72,13 +280,20 @@ class MainController extends Controller
              'countUserOther'));
 
         }elseif ($dataRoleUser->role_type=="Admin") {
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
+
+            // $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')->with('booking_project_ref:id,name')
+            // ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            // ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+            // ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            // ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')->orderBy('bookings.id')->get();
+
+            $bookings = Booking::with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
-            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')->orderBy('bookings.id')->get();
+            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')->orderBy('bookings.id','desc')->get();
 
-
+            $this->addApiDataToUser($bookings);
 
 
             $countAllBooking = Booking::count();
@@ -100,20 +315,21 @@ class MainController extends Controller
         }elseif ($dataRoleUser->role_type=="Staff") {
 
 
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')
+            $bookings = Booking::
+            with('booking_project_ref:id,name')
+            // ->with('booking_emp_ref:id,code,name_th,phone')
+            // ->with('booking_user_ref:id,code,name_th')
            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
-           ->where('teampro_id',Session::get('loginId'))->get();
+           ->where('teampro_id',Session::get('loginId')['user_id'])->get();
+           $this->addApiDataToUser($bookings);
 
-
-           $countAllBooking = Booking::where('teampro_id', Session::get('loginId'))->count();
-           $countSucessBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',3)->count();
-           $countCancelBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',4)->count();
-           $countExitBooking = Booking::where('teampro_id', Session::get('loginId'))->where('booking_status',5)->count();
+           $countAllBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->count();
+           $countSucessBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',3)->count();
+           $countCancelBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',4)->count();
+           $countExitBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',5)->count();
 
             return view('staff',compact('dataUserLogin',
             'dataRoleUser',
@@ -130,14 +346,13 @@ class MainController extends Controller
 
         }else{
 
-            $bookings = Booking::with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th,phone')
-            ->with('booking_project_ref:id,name')
+            $bookings = Booking::with('booking_project_ref:id,name')
            ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
            ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
            ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
            ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid','teams.id', 'teams.team_name', 'subteams.subteam_name')
            ->where('user_id',Session::get('loginId')['user_id'])->get();
+           $this->addApiDataToUser($bookings);
 
            $countAllBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->count();
            $countSucessBooking = Booking::where('user_id', Session::get('loginId')['user_id'])->where('booking_status',3)->count();
@@ -345,14 +560,20 @@ class MainController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
 
         $projects = Project::where('active',1)->get();
         $subTeams = Subteam::get();
 
         $dataRoleUser = Role_user::where('user_id', Session::get('loginId')['user_id'])->first();
-        $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
-        $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+        // $dataEmps = Role_user::with('user_ref:id,code,name_th as name_emp')->where('role_type','Staff')->get();
+        // $dataSales = Role_user::with('user_ref:id,code,name_th as name_sale')->where('role_type','Sale')->get();
+        $dataEmps = Role_user::where('role_type', 'Staff')->get();
+        $this->addApiDataToEmp($dataEmps);
+
+        $dataSales = Role_user::where('role_type', 'Sale')->get();
+        $this->addApiDataToSale($dataSales);
+
         $ItemStatusHowCancel =  Booking::whereNotIn('booking_status', ["3","4","5"])->get();
 
         if ($dataRoleUser->role_type== "SuperAdmin"){
@@ -372,10 +593,17 @@ class MainController extends Controller
         }elseif ($dataRoleUser->role_type=="Admin") {
 
            // dd($request->start_date);
-            $bookings = Booking::query()
-            ->with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th')
-            ->with('booking_project_ref:id,name')
+            // $bookings = Booking::query()
+            // ->with('booking_user_ref:id,code,name_th')
+            // ->with('booking_emp_ref:id,code,name_th')
+            // ->with('booking_project_ref:id,name')
+            // ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            // ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+            // ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            // ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid',
+            // 'teams.id', 'teams.team_name', 'subteams.subteam_name')
+            // ->orderBy('bookings.id');
+            $bookings = Booking::query()->with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
             ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
@@ -413,6 +641,7 @@ class MainController extends Controller
 
 
             $bookings = $bookings->get();
+            $this->addApiDataToUser($bookings);
               //dd($bookings);
 
 
@@ -437,9 +666,17 @@ class MainController extends Controller
 
         }elseif ($dataRoleUser->role_type=="Staff") {
 
+            // $bookings = Booking::query()
+            // ->with('booking_user_ref:id,code,name_th')
+            // ->with('booking_emp_ref:id,code,name_th')
+            // ->with('booking_project_ref:id,name')
+            // ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
+            // ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
+            // ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
+            // ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid',
+            // 'teams.id', 'teams.team_name', 'subteams.subteam_name')
+            // ->orderBy('bookings.id');
             $bookings = Booking::query()
-            ->with('booking_user_ref:id,code,name_th')
-            ->with('booking_emp_ref:id,code,name_th')
             ->with('booking_project_ref:id,name')
             ->leftJoin('bookingdetails', 'bookingdetails.booking_id', '=', 'bookings.id')
             ->leftJoin('teams','teams.id', '=', 'bookings.team_id')
@@ -447,6 +684,7 @@ class MainController extends Controller
             ->select('bookings.*', 'bookingdetails.*','bookings.id as bkid',
             'teams.id', 'teams.team_name', 'subteams.subteam_name')
             ->orderBy('bookings.id');
+
 
             if ($request->project_id) {
 
@@ -480,7 +718,8 @@ class MainController extends Controller
             }
 
             $bookings = $bookings->where('teampro_id',Session::get('loginId')['user_id'])->get();
-              //dd($bookings);
+            $this->addApiDataToUser($bookings);
+
 
            $countAllBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->count();
            $countSucessBooking = Booking::where('teampro_id', Session::get('loginId')['user_id'])->where('booking_status',3)->count();

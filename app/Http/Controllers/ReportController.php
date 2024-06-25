@@ -58,6 +58,7 @@ class ReportController extends Controller
             ->orderBy('month')
             ->get();
 
+
                         //dd($bookings);
             return response()->json($bookings);
         }
@@ -100,7 +101,7 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
@@ -130,7 +131,7 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
@@ -159,7 +160,7 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
@@ -189,7 +190,7 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
 
@@ -218,7 +219,7 @@ class ReportController extends Controller
     {
 
 
-        $dataUserLogin = User::where('user_id', '=', Session::get('loginId')['user_id'])->first();
+        $dataUserLogin = Session::get('loginId');
         $dataRoleUser = Role_user::where('user_id',"=", Session::get('loginId')['user_id'])->first();
 
         //ทีมไหน โปรเจคไหนบ้าง

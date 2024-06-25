@@ -52,10 +52,10 @@
                       <div class="tab-pane active" id="tab_1">
                         <form action="{{route('updateBookingProject')}}" method="post">
                             @csrf
-                            <input type="hidden" name="booking_id" value="{{$bookings->bkid}}">
-                            <input type="hidden" name="booking_title" value="{{$bookings->booking_title}}">
-                            <input type="hidden" name="user_id" value="{{$bookings->user_id}}">
-                            <input type="hidden" name="teampro_id" value="{{$bookings->teampro_id}}">
+                            <input type="hidden" name="booking_id" value="{{$bookings[0]->bkid}}">
+                            <input type="hidden" name="booking_title" value="{{$bookings[0]->booking_title}}">
+                            <input type="hidden" name="user_id" value="{{$bookings[0]->user_id}}">
+                            <input type="hidden" name="teampro_id" value="{{$bookings[0]->teampro_id}}">
                         <div class="box-body">
                             <div class="form-group">
                                 <div class="row">
@@ -66,8 +66,8 @@
                                             <i class="fa fa-calendar"></i>
                                             </div>
                                             @php
-                                                $booking_start = date('Y-m-d', strtotime($bookings->booking_start));
-                                                $time_start = date('H:i', strtotime($bookings->booking_start));
+                                                $booking_start = date('Y-m-d', strtotime($bookings[0]->booking_start));
+                                                $time_start = date('H:i', strtotime($bookings[0]->booking_start));
                                             @endphp
                                             <input type="text" class="form-control pull-right" id="datepicker" name="date" value="{{$booking_start}}" autocomplete="off" required>
                                         </div>
@@ -99,7 +99,7 @@
                                 <select class="form-control select2" style="width: 100%;" name="project_id" autocomplete="off" required>
                                 <option value="">เลือก</option>
                                 @foreach ($projects as $project )
-                                <option value="{{$project->id}}" {{ $bookings->project_id == $project->id ? 'selected' : '' }}>{{$project->name}}</option>
+                                <option value="{{$project->id}}" {{ $bookings[0]->project_id == $project->id ? 'selected' : '' }}>{{$project->name}}</option>
                                 @endforeach
                                 </select>
                             </div>
@@ -107,11 +107,11 @@
                                 <div class="row">
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (ลูกค้า)</label>
-                                        <input type="text" class="form-control" placeholder="" value="{{$bookings->customer_name}}" name="customer_name" autocomplete="off" required>
+                                        <input type="text" class="form-control" placeholder="" value="{{$bookings[0]->customer_name}}" name="customer_name" autocomplete="off" required>
                                     </div>
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อ</label>
-                                        <input type="text" class="form-control" placeholder="099xxxxxxx" value="{{$bookings->customer_tel}}" maxlength="10" name="customer_tel" autocomplete="off" required>
+                                        <input type="text" class="form-control" placeholder="099xxxxxxx" value="{{$bookings[0]->customer_tel}}" maxlength="10" name="customer_tel" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@
                                 <br>
                                 @php
 
-                                $data_req_bank = $bookings->customer_req_bank;
+                                $data_req_bank = $bookings[0]->customer_req_bank;
                                 $array_data_req_bank = explode(",", $data_req_bank);
                                 //print_r($array_data_req_bank);
 
@@ -185,7 +185,7 @@
                                                         {{-- <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
                                                         <input type="checkbox" class="minimal" name="checkbox_bank[]" value="อื่น">
                                                         </span> --}}
-                                                        <input type="text" class="form-control" name="customer_req_bank_other" placeholder="อื่น ๆ ระบุ.." autocomplete="off" value="{{$bookings->customer_req_bank_other}}">
+                                                        <input type="text" class="form-control" name="customer_req_bank_other" placeholder="อื่น ๆ ระบุ.." autocomplete="off" value="{{$bookings[0]->customer_req_bank_other}}">
                                                     </div>
                                                 </div>
 
@@ -200,7 +200,7 @@
                                 <br>
                                 @php
 
-                                $data_req = $bookings->customer_req;
+                                $data_req = $bookings[0]->customer_req;
                                 $array_data_req = explode(",", $data_req);
                                // print_r($array_data_req);
 
@@ -219,14 +219,14 @@
                                                 <span class="input-group-addon" style="border: none;  padding: 0px 10px 0px 0px;">
                                                 <input type="checkbox" class="minimal" name="checkbox_room[]" value="พาชมห้องราคา" {{ (isset($array_data_req[1]) && $array_data_req[1] == "พาชมห้องราคา") ? 'checked' : '' }}>
                                                 </span>
-                                                <input type="text" id="inputNumber" name="room_price" class="form-control" placeholder="พาชมห้อง ราคา"  value="{{$bookings->room_price}}" autocomplete="off">
+                                                <input type="text" id="inputNumber" name="room_price" class="form-control" placeholder="พาชมห้อง ราคา"  value="{{$bookings[0]->room_price}}" autocomplete="off">
                                             </div>
                                         </div>
 
                                     </div>
                                     <div class="col-xs-6">
                                         <label>ระบุเลขห้อง</label>
-                                        <input type="text" class="form-control" name="room_no" placeholder="เช่น 99/9" value="{{$bookings->room_no}}" autocomplete="off">
+                                        <input type="text" class="form-control" name="room_no" placeholder="เช่น 99/9" value="{{$bookings[0]->room_no}}" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
@@ -235,7 +235,7 @@
                                 <br>
                                 @php
 
-                                $data_req_doc = $bookings->customer_doc_personal;
+                                $data_req_doc = $bookings[0]->customer_doc_personal;
                                 $array_data_doc = explode(",", $data_req_doc);
                                //print_r($array_data_doc);
 
@@ -257,7 +257,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td width="20%"><input type="number" name="num_home" class="form-control" placeholder="" value="{{$bookings->num_home}}"></td>
+                                                <td width="20%"><input type="number" name="num_home" class="form-control" placeholder="" value="{{$bookings[0]->num_home}}"></td>
                                                 <td width="20%">&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                             <tr>
@@ -273,7 +273,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td><input type="number" class="form-control" name="num_idcard" placeholder="" value="{{$bookings->num_idcard}}"></td>
+                                                <td><input type="number" class="form-control" name="num_idcard" placeholder="" value="{{$bookings[0]->num_idcard}}"></td>
                                                 <td>&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                             <tr>
@@ -289,7 +289,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td><input type="number" class="form-control" name="num_app_statement" placeholder="" value="{{$bookings->num_app_statement}}"></td>
+                                                <td><input type="number" class="form-control" name="num_app_statement" placeholder="" value="{{$bookings[0]->num_app_statement}}"></td>
                                                 <td>&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                             <tr>
@@ -305,7 +305,7 @@
                                                     </div>
                                                 </div>
                                                 </td>
-                                                <td><input type="number" class="form-control"name="num_statement" placeholder="" value="{{$bookings->num_statement}}"></td>
+                                                <td><input type="number" class="form-control"name="num_statement" placeholder="" value="{{$bookings[0]->num_statement}}"></td>
                                                 <td>&nbsp;&nbsp;ชุด</td>
                                             </tr>
                                         </table>
@@ -326,7 +326,7 @@
                                 <select class="form-control select2" id="teamSelect" name="team_id" style="width: 100%;" required>
                                 <option value="">เลือก</option>
                                 @foreach ($teams as $team)
-                                    <option value="{{$team->id}}" {{ $bookings->team_id == $team->id ? 'selected' : '' }}>{{ $team->team_name }}</option>
+                                    <option value="{{$team->id}}" {{ $bookings[0]->team_id == $team->id ? 'selected' : '' }}>{{ $team->team_name }}</option>
                                 @endforeach
 
                                 </select>
@@ -334,7 +334,7 @@
                             <div class="form-group">
                                 <label>ชื่อสายงาน</label>
                                 <select class="form-control select2" id="subteamSelect" name="subteam_id" style="width: 100%;" required>
-                                <option value="{{ $bookings->subteam_id }}">{{ $bookings->subteam_name }}</option>
+                                <option value="{{ $bookings[0]->subteam_id }}">{{ $bookings[0]->subteam_name }}</option>
 
                                 </select>
                             </div>
@@ -345,29 +345,34 @@
                                         <label>ชื่อ-นามสกุล (Sale)</label>
                                         <select class="form-control select2" style="width: 100%;" name="user_id" autocomplete="off" >
                                             <option value="">เลือก</option>
+
                                             @foreach ($dataSales as $dataSale)
-                                            <option value="{{$dataSale->user_ref[0]->id}}"  {{ $dataSale->user_ref[0]->id == $bookings->user_id ? 'selected' : '' }}>{{$dataSale->user_ref[0]->name_sale}}</option>
+                                            <option value="{{ optional($dataSale->apiData)['user_id'] }}"  {{ optional($dataSale->apiData)['user_id'] == $bookings[0]->user_id ? 'selected' : '' }}>{{ optional($dataSale->apiData)['name_th'] }}</option>
                                            @endforeach
+
+                                            {{-- @foreach ($dataSales as $dataSale)
+                                            <option value="{{$dataSale->user_ref[0]->id}}"  {{ $dataSale->user_ref[0]->id == $bookings->user_id ? 'selected' : '' }}>{{$dataSale->user_ref[0]->name_sale}}</option>
+                                           @endforeach --}}
                                         </select>
                                     </div>
                                     @else
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
-                                        <input type="hidden" class="form-control" name="user_id" value="{{$bookings->booking_user_ref[0]->id}}" >
-                                        <input type="hidden" class="form-control" name="sale_name" value="{{$bookings->booking_user_ref[0]->name_th}}" >
-                                        <input type="text" class="form-control" name="" value="{{$bookings->booking_user_ref[0]->name_th}}" disabled>
+                                        <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin['user_id']}}" >
+                                        <input type="hidden" class="form-control" name="sale_name" value="{{ $dataUserLogin['apiData']['data']['name_th'] }}" >
+                                        <input type="text" class="form-control" name="" value="{{ $dataUserLogin['apiData']['data']['name_th'] }}" disabled>
                                     </div>
                                     @endif
                                     <div class="col-xs-6">
                                         <label>เบอร์ติดต่อสายงาน</label>
-                                        <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" value="{{ $bookings->user_tel }}" autocomplete="off" required>
+                                        <input type="text" class="form-control" name="user_tel" placeholder="099xxxxxxx" maxlength="10" value="{{ $bookings[0]->user_tel }}" autocomplete="off" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
 
                                         <label>หมายเหตุ</label>
-                                        <textarea class="form-control" rows="3" name="remark" placeholder="หมายเหตุ ..." autocomplete="off" >{{ $bookings->remark }}</textarea>
+                                        <textarea class="form-control" rows="3" name="remark" placeholder="หมายเหตุ ..." autocomplete="off" >{{ $bookings[0]->remark }}</textarea>
                             </div>
                             <div class="box-footer text-center">
                                 <button type="submit" class="btn btn-primary">บันทึก</button>

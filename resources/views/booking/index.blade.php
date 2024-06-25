@@ -354,9 +354,9 @@
                                     @else
                                     <div class="col-xs-6">
                                         <label>ชื่อ-นามสกุล (Sale)</label>
-                                        <input type="text" class="form-control" name="user_id" value="{{$dataUserLogin->user_id}}" >
-                                        <input type="hidden" class="form-control" name="sale_name" value="{{$dataUserLogin->name_th}}" >
-                                        <input type="text" class="form-control" name="" value="{{$dataUserLogin->name_th}}" disabled>
+                                        <input type="hidden" class="form-control" name="user_id" value="{{$dataUserLogin['user_id']}}" >
+                                        <input type="hidden" class="form-control" name="sale_name" value="{{ $dataUserLogin['apiData']['data']['name_th'] }}">
+                                        <input type="text" class="form-control" name="" value="{{ $dataUserLogin['apiData']['data']['name_th'] }}" disabled>
 
                                     </div>
                                     @endif

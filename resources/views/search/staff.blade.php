@@ -186,19 +186,19 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-xs-3">
+                                    {{-- <div class="col-xs-3">
                                         <label>เจ้าหน้าทีโครงการ</label>
                                         <select class="form-control select2" style="width: 100%;" name="emp_id"
                                             autocomplete="off">
                                             <option value="">เลือก</option>
 
                                             @foreach ($dataEmps as $dataEmp)
-                                                <option value="{{ $dataEmp->user_ref[0]->id }}">
-                                                    {{ $dataEmp->user_ref[0]->name_emp }}</option>
-                                            @endforeach
+                                            <option value="{{ optional($dataEmp->apiData)['id'] }}">
+                                                {{ optional($dataEmp->apiData)['name_th'] }}</option>
+                                        @endforeach
 
                                         </select>
-                                    </div>
+                                    </div> --}}
 
                                 </div>
                             </div>

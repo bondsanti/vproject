@@ -10,7 +10,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>vBis | ระบบนัดเยี่ยมโครงการ</title>
+        <title>VBNext | ระบบนัดเยี่ยมชมโครงการ</title>
         <link rel="icon" type="image/x-icon" href="{{ url('uploads/vbeicon.ico') }}">
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -57,9 +57,9 @@
                 <div class="col-md-4 text-center">
                     <img src="{{url('/uploads/logo_vbeyond.png')}}" width="170px" alt="">
                     <h4>แจ้งขอนัดชมโครงการ</h4>
-                    <h5>ชื่อ <span class="under-line-dot"> {{ optional($bookings->booking_project_ref->first())->name }} </span></h5>
-                    <h5>วันเวลา <span class="under-line-dot"> {{$Strdate_start = date('d/m/Y H:00', strtotime($bookings->booking_start . ' +543 years'))}} -
-                        {{$Strdate_end = date('H:00', strtotime($bookings->booking_end))}} น.</span></h5>
+                    <h5>ชื่อ <span class="under-line-dot"> {{ optional($bookings[0]->booking_project_ref->first())->name }} </span></h5>
+                    <h5>วันเวลา <span class="under-line-dot"> {{$Strdate_start = date('d/m/Y H:00', strtotime($bookings[0]->booking_start . ' +543 years'))}} -
+                        {{$Strdate_end = date('H:00', strtotime($bookings[0]->booking_end))}} น.</span></h5>
                 </div>
                 <div class="col-md-4"></div>
             </div>
@@ -78,19 +78,19 @@
                         <tbody class="text-center">
                             <tr>
                                 <td class="text-right">Booking ID :</td>
-                                <td class="text-left">{{$bookings->bkid}} </td>
+                                <td class="text-left">{{$bookings[0]->bkid}} </td>
                             </tr>
                             <tr>
                                 <td class="text-right">ชื่อ ลูกค้า :</td>
-                                <td class="text-left">คุณ {{$bookings->customer_name}}, {{$bookings->customer_tel}} </td>
+                                <td class="text-left">คุณ {{$bookings[0]->customer_name}}, {{$bookings[0]->customer_tel}} </td>
                             </tr>
 
                             <tr>
                                 <td class="text-right">ข้อมูลเข้าชม :</td>
-                                <td class="text-left"> {{$bookings->customer_req}}
+                                <td class="text-left"> {{$bookings[0]->customer_req}}
                                     @php
-                                    if($bookings->room_price > 0){
-                                        echo number_format($bookings->room_price).".-";
+                                    if($bookings[0]->room_price > 0){
+                                        echo number_format($bookings[0]->room_price).".-";
                                     }
                                     @endphp
                                 </td>
@@ -98,56 +98,56 @@
                             <tr>
                                 <td class="text-right">เลขห้อง :</td>
                                 <td class="text-left"> @php
-                                    if($bookings->room_price!=null){
-                                        echo $bookings->room_no;
+                                    if($bookings[0]->room_price!=null){
+                                        echo $bookings[0]->room_no;
                                     }
                                     @endphp
                                 </td>
                             </tr>
                             <tr>
                                 <td class="text-right">ชื่อ Sale :</td>
-                                <td class="text-left"> {{ optional($bookings->booking_user_ref->first())->name_th }}, {{$bookings->user_tel}}
+                                <td class="text-left"> {{ $bookings[0]->apiDataSale['name_th'] }}, {{ $bookings[0]->user_tel }}
                                 </td>
                             </tr>
                             <tr>
                                 <td class="text-right">เจ้าหน้าที่โครงการ :</td>
-                                <td class="text-left">คุณ {{ optional($bookings->booking_emp_ref->first())->name_th }}, {{ optional($bookings->booking_emp_ref->first())->phone }}</td>
+                                <td class="text-left">คุณ {{ $bookings[0]->apiDataPro['name_th'] }}, {{ $bookings[0]->apiDataPro['phone'] }}</td>
                             </tr>
                             <tr>
                                 <td class="text-right">เอกสารขอกู้ธนาคาร :</td>
-                                <td class="text-left"> {{$bookings->customer_req_bank}}
+                                <td class="text-left"> {{$bookings[0]->customer_req_bank}}
                                 </td>
                             </tr>
                             @php
-                                    if($bookings->num_home > 0){
+                                    if($bookings[0]->num_home > 0){
                                         echo "<tr>
                                 <td class=\"text-right\">ฝากรับเอกสารลูกค้า :</td>
                                 <td class=\"text-left\">
-                                        สำเนาทะเบียนบาน <strong>".$bookings->num_home."</strong>ชุด
+                                        สำเนาทะเบียนบาน <strong>".$bookings[0]->num_home."</strong>ชุด
                                 </td>
                             </tr>
                             ";
                                     }
                              @endphp
                             @php
-                            if($bookings->num_idcard > 0){
+                            if($bookings[0]->num_idcard > 0){
                                 echo "
                             <tr>
                                 <td class=\"text-right\"></td>
                                 <td class=\"text-left\">
-                                        สำเนาบัตรประชาชน <strong>".$bookings->num_idcard."</strong>ชุด
+                                        สำเนาบัตรประชาชน <strong>".$bookings[0]->num_idcard."</strong>ชุด
 
                                 </td>
                             </tr>
                             ";}
                             @endphp
                             @php
-                            if($bookings->num_app_statement > 0){
+                            if($bookings[0]->num_app_statement > 0){
                                 echo "<tr>
                                 <td class=\"text-right\"></td>
                                 <td class=\"text-left\">
 
-                                       หนังสือรับรองเงินเดือน <strong>".$bookings->num_app_statement."</strong>ชุด
+                                       หนังสือรับรองเงินเดือน <strong>".$bookings[0]->num_app_statement."</strong>ชุด
 
 
                                 </td>
@@ -155,12 +155,12 @@
                             ";}
                             @endphp
                             @php
-                            if($bookings->num_statement > 0){
+                            if($bookings[0]->num_statement > 0){
                                 echo"
                             <tr>
                                 <td class=\"text-right\"></td>
                                 <td class=\"text-left\">
-                                        เอกสาร Statement <strong>".$bookings->num_statement."</strong>ชุด
+                                        เอกสาร Statement <strong>".$bookings[0]->num_statement."</strong>ชุด
 
                                 </td>
                             </tr>";}

@@ -196,19 +196,19 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-xs-3">
+                                    {{-- <div class="col-xs-3">
                                         <label>เจ้าหน้าทีโครงการ</label>
                                         <select class="form-control select2" style="width: 100%;" name="emp_id"
                                             autocomplete="off">
                                             <option value="">เลือก</option>
 
                                             @foreach ($dataEmps as $dataEmp)
-                                                <option value="{{ $dataEmp->user_ref[0]->id }}">
-                                                    {{ $dataEmp->user_ref[0]->name_emp }}</option>
+                                                <option value="{{ optional($dataEmp->apiData)['id'] }}">
+                                                    {{ optional($dataEmp->apiData)['name_th'] }}</option>
                                             @endforeach
 
                                         </select>
-                                    </div>
+                                    </div> --}}
 
                                 </div>
                             </div>
@@ -289,7 +289,7 @@
                                         </td>
 
                                         <td class="project-state">
-                                            <a>{{ optional($booking->booking_user_ref->first())->name_th }}</a>
+                                            <a>{{ $booking->apiDataPro['name_th'] }}</a>
                                             <br />
                                             <small>
                                                 {{ $booking->user_tel }}
@@ -299,17 +299,23 @@
 
                                         <td> @php
                                             if ($booking->booking_status == 0) {
-                                                echo $textStatus = "<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
+                                                echo $textStatus =
+                                                    "<span class=\"badge\" yle=\"background-color:#a6a6a6\">รอรับงาน</span>";
                                             } elseif ($booking->booking_status == 1) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
+                                                echo $textStatus =
+                                                    "<span class=\"badge\" style=\"background-color:#f39c12\">รับงานแล้ว</span>";
                                             } elseif ($booking->booking_status == 2) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
+                                                echo $textStatus =
+                                                    "<span class=\"badge\" style=\"background-color:#00c0ef\">จองสำเร็จ</span>";
                                             } elseif ($booking->booking_status == 3) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
+                                                echo $textStatus =
+                                                    "<span class=\"badge\" style=\"background-color:#00a65a\">เยี่ยมชมเรียบร้อย</span>";
                                             } elseif ($booking->booking_status == 4) {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
+                                                echo $textStatus =
+                                                    "<span class=\"badge\" style=\"background-color:#dd4b39\">ยกเลิก</span>";
                                             } else {
-                                                echo $textStatus = "<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
+                                                echo $textStatus =
+                                                    "<span class=\"badge\" style=\"background-color:#b342f5\">ยกเลิกอัตโนมัติ</span>";
                                             }
 
                                         @endphp
@@ -513,28 +519,36 @@
                                         <dd>
                                             @php
                                                 if ($booking->num_home > 0) {
-                                                    echo 'สำเนาทะเบียนบาน <strong>' . $booking->num_home . '</strong>ชุด';
+                                                    echo 'สำเนาทะเบียนบาน <strong>' .
+                                                        $booking->num_home .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
                                         <dd>
                                             @php
                                                 if ($booking->num_idcard > 0) {
-                                                    echo 'สำเนาบัตรประชาชน <strong>' . $booking->num_idcard . '</strong>ชุด';
+                                                    echo 'สำเนาบัตรประชาชน <strong>' .
+                                                        $booking->num_idcard .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
                                         <dd>
                                             @php
                                                 if ($booking->num_app_statement > 0) {
-                                                    echo 'หนังสือรับรองเงินเดือน <strong>' . $booking->num_app_statement . '</strong>ชุด';
+                                                    echo 'หนังสือรับรองเงินเดือน <strong>' .
+                                                        $booking->num_app_statement .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
                                         <dd>
                                             @php
                                                 if ($booking->num_statement > 0) {
-                                                    echo 'เอกสาร Statement <strong>' . $booking->num_statement . '</strong>ชุด';
+                                                    echo 'เอกสาร Statement <strong>' .
+                                                        $booking->num_statement .
+                                                        '</strong>ชุด';
                                                 }
                                             @endphp
                                         </dd>
@@ -549,11 +563,10 @@
                                         <dd><strong class="text-primary">{{ $booking->team_name }}</strong> -
                                             {{ $booking->subteam_name }}</dd>
                                         <dt>ชื่อ Sale</dt>
-                                        <dd>{{ optional($booking->booking_user_ref->first())->name_th }},
-                                            {{ $booking->user_tel }} </dd>
+                                        <dd>{{ $booking->apiDataSale['name_th'] }} {{ $booking->user_tel }} </dd>
 
                                         <dt>ทีม หน้าโครงการ</dt>
-                                        <dd>{{ optional($booking->booking_emp_ref->first())->name_th }},{{ optional($booking->booking_emp_ref->first())->phone }}
+                                        <dd>{{ $booking->apiDataPro['name_th'] }} {{ $booking->apiDataPro['phone'] }}
                                         </dd>
 
                                     </dl>
@@ -887,7 +900,21 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-
+            $('#datepicker1').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                //startDate: new Date(), // sets the minimum date to today
+                //datesDisabled: [new Date()], // disables today's date in the datepicker
+                todayHighlight: true, // highlights today's date in the datepicker
+            });
+            //Date picker
+            $('#datepicker2').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                //startDate: new Date(), // sets the minimum date to today
+                //datesDisabled: [new Date()], // disables today's date in the datepicker
+                todayHighlight: true, // highlights today's date in the datepicker
+            });
 
             $('#table').DataTable({
                 'paging': true,

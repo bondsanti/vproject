@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('PY0A3A9$G55KlasS90xxQwA9FvvLkiIQdZxpO09s1A/{id}&{token}',[CustomAuthController::class,'AllowLoginConnect']);
+Route::get('McfaSei97t71S0w62eKWQCVWXRqVe2naBUS8rUNxajavLw1F5aR7Y1buECBP5AdtiMCZajbvy1kvitbA36FD3NECkW/{code}&{token}',[CustomAuthController::class,'AllowLoginConnect']);
 
 Route::get('/login',[CustomAuthController::class,'login'])->middleware('alreadyLogin');
 Route::get('/regis',[CustomAuthController::class,'regis'])->middleware('alreadyLogin');
