@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use Phattarachai\LineNotify\Line;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -218,6 +220,36 @@ class UserController extends Controller
         }
 
 
+    }
+
+    public function testAPI()
+    {
+        try {
+            $code = '6601025'; // กำหนดค่า $code ตามที่ต้องการ
+
+            $url = 'https://vbnext.vbeyond.co.th' . '/getAuth/' . $code;
+            $token = env('API_TOKEN_AUTH');
+
+            // ส่งคำขอพร้อม headers
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get($url);
+
+            // ตรวจสอบสถานะของการตอบกลับ
+            if ($response->successful()) {
+                // ทำงานกับข้อมูลที่ได้จาก API
+             echo 'Success', 'API request was successful.';
+            } else {
+                // จัดการกับข้อผิดพลาด HTTP
+                 echo 'Error', 'API request failed with status: ' . $response->status();
+            }
+        } catch (ConnectionException $e) {
+            // จัดการข้อผิดพลาดของการเชื่อมต่อ
+           echo 'Connection error', $e->getMessage();
+        } catch (\Exception $e) {
+            // จัดการข้อผิดพลาดทั่วไป
+           echo 'Error', $e->getMessage();
+        }
     }
 
 }

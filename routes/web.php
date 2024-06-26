@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/testapi',[UserController::class,'testAPI']);
+
 Route::get('McfaSei97t71S0w62eKWQCVWXRqVe2naBUS8rUNxajavLw1F5aR7Y1buECBP5AdtiMCZajbvy1kvitbA36FD3NECkW/{code}&{token}',[CustomAuthController::class,'AllowLoginConnect']);
 
 Route::get('/login',[CustomAuthController::class,'login'])->middleware('alreadyLogin');
