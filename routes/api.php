@@ -24,5 +24,5 @@ Route::get('/report/booking.current-year',[ApiReportController::class,'ReportBoo
 
 // api createRoleBy VBNext
 Route::post('/create-role/{user_id}',[UserController::class,'createUserRoleByAPI'])->middleware(['checkTokenApi']);
-Route::get('/users-list/{user_id}',[UserController::class,'userListAPI'])->middleware(['checkTokenApi']);
-
+// Route::get('/users-list/{user_id}',[UserController::class,'userListAPI'])->middleware(['checkTokenApi']);
+Route::get('/users-list/{user_id}',[UserController::class,'userListAPI']);
