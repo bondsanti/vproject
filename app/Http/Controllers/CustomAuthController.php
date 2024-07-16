@@ -84,21 +84,31 @@ class CustomAuthController extends Controller
         $code = $request->code;
         $password = $request->password;
 
-       try {
+        try {
 
             $url = env('API_URL') . '/getAuth/' . $code;
             $token = env('API_TOKEN_AUTH');
 
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.$token
+                'Authorization' => 'Bearer ' . $token
             ])->get($url);
 
+
+            $url_log = env('API_URL') . '/create/login/log/' . $code . ',vproject';
+            //insert loglogin
+            $response_log = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->post($url_log);
+            if ($response_log->successful()) {
+            }
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
                 //dd($userData);
                 if (Hash::check($password, $userData['password'])) {
-                    $request->session()->put('loginId',$userData);
+                    $request->session()->put('loginId', $userData);
+
+
                     Alert::success('เข้าสู่ระบบสำเร็จ');
                     return redirect('/');
                 } else {
@@ -107,16 +117,14 @@ class CustomAuthController extends Controller
                 }
             } else {
 
-            Alert::warning('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-            return back();
-
+                Alert::warning('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+                return back();
             }
         } catch (\Exception $e) {
 
-            Alert::error('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ API ภายนอก' .$e->getMessage());
+            Alert::error('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ API ภายนอก' . $e->getMessage());
             return back();
         }
-
     }
 
     public function logoutUser(Request $request)
@@ -135,38 +143,42 @@ class CustomAuthController extends Controller
         }
     }
 
-    public function AllowLoginConnect(Request $request,$code,$token)
+    public function AllowLoginConnect(Request $request, $code, $token)
     {
 
         try {
 
             $url = env('API_URL') . '/checktoken/out/' . $token;
             $tokenapi = env('API_TOKEN_AUTH');
-           //dd($url);
+            //dd($url);
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.$tokenapi
+                'Authorization' => 'Bearer ' . $tokenapi
             ])->get($url);
 
+            $url_log = env('API_URL') . '/create/login/log/' . $code . ',vproject';
+            //insert loglogin
+            $response_log = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->post($url_log);
+            if ($response_log->successful()) {
+            }
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
 
-                    $request->session()->put('loginId',$userData);
-                    Alert::success('เข้าสู่ระบบสำเร็จ');
-                    return redirect('/');
-
+                $request->session()->put('loginId', $userData);
+                Alert::success('เข้าสู่ระบบสำเร็จ');
+                return redirect('/');
             } else {
 
-            Alert::warning('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
-            return back();
-
+                Alert::warning('ไม่พบผู้ใช้งาน', 'กรุณากรอกข้อมูลใหม่อีกครั้ง');
+                return back();
             }
         } catch (\Exception $e) {
 
             Alert::error('Error', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ API ภายนอก');
             return back();
         }
-
     }
 
     // public function AllowLoginConnect(Request $request, $id, $token)
