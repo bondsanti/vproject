@@ -158,7 +158,7 @@ class CustomAuthController extends Controller
             $url_log = env('API_URL') . '/create/login/log/' . $code . ',vproject';
             //insert loglogin
             $response_log = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token
+                'Authorization' => 'Bearer ' . $tokenapi
             ])->post($url_log);
             if ($response_log->successful()) {
             }
