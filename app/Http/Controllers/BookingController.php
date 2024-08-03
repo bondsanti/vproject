@@ -456,7 +456,7 @@ class BookingController extends Controller
 
             // $bookings = Booking::leftJoin('projects','projects.id','=','bookings.project_id')
             // ->leftJoin('bookingdetails','bookingdetails.booking_id','=','bookings.id')->get();
-
+            $currentYear = Carbon::now()->year;
             $bookings = Booking::with('booking_project_ref:id,name')
                 // ->with('booking_emp_ref:id,code,name_th,phone') //จน. โครงการ
                 // ->with('booking_user_ref:id,code,name_th') //ชื่อ Sale
@@ -465,6 +465,7 @@ class BookingController extends Controller
                 ->leftJoin('subteams', 'subteams.id', '=', 'bookings.subteam_id')
                 ->select('bookings.*', 'bookingdetails.*', 'bookings.id as bkid', 'teams.id', 'teams.team_name', 'subteams.subteam_name')
                 ->where('user_id', Session::get('loginId')['user_id'])
+                ->whereYear('bookings.created_at', $currentYear) // Filter by current year
                 ->orderBy('bkid', 'desc')
                 ->get();
                 $this->addApiDataToUser($bookings);

@@ -94,21 +94,22 @@ class CustomAuthController extends Controller
             ])->get($url);
 
 
-            $url_log = env('API_URL') . '/create/login/log/' . $code . ',vproject';
+            $url_log = env('API_URL') . '/logs/login/' . $code . ',vproject';
             //insert loglogin
             $response_log = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
-            ])->post($url_log);
+            ])->get($url_log);
+
             if ($response_log->successful()) {
             }
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
-                //dd($userData);
+                // dd($userData);
                 if (Hash::check($password, $userData['password'])) {
                     $request->session()->put('loginId', $userData);
 
-
+                    Log::addLog($userData['user_id'], 'Login', 'By LoginPage');
                     Alert::success('เข้าสู่ระบบสำเร็จ');
                     return redirect('/');
                 } else {
@@ -132,10 +133,9 @@ class CustomAuthController extends Controller
 
         if ($request->session()->has('loginId')) {
 
-            //$user = User::where('id', $request->session()->get('loginId'))->first();
-            //dd($user);
-            //Log::addLog($request->session()->get('loginId'), 'Logout', '');
+            // dd($request->session()->get('loginId')['user_id']);
 
+            Log::addLog($request->session()->get('loginId')['user_id'], 'Logout', '');
             $request->session()->pull('loginId');
 
             Alert::success('ออกจากระบบเรียบร้อย');
@@ -148,24 +148,24 @@ class CustomAuthController extends Controller
 
         try {
 
-            $url = env('API_URL') . '/checktoken/out/' . $token;
+            $url = env('API_URL') . '/token/check/out/' . $token;
             $tokenapi = env('API_TOKEN_AUTH');
             //dd($url);
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $tokenapi
             ])->get($url);
 
-            $url_log = env('API_URL') . '/create/login/log/' . $code . ',vproject';
+            $url_log = env('API_URL') . '/logs/login/' . $code . ',vproject';
             //insert loglogin
             $response_log = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $tokenapi
-            ])->post($url_log);
+            ])->get($url_log);
             if ($response_log->successful()) {
             }
 
             if ($response->successful()) {
                 $userData = $response->json()['data'];
-
+                Log::addLog($userData['user_id'], 'Login', 'AllowLoginConnect By VBNext');
                 $request->session()->put('loginId', $userData);
                 Alert::success('เข้าสู่ระบบสำเร็จ');
                 return redirect('/');
@@ -180,42 +180,4 @@ class CustomAuthController extends Controller
             return back();
         }
     }
-
-    // public function AllowLoginConnect(Request $request, $id, $token)
-    // {
-
-    //     $user = User::where('code', '=', $id)->orWhere('old_code', '=', $id)->first();
-    //     //dd($user);
-    //     if ($user) {
-    //         $request->session()->put('loginId', $user->id);
-    //         // Auth::login($user);
-    //         $user->last_login_at = date('Y-m-d H:i:s');
-    //         $user->save();
-    //         $checkToken = User::where('token', '=', $token)->first();
-
-    //         if ($checkToken) {
-    //             DB::table('vbeyond_report.log_login')->insert([
-    //                 'username' => $user->code,
-    //                 'dates' => date('Y-m-d'),
-    //                 'timeStm' => date('Y-m-d H:i:s'),
-    //                 'page' => 'vProject'
-    //             ]);
-
-    //             Log::addLog($request->session()->get('loginId'), 'Login', 'AllowLoginConnect By vBisConnect');
-    //             return redirect('/');
-    //         } else {
-    //             $request->session()->pull('loginId');
-    //             return redirect('/');
-    //         }
-    //     } else if ($user->active == 0) {
-    //         $request->session()->pull('loginId');
-    //         return redirect('/');
-    //     } else {
-    //         return redirect('/');
-    //     }
-    // }
-
-
-
-
 }

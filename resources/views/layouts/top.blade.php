@@ -26,7 +26,7 @@
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="{{ $dataUserLogin['fileExists'] ? $dataUserLogin['remoteFile'] : url('uploads/avatar.png') }}" class="img-circle" alt="">
+                            <img src="{{url('uploads/avatar.png') }}" class="img-circle" alt="">
 
                             <p>
                                 {{ $dataUserLogin['apiData']['data']['name_th'] }}
