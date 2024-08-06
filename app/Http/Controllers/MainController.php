@@ -444,11 +444,6 @@ class MainController extends Controller
 
 
 
-
-
-
-
-
     }
 
     //แจ้งเตือนยกเลิก กรณี Saleไม่กด confirm
@@ -517,10 +512,16 @@ class MainController extends Controller
         $nextDay = $currentDate->addDay();
 
        //dd($currentDate);
-        $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
-        ->where('booking_status', 1)
+        // $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')
+        // ->where('booking_status', 1)
+        // ->where('booking_start', '<=', $nextDay)
+        // ->get();
+
+        $bookings = Booking::where('booking_status', 1)
         ->where('booking_start', '<=', $nextDay)
         ->get();
+
+        $this->addApiDataToUser($bookings);
 
         //dd($bookings);
         if ($bookings->count() > 0) {
@@ -533,7 +534,7 @@ class MainController extends Controller
                  $line->send(
                      '⚠️ *เตือน...* ❗️❗️'." \n".
                      'หมายเลขการจอง : *'.$bookingId."* \n".
-                     'ชื่อ Sale : *'.$booking->booking_user_ref[0]->name_th."* \n".
+                     'ชื่อ Sale : *'.$booking->apiDataSale['name_th']."* \n".
                      '----------------------------'." \n".
                      '❌ ยังไม่ได้กดคอนเฟริ์มนัด'." \n".
                      '✨ กดคอนเฟริ์มนัด => '.route('main')

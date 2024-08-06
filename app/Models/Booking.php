@@ -21,44 +21,70 @@ class Booking extends Model
 
     public function booking_user_ref()
     {
-        return $this->hasMany(User::class,'id','user_id');
+        return $this->hasMany(User::class, 'id', 'user_id');
     }
-    public function booking_emp_ref()//เจ้าหน้าที่โครงการ
+    public function booking_emp_ref() //เจ้าหน้าที่โครงการ
     {
-        return $this->hasMany(User::class,'id','teampro_id');
+        return $this->hasMany(User::class, 'id', 'teampro_id');
     }
-    public function booking_project_ref()//ชื่อโครงการ
+    public function booking_project_ref() //ชื่อโครงการ
     {
-        return $this->hasMany(Project::class,'id','project_id');
+        return $this->hasMany(Project::class, 'id', 'project_id');
     }
+
     // protected static function boot()
     // {
     //     parent::boot();
 
     //     static::creating(function ($booking) {
-    //         $y = date('Y')+543;
+    //         $y = date('Y') + 543;
     //         $last_two_digits = substr($y, -2);
-    //         $booking->id = $last_two_digits. sprintf('%03d', static::count() + 1);
+
+    //         // ดึง ID ล่าสุดที่ขึ้นต้นด้วยปีปัจจุบัน
+    //         $lastBooking = static::where('id', 'like', $last_two_digits . '%')
+    //             ->orderBy('id', 'desc')
+    //             ->first();
+
+    //         if ($lastBooking) {
+    //             // แยกเลขท้ายของ ID ล่าสุดออกมา
+    //             $lastId = substr($lastBooking->id, 2);
+    //             $nextId = sprintf('%03d', $lastId + 1);
+    //         } else {
+    //             $nextId = '001';
+    //         }
+
+    //         // สร้าง ID ใหม่
+    //         $booking->id = $last_two_digits . $nextId;
     //     });
     // }
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($booking) {
-            $y = date('Y')+543;
-            $last_two_digits = substr($y, -2);
+            $currentYear = date('Y') + 543;
+            $last_two_digits = substr($currentYear, -2);
 
+            // ดึง ID ล่าสุดที่ขึ้นต้นด้วยปีปัจจุบัน
             $lastBooking = static::orderBy('id', 'desc')->first();
 
             if ($lastBooking) {
-                $lastId = substr($lastBooking->id, 3);
-                $nextId = sprintf('%03d', $lastId + 1);
+                $lastYearDigits = substr($lastBooking->id, 0, 2);
+                if ($lastYearDigits === $last_two_digits) {
+                    // ถ้าปีเดียวกัน แยกเลขท้ายของ ID ล่าสุดออกมา
+                    $lastId = substr($lastBooking->id, 2);
+                    $nextId = sprintf('%03d', $lastId + 1);
+                } else {
+                    // ถ้าปีเปลี่ยน เริ่มใหม่จาก 001
+                    $nextId = '001';
+                }
             } else {
                 $nextId = '001';
             }
 
-            $booking->id = $last_two_digits.$nextId;
+            // สร้าง ID ใหม่
+            $booking->id = $last_two_digits . $nextId;
         });
     }
 }

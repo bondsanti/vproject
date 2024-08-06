@@ -27,7 +27,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('command:sendalert')->hourly();
+
+        $schedule->command('check:alert-booking-confirm')->hourly();
+        $schedule->command('check:alert-booking-confirm-sale')->dailyAt('17:30');
+        $schedule->command('alert:before-booking-confirm-sale')->dailyAt('16:30');
 
     }
 
