@@ -143,6 +143,6 @@ Route::get('/report/booking/group/project/team',[ReportController::class,'report
 
 
 //ChackBooking to alert auto
-Route::get('/alert/booking',[MainController::class,'checkAlertBookingConfirm']);
-Route::get('/alert/booking/sale',[MainController::class,'checkAlertBookingConfirmSale']);
-Route::get('/alert/booking/before/sale',[MainController::class,'alertBeforeBookingConfirmSale']);
+Route::get('/alert/booking',[MainController::class,'checkAlertBookingConfirm'])->name('alert.booking');
+Route::get('/alert/booking/sale',[MainController::class,'checkAlertBookingConfirmSale'])->name('alert.booking.sale');
+Route::get('/alert/booking/before/sale',[MainController::class,'alertBeforeBookingConfirmSale'])->name('alert.booking.bf.sale');

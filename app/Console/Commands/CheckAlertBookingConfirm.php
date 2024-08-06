@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 
 class CheckAlertBookingConfirm extends Command
 {
@@ -38,7 +39,9 @@ class CheckAlertBookingConfirm extends Command
     public function handle()
     {
         // Call the route
-        Http::get(url('/alert/booking'));
+        $url = route('alert.booking');
+        Http::get($url);
+
 
         $this->info('Alert booking confirm checked successfully.');
         return 0;

@@ -37,7 +37,8 @@ class CheckAlertBookingConfirmSale extends Command
      */
     public function handle()
     {
-        Http::get(url('/alert/booking/sale'));
+        $url = route('alert.booking.sale');
+        Http::get($url);
 
         $this->info('Alert booking confirm sale checked successfully.');
         return 0;

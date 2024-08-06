@@ -373,7 +373,7 @@ class MainController extends Controller
         }
     }
 
-
+    //เจ้าหน้าที่โครงการไม่กดรับงานภายใน 1 ชม.
     public function checkAlertBookingConfirm(){
 
         $bookings = Booking::where('booking_status', 0)->get();
@@ -383,8 +383,7 @@ class MainController extends Controller
         $startTime = '16:00:00';
         $endTime = '17:30:00';
 
-       // dd($startTime1);
-
+       //dd($bookings->count());
 
         if($bookings->count() > 0){
 
@@ -395,8 +394,9 @@ class MainController extends Controller
 
                 //check จองล่วงหน้า 1 วัน
                 //$oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
-                $limitTime = date('H:i:s', strtotime($booking->created_at.' +1 Hour'));
-
+                // $limitTime = date('H:i:s', strtotime($booking->created_at.' +1 Hour'));
+                $limitTime = Carbon::parse($booking->created_at)->addHour()->format('H:i:s');
+                //dd( $booking->created_at );
                 if ($currentTime > $limitTime){
 
                     DB::table('bookings')
@@ -509,7 +509,7 @@ class MainController extends Controller
 
         $currentDate = Carbon::now();
         $currentTime = date('H:i:s');
-        $nextDay = $currentDate->addDay();
+        $nextDay = $currentDate->addDay(); // วันที่ปัจจุบัน +1 วัน
 
        //dd($currentDate);
         // $bookings = Booking::with('booking_user_ref:id,code,name_th')->with('booking_emp_ref:id,code,name_th,phone')

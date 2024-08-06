@@ -38,7 +38,8 @@ class AlertBeforeBookingConfirmSale extends Command
     public function handle()
     {
         // Call the route
-        Http::get(url('/alert/booking/before/sale'));
+        $url = route('alert.booking.bf.sale');
+        Http::get($url);
 
         $this->info('Alert before booking confirm sale executed successfully.');
         return 0;
