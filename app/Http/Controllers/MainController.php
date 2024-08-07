@@ -396,7 +396,7 @@ class MainController extends Controller
                 //$oneDayBeforeBookingDate = date('Y-m-d', strtotime($booking->booking_start . ' -1 day'));
                 // $limitTime = date('H:i:s', strtotime($booking->created_at.' +1 Hour'));
                 $limitTime = Carbon::parse($booking->created_at)->addHour()->format('H:i:s');
-                dd( $booking->created_at );
+                //dd( $booking->created_at );
                 if ($currentTime > $limitTime){
 
                     DB::table('bookings')
