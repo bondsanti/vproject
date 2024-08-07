@@ -383,7 +383,7 @@ class MainController extends Controller
         $startTime = '16:00:00';
         $endTime = '17:30:00';
 
-       //dd($bookings->count());
+       dd($bookings->count());
 
         if($bookings->count() > 0){
 
